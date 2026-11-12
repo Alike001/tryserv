@@ -25,6 +25,7 @@
   const valid=scenarios.filter(s=>completed.has(s.id)).length;
   $("progress").textContent=valid+" / "+scenarios.length+" repaired";
   $("fill").style.width=scenarios.length?(valid/scenarios.length*100)+"%":"0%";
+  $("debug-complete").hidden=valid!==scenarios.length;
   const nav=$("cases");clean(nav);
   for(const item of scenarios){
    const button=el(nav,"button","","case-button"+
@@ -93,7 +94,7 @@
    $("solution").hidden=false;
    lastCorrect=data.request;
    $("solution-code").textContent=JSON.stringify(lastCorrect,null,2);
-   $("next").textContent=scenarios.indexOf(current)===scenarios.length-1?"Review the learning studio →":"Next mission →";
+   $("next").textContent=scenarios.every(s=>completed.has(s.id))?"See your learning summary →":"Next unfinished mission →";
   }catch(e){showError(e.message);}
   finally{button.disabled=false;button.textContent="Validate my fix →";}
  }
@@ -105,9 +106,9 @@
   }catch{showError("Automatic copying was blocked. Select and copy the preview JSON manually.");}
  }
  function next(){
-  const index=scenarios.indexOf(current);
-  if(index<scenarios.length-1)select(scenarios[index+1].id);
-  else window.location.href="/try";
+  const unfinished=scenarios.find(s=>!completed.has(s.id));
+  if(unfinished)select(unfinished.id);
+  else window.location.href="/learn";
  }
  async function start(){
   $("check").addEventListener("click",check);
