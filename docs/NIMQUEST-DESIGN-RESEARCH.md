@@ -52,3 +52,7 @@ NimQuest's public repository uses the MIT license. TrySERV uses high-level inter
 - Prepare hackathon screenshots, walkthrough, and submission from verified claims only.
 
 Principle: Make OpenServ understandable to a newcomer and useful to a developer without demanding a wallet, paid API keys, or a giant generic agent platform.
+
+## Mobile navigation regression caught before merge
+
+Chromium testing exposed two mobile header issues: the newly added guide link was initially hidden behind desktop navigation, and shrinking the 320px header initially hid its primary Start learning CTA. Both were corrected: mobile shows Docs visibly and uses a shorter Start label on the narrowest screens while keeping the accessible full link text. Validate this with the latest branch browser CI before merging.
