@@ -121,3 +121,14 @@ Source of truth for next chats: docs/CONTEXT-HANDOFF.md. Old ServSteps preview e
 - [ ] Test a new learner end-to-end and prepare final submission.
 
 Canonical research: [docs/INTERACTIVE-LEARNING-RESEARCH.md](INTERACTIVE-LEARNING-RESEARCH.md).
+
+
+## November 12 functional journey checkpoint (pending CI + preview)
+
+- [x] Connect four-lesson completion to a truthful summary: modules finished, 80 on-device XP, and next action to practise fixing requests. The completion summary is **not a credential or certificate**.
+- [x] Keep the debugging lab as a separate progress track (three real request-repair missions); do not award additional XP just for visiting it.
+- [x] Fix last debug mission: continue to any unfinished repair; after all three, return to the learning studio summary rather than an unrelated request-builder page.
+- [x] Add a read-only guest SERV allowance endpoint and visible per-visitor questions remaining today plus shared trial remaining. Reading status **never consumes** SERV inference credits.
+- [x] Free tutor button disabled when daily/global quota is exhausted or budget status cannot be read; no inference is attempted when protections are down.
+- [ ] Validate this branch in CI, merge only after green tests, confirm Render's final deployment and request a browser screenshot.
+- [ ] Evaluate real usability with one beginner and one developer before comprehensive visuals. Keep total trial budget at 24 until spending is reviewed; don't silently raise it.
