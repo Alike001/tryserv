@@ -1,5 +1,5 @@
 # TrySERV — Product Direction, Feature Plan and Release Gates
-Updated: 12 Nov 2026 (Africa/Lagos). Planning checkpoint. No further feature development authorized by this document alone.
+Updated: 12 Nov 2026 (Africa/Lagos). Living milestone plan. Update release gates only with tested outcomes.
 Working name: TrySERV (not trademark cleared). Independent OpenServ learning companion.
 
 ## Product promise
@@ -58,9 +58,9 @@ Exit gate: source public, real SERV use demonstrated, all claims truthful, keys 
 Login, leaderboards, crypto points, NFTs/certificates, multi-tenant course platform, many dozens of lessons, document crawling, voice/multimodal tutor, shell access, complicated agent/MCP orchestration, billing, complex database.
 
 ## Repository and deployment strategy
-Current early preview: https://servsteps-preview.onrender.com
+Current standalone deployment: https://tryserv.onrender.com
 Source is currently https://github.com/Alike001/opsra on feat/serv-learning-companion under learn/.
-Existing unrelated incident product is on Opsra main. **Do not delete it.** Recommend a clean public repository Alike001/tryserv (needs owner to create it in GitHub UI; current connector has no repository-create action), then migrate only the learning files onto its main branch. Reconnect Render service once the new branch tests pass. The name may be refined after checking availability.
+Existing unrelated incident product is on Opsra main. **Do not delete it.** Clean public TrySERV repository has been created and populated; unrelated Opsra code remains elsewhere. Reconnect Render service once the new branch tests pass. The name may be refined after checking availability.
 No laptop Docker needed; GitHub Actions + Render carry build/test/deploy.
 
 ## Mandatory truthfulness and judging gates
@@ -72,3 +72,13 @@ https://docs.openserv.ai/serv-reasoning/introduction
 ## Name checkpoint and deployment repair
 - 12 Nov: Working name changed from ServSteps to TrySERV (shorter, learning by trying). The current preview URL may retain the old Render slug until clean repo migration.
 - Deployment repair: commit c0e6145 restored the original application file tree after a previous docs-only commit unintentionally replaced the tree. Render subsequently built successfully, tests passed and reported live. Not caused by the user's environment variables.
+
+## Execution checkpoint — Nov 12
+- [x] Clean standalone GitHub repo: https://github.com/Alike001/tryserv (main, source migrated and CI passing).
+- [x] Dedicated Render service: https://tryserv.onrender.com (new service ID srv-dbqvo68ae00c73bepbj0), live deployment verified through Render.
+- [x] Full public landing page; /learn lessons and /try builder have functional routes and test coverage.
+- [x] On-device 20-XP lesson rewards (maximum 80), idempotence tests, resume and reset.
+- [ ] Actual live hosted SERV tutor completion with operator-configured secrets in the NEW service.
+- [ ] Browser/mobile accessibility and first-time learner walkthrough.
+- [ ] Public safe guest SERV try-it flow and final submission evidence.
+Source of truth for next chats: docs/CONTEXT-HANDOFF.md. Old ServSteps preview environment secrets are not automatically available in the new Render service.
