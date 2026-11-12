@@ -54,3 +54,39 @@ export function guestFailure(reason){
    return {status:429,message:"Today's free tutor allowance for this visitor has been used. Try again tomorrow."};
  return {status:503,message:"The free tutor's usage protection is unavailable. Free lessons still work."};
 }
+
+
+// Read-only allowance lookup. It never reserves a credit or calls SERV.
+async function defaultStatusQuery(databaseUrl,actor){
+ const {neon}=await import("@neondatabase/serverless");
+ const sql=neon(databaseUrl);
+ return sql.query(
+  "SELECT b.used AS global_used, COALESCE(d.used,0) AS actor_used " +
+  "FROM tryserv_guest_budget b LEFT JOIN tryserv_guest_daily d " +
+  "ON d.actor_hash=$1 AND d.day=(now() AT TIME ZONE 'UTC')::date " +
+  "WHERE b.id=1",
+  [actor]
+ );
+}
+export async function getGuestTrialStatus({req,env,query=defaultStatusQuery}){
+ const defaults={enabled:false,available:false,remaining_today:0,remaining_total:0,
+  daily_limit:GUEST_PER_ACTOR_DAILY_LIMIT,status:"disabled"};
+ if(!guestTrialConfigured(env))return defaults;
+ try{
+  const actor=guestActorHash(req,env.SERV_API_KEY);
+  const rows=await query(env.DATABASE_URL,actor);
+  const row=Array.isArray(rows)?rows[0]:null;
+  const used=Number(row?.global_used),daily=Number(row?.actor_used);
+  if(!Number.isSafeInteger(used)||used<0||!Number.isSafeInteger(daily)||daily<0)
+   return {...defaults,enabled:true,status:"unavailable"};
+  const remaining_total=Math.max(0,GUEST_GLOBAL_LIFETIME_LIMIT-used);
+  const remaining_today=Math.min(Math.max(0,GUEST_PER_ACTOR_DAILY_LIMIT-daily),remaining_total);
+  return {
+    enabled:true,available:remaining_today>0,
+    remaining_today,remaining_total,daily_limit:GUEST_PER_ACTOR_DAILY_LIMIT,
+    status:remaining_total===0?"trial_exhausted":remaining_today===0?"daily_exhausted":"available"
+  };
+ }catch{
+  return {...defaults,enabled:true,status:"unavailable"};
+ }
+}
