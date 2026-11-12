@@ -1,4 +1,4 @@
-import {loadProgress,award,pointsFor} from "./progress.mjs";
+import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
 
 (() => {
  "use strict";
@@ -24,6 +24,16 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
  }
  function updateProgress(){
    const count=lessons.filter(x=>done.has(x.id)).length;
+   let debugCompleted=[];
+   try{
+     const stored=JSON.parse(localStorage.getItem("tryserv-debug-progress-v1")??"[]");
+     if(Array.isArray(stored))debugCompleted=stored;
+   }catch{}
+   const journey=summaryProgress([...done],debugCompleted);
+   $("completion-panel").hidden=!journey.learningPathComplete;
+   $("practice-progress").textContent=journey.practiceComplete
+     ?"Debugging practice completed: 3 of 3 repairs on this browser."
+     :"Debugging practice: "+journey.repairsCompleted+" of 3 repairs completed on this browser.";
    $("progress-count").textContent=count+" of "+lessons.length;
    $("progress-fill").style.width=lessons.length?(count*100/lessons.length)+"%":"0%";
    $("progress-track").setAttribute("aria-valuenow",String(count));
@@ -103,7 +113,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    updateProgress();
    $("next").hidden=false;
    const ix=lessons.findIndex(l=>l.id===current);
-   $("next").textContent=ix===lessons.length-1?"Return to overview →":"Continue to next lesson →";
+   $("next").textContent=ix===lessons.length-1?"See your learning summary →":"Continue to next lesson →";
  }
  function showRequest(data){
    requestJson=JSON.stringify(data.request,null,2);
@@ -148,9 +158,9 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    openLesson((remaining??lessons[lessons.length-1])?.id??"ecosystem");
  }
  function resetProgress(){
-   if(!window.confirm("Reset completed lessons and XP saved on this browser?"))return;
+   if(!window.confirm("Reset completed lessons, XP and debugging practice saved on this browser?"))return;
    done=new Set();
-   try{localStorage.removeItem(storageKey);}catch{}
+   try{localStorage.removeItem(storageKey);localStorage.removeItem("tryserv-debug-progress-v1");}catch{}
    overview();
  }
  function overview(){
@@ -215,6 +225,32 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    }catch(error){host.className="live-result error";host.textContent=error.message;}
    finally{button.disabled=false;button.textContent="Run this request with SERV ↗";}
  }
+ async function refreshTutorAllowance(){
+   const output=$("mentor-allowance");
+   if(!publicTutorEnabled){output.hidden=true;return;}
+   output.hidden=false;
+   try{
+     const status=await api("/api/tutor/allowance");
+     if(status.status==="available"){
+       output.textContent=status.remaining_today+" of "+status.daily_limit+
+         " free questions available today. Shared trial capacity: "+
+         status.remaining_total+" requests remaining.";
+       $("ask-mentor").disabled=false;
+     }else if(status.status==="daily_exhausted"){
+       output.textContent="You've used today's free tutor allowance. Lessons and practice still work. Check again tomorrow (UTC).";
+       $("ask-mentor").disabled=true;
+     }else if(status.status==="trial_exhausted"){
+       output.textContent="The shared free SERV trial is exhausted. All lessons, XP and the debugging lab remain available.";
+       $("ask-mentor").disabled=true;
+     }else{
+       output.textContent="Tutor allowance could not be checked, so paid guest requests are temporarily unavailable. Lessons still work.";
+       $("ask-mentor").disabled=true;
+     }
+   }catch{
+     output.textContent="Tutor allowance could not be checked. Guided practice remains available.";
+     $("ask-mentor").disabled=true;
+   }
+ }
  async function askTutor(){
    const question=$("mentor-question").value.trim();
    if(question.length<8)return mentorMessage("Enter a specific question of at least eight characters.",true);
@@ -246,7 +282,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
        (result.guest_trial?" · Free guest trial":"")+" · Not independently fact-checked");
      host.hidden=false;host.className="mentor-response";
    }catch(error){mentorMessage(error.message,true);}
-   finally{button.disabled=false;button.textContent="Ask SERV tutor ↗";}
+   finally{button.disabled=false;button.textContent="Ask SERV tutor ↗";if(publicTutorEnabled)await refreshTutorAllowance();}
  }
  function mentorMessage(message,failed=false){
    const host=$("mentor-response");host.hidden=false;host.textContent=message;
@@ -278,6 +314,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
      $("mentor-access").hidden=publicTutorEnabled||!tutorEnabled;
      $("mentor-access-label").hidden=publicTutorEnabled||!tutorEnabled;
      $("ask-mentor").disabled=!tutorEnabled;
+     if(publicTutorEnabled)await refreshTutorAllowance();
    }catch(error){
      $("mentor-gate").textContent="Learning content is temporarily unavailable: "+error.message;
      $("start-fresh").disabled=true;$("jump-build").disabled=true;
