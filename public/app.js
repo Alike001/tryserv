@@ -50,7 +50,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    host.textContent=message;
  }
  function resetExercise(){
-   chosen=null;notify("");$("next").hidden=true;$("request-preview").hidden=true;
+   chosen=null;notify("");$("help-action").hidden=true;$("next").hidden=true;$("request-preview").hidden=true;
    $("check").disabled=false;$("check").textContent="Check my answer →";
  }
  function showChoices(lesson){
@@ -72,7 +72,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
          b.classList.toggle("picked",selected);
          b.setAttribute("aria-pressed",String(selected));
        }
-       notify("");
+       notify("");$("help-action").hidden=true;
      });
    }
  }
@@ -129,7 +129,10 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
        notify("Correct. "+data.feedback+(alreadyEarned?" · You've already earned XP for this lesson.":" · +20 XP earned!"),true);
        complete();
        if(data.request)showRequest(data);
-     }else notify(data.feedback,false);
+     }else{
+       notify(data.feedback+(data.hint?" Hint: "+data.hint:""),false);
+       $("help-action").hidden=!tutorEnabled;
+     }
    }catch(error){notify(error.message);}
    finally{$("check").disabled=false;}
  }
@@ -162,11 +165,29 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
      setTimeout(()=>button.textContent=old,1600);
    }catch{notify("Couldn't copy automatically. Select the code and copy it manually.");}
  }
+ function prepareTutorQuestion(){
+   if(!tutorEnabled || !current)return;
+   const lesson=lessons.find(l=>l.id===current);
+   if(!lesson)return;
+   const option=(lesson.choices??[]).find(o=>o.id===chosen);
+   const situation=current==="build"
+     ?"I am building a Chat Completions request and my fields failed validation."
+     :option
+       ?"For this question: "+lesson.challenge+" I chose: "+option.text+"."
+       :"I have not understood this lesson's exercise.";
+   const question=("In the "+lesson.title+" lesson, "+situation+
+     " Explain my misconception and give a practical hint, but do not reveal the correct answer.")
+     .slice(0,400);
+   $("mentor-question").value=question;
+   $("tutor-panel").scrollIntoView({behavior:"smooth",block:"nearest"});
+   $("mentor-question").focus({preventScroll:true});
+   mentorMessage("Your question is ready. Live SERV tutoring uses the private demo access code during testing; no request has been sent yet.");
+ }
  async function askTutor(){
    const question=$("mentor-question").value.trim();
    if(question.length<8)return mentorMessage("Enter a specific question of at least eight characters.",true);
    const code=$("mentor-access").value;
-   if(!code)return mentorMessage("Enter the instructor access code for live tutoring.",true);
+   if(!code)return mentorMessage("Enter the private demo access code. Free practice does not require it.",true);
    const button=$("ask-mentor");
    button.disabled=true;button.textContent="Thinking through your question…";
    mentorMessage("Requesting a real SERV explanation. It may take a moment.");
@@ -183,7 +204,10 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
      item(host,"p",result.next_action);
      const link=item(host,"a",result.reference.title+" ↗");
      link.href=result.reference.url;link.target="_blank";link.rel="noopener noreferrer";
-     item(host,"small","Model: "+result.model+" · Completion: "+(result.completion_id??"not supplied")+" · Not independently fact-checked");
+     item(host,"small","Model: "+result.model+" · Completion: "+(result.completion_id??"not supplied")+
+       " · Latency: "+(result.latency_ms??"unavailable")+" ms"+
+       " · Tokens: "+((result.usage?.input_tokens??"–")+" input / "+(result.usage?.output_tokens??"–")+" output")+
+       " · Not independently fact-checked");
      host.hidden=false;host.className="mentor-response";
    }catch(error){mentorMessage(error.message,true);}
    finally{button.disabled=false;button.textContent="Ask SERV tutor ↗";}
@@ -200,6 +224,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    $("check").addEventListener("click",check);
    $("next").addEventListener("click",next);
    $("ask-mentor").addEventListener("click",askTutor);
+   $("ask-about-answer").addEventListener("click",prepareTutorQuestion);
    $("copy-json").addEventListener("click",()=>copy(requestJson,$("copy-json")));
    $("copy-curl").addEventListener("click",()=>copy(curl,$("copy-curl")));
    try{
@@ -208,7 +233,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
      updateProgress();
      if(window.location.pathname==="/try")openLesson("build");
      $("mentor-gate").textContent=tutorEnabled
-       ?"Live SERV tutor available with instructor access. Never paste API keys into a lesson."
+       ?"SERV tutoring is in private testing. Use the demo access code (not your SERV API key) to authorize a live call."
        :"Guided lessons work now. The live SERV tutor will be enabled when its secure server credentials are configured.";
      $("mentor-access").hidden=!tutorEnabled;
      $("mentor-access-label").hidden=!tutorEnabled;
