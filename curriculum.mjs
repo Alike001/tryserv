@@ -66,7 +66,7 @@ const modules=[
     title:"Build your first valid request",
     summary:"Create a real API request shape you can use in your own project.",
     takeaway:"For Chat Completions, you need an authorized request, supported model, and system/developer instruction. Keep your key on the server.",
-    detail:"This exercise constructs the actual JSON payload and curl command for the official SERV Chat Completions endpoint. The preview is NOT executed; the separate live tutor is the only paid SERV call in this learning app.",
+    detail:"This exercise constructs the actual JSON payload and curl command for the official SERV Chat Completions endpoint. The JSON and curl previews do not execute an API call. The separate live tutor uses paid SERV inference; the operator-gated request lab can also make an authorized live call after validation.",
     challenge:"Write a system instruction and a useful user question. We'll validate your request before you send it.",
     source:{title:"Chat completions API",url:"https://docs.openserv.ai/serv-reasoning/api/chat-completions"}
   }
