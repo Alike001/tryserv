@@ -288,6 +288,7 @@ test("refreshed studio stays readable at 320, 375, 768, 1024 and 1440 pixels",as
    await page.goto("/learn");
    await page.locator("#start-fresh").click();
    await expect(page.locator("#lesson-title")).toBeVisible();
+   await expect(page.locator("#progress-count")).toBeVisible();
    await expect(page.locator("#mentor-question")).toBeAttached();
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
    expect(overflow, "horizontal overflow at "+width+"px").toBeLessThanOrEqual(2);
