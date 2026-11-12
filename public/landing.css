@@ -49,3 +49,8 @@ a:focus-visible{outline:3px solid #6183ef;outline-offset:3px}
 .header-docs{display:none;text-decoration:none;font-weight:800;font-size:12px;color:#294bad;padding:8px 11px;border:1px solid #cad9e9;background:#fff;border-radius:9px}
 @media(max-width:760px){.header-docs{display:inline-flex;margin-left:auto}.header-cta{margin-left:0}}
 @media(max-width:420px){.header-docs{margin-left:auto}.header-cta{display:inline-flex;font-size:0;padding:10px 12px}.header-cta::before{content:"Start";font-size:11px;line-height:1.2}.header-cta span{display:none}}
+
+/* Keyboard access: bypass navigation before the first primary action. */
+.skip-link{position:fixed;top:-80px;left:18px;z-index:100;padding:12px 18px;background:#132b42;color:#fff;border:3px solid #6183ef;border-radius:8px;font-weight:800;text-decoration:none}
+.skip-link:focus{top:12px}
+#main-content:focus{outline:none}
