@@ -46,6 +46,16 @@
         </div>
         <div class="features-inline"><span>✓ No signup</span><span>✓ Real documentation</span><span>✓ Checkable exercises</span></div>
         <p id="resume-hint" class="resume-hint" hidden>Your completed lessons and XP are saved on this browser.</p>
+        <section id="completion-panel" class="completion-panel" hidden aria-label="Completed learning path">
+          <div class="eyebrow">YOUR LEARNING SUMMARY</div>
+          <h2>You've completed the beginner path.</h2>
+          <p>Four lessons completed and 80 on-device XP earned. You've explored OpenServ, decided when reasoning helps, and built a validated request shape. This is practice progress, not a certificate or proof of production integration.</p>
+          <p id="practice-progress" class="practice-progress">Debugging practice: not started</p>
+          <div class="entry-actions">
+            <a class="primary" href="/debug">Practice fixing a request →</a>
+            <a class="secondary" href="/try">Review your request builder ↗</a>
+          </div>
+        </section>
       </section>
       <section class="learning" id="learning" hidden>
         <div class="lesson-top"><div class="eyebrow" id="lesson-meta">LESSON 01 · UNDERSTAND</div><span class="time" id="lesson-time">3 MIN</span></div>
@@ -99,11 +109,12 @@
     <label for="mentor-question">What would you like clarified?</label>
     <textarea id="mentor-question" rows="5" maxlength="400" placeholder="For example: why does SERV need a system prompt?"></textarea>
     <div id="mentor-gate" class="mentor-gate">Checking tutor availability…</div>
+    <div id="mentor-allowance" class="mentor-allowance" role="status" aria-live="polite" hidden></div>
     <label for="mentor-access" id="mentor-access-label" hidden>Private demo access code</label>
     <input id="mentor-access" type="password" autocomplete="off" placeholder="Demo access code — not your SERV API key" hidden>
     <button id="ask-mentor" type="button" class="mentor-button" disabled>Ask SERV tutor <span aria-hidden="true">↗</span></button>
     <div id="mentor-response" class="mentor-response" aria-live="polite" hidden></div>
-    <div class="mentor-foot">The free SERV tutor has a shared trial budget, so availability may be limited. Lessons and practice stay free. Tutor explanations can be mistaken; verify the linked official source.</div>
+    <div class="mentor-foot">Free tutor questions depend on a shared trial allowance. Your lesson progress remains available even when the tutor is exhausted. Responses may be mistaken; verify the linked source.</div>
   </aside>
 </div>
 <footer class="mobile-footer">TrySERV is an independent learning companion. <a href="https://docs.openserv.ai/" target="_blank" rel="noopener noreferrer">Official docs ↗</a></footer>
