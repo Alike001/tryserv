@@ -1,0 +1,34 @@
+name: TrySERV browser journeys
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install application dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Install pinned browser test runner
+        run: npm install --no-save --ignore-scripts --no-audit --no-fund @playwright/test@1.65.0
+      - name: Install Chromium on GitHub runner
+        run: npx playwright install --with-deps chromium
+      - name: Test real desktop and mobile user journeys
+        run: npx playwright test --config=browser/playwright.config.mjs
+      - name: Preserve browser report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tryserv-browser-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
