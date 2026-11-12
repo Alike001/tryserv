@@ -96,3 +96,19 @@ The user confirmed https://tryserv.onrender.com/debug visually loads and asked t
 - Existing limits remain 2 guest questions per approximate visitor/day and 24 total guest calls. No budget increase or price assertion was made.
 - Browser interaction across all new states is NOT yet manually verified. User screenshot confirmed prior /debug first challenge; ask for full path test next.
 - Next priorities: independent novice and developer walkthrough, mobile/keyboard browser regression, source/lesson review and final demo/submission. Existing old Opsra repository remains untouched.
+
+
+## November 12 late-night checkpoint — real browser regression gate (verified)
+- User asked whether progress will survive ChatGPT chat limits and to continue the next project task. **GitHub is canonical memory**, not a promise that ChatGPT saved memory updates instantly.
+- Branch `test/browser-journey-a11y` created and merged via PR #3: https://github.com/Alike001/tryserv/pull/3
+- Merge SHA: `04689c65965d61d82942f77355cc16d6ac5916ab`; main GitHub application CI succeeded.
+- Added a dedicated Chromium Playwright GitHub Actions workflow `.github/workflows/browser-journeys.yml`, config `browser/playwright.config.mjs`, 7 tests in `browser/learning.spec.mjs` each for desktop (1440×900) and mobile (375×812).
+- Verified **14 of 14 actual browser tests passed**, including working landing -> learn/try links, wrong answer then correction, four lessons -> 80 XP persisted/no duplicate XP, three debugging exercises -> learning studio, keyboard activation, mock-only guest tutor usage interface, and page-wide overflow at 320/375/768/1024/1440px. Reports: https://github.com/Alike001/tryserv/actions/runs/43309621574 (PR) and https://github.com/Alike001/tryserv/actions/runs/43309890087 (main).
+- Fixed test runner server path `node ../index.mjs` (the first attempt failed before any browser tests because of relative working directory). Corrected final debugging lab button from misleading “See your learning summary” to “Return to learning studio.”
+- Browser runner pinned `@playwright/test@1.65.0`, installed exclusively on **GitHub cloud runner**; the user's laptop and Render production backend do not need Chromium.
+- Render service `srv-dbqvo68ae00c73bepbj0` deployment `dep-dbr2st942hec73efj00g` reported **LIVE** at merge SHA. The prior existing 47 unit/HTTP tests are still used in normal app build.
+- Browser tests use a **local no-secret backend**, with clearly marked mock tutor response; they do **not** spend real SERV credits or independently prove hosted inference. Real public SERV inference was separately confirmed in the user's screenshot in the earlier milestone. Public URL cannot be independently opened through the assistant's web fetch, so human production-browser validation of the newest release remains to do.
+- Next: verify at least one real first-time learner and one developer using the current deployed UI; inspect genuine mobile screenshots/accessibility. Fix observed blockers, then UI/UX polish, concise README/demo, hackathon submission. Avoid new expansive features or inflated claims; old Opsra remains untouched. Deadline Nov 15, 2026 23:59 UTC (verify on official site if needed).
+- Permanent browser testing notes: `docs/BROWSER-RELIABILITY.md`. Keep this handoff updated after material changes.
+
+Resume in a new chat: "Continue TrySERV in Alike001/tryserv main. Read docs/CONTEXT-HANDOFF.md and docs/PRODUCT-PLAN.md. Verify GitHub CI and Render service srv-dbqvo68ae00c73bepbj0. Browser regression PR #3 is merged with 14/14 Chromium tests. Next focus on real-user flow review and final UX/submission. Leave Opsra untouched."
