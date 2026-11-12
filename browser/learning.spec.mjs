@@ -141,3 +141,75 @@ test("responsive layout has no unexpected page-wide horizontal scrolling",async(
     }
   }
 });
+
+
+test("shared guest trial exhausted: no paid request and learning remains usable",async({page})=>{
+ let submissions=0;
+ await page.route("**/api/lessons",async route=>{
+   const original=await (await route.fetch()).json();
+   await route.fulfill({json:{...original,tutor_enabled:true,public_tutor_enabled:true,guest_daily_limit:2}});
+ });
+ await page.route("**/api/tutor/allowance",route=>route.fulfill({
+   json:{enabled:true,available:false,remaining_today:0,remaining_total:0,daily_limit:2,status:"trial_exhausted"}
+ }));
+ await page.route("**/api/mentor",route=>{
+   submissions++;
+   return route.fulfill({status:500,json:{error:"This should never be requested."}});
+ });
+ await page.goto("/learn");
+ await expect(page.locator("#mentor-allowance")).toContainText("shared free SERV trial is exhausted");
+ await expect(page.locator("#ask-mentor")).toBeDisabled();
+ await page.locator("#start-fresh").click();
+ await page.locator("#answers .choice").first().click();
+ await page.locator("#check").click();
+ await expect(page.locator("#xp-count")).toHaveText("20 XP");
+ expect(submissions).toBe(0);
+});
+
+test("quota database unavailable: paid tutor remains disabled, free learning works",async({page})=>{
+ let submissions=0;
+ await page.route("**/api/lessons",async route=>{
+  const original=await (await route.fetch()).json();
+  await route.fulfill({json:{...original,tutor_enabled:true,public_tutor_enabled:true,guest_daily_limit:2}});
+ });
+ await page.route("**/api/tutor/allowance",route=>route.fulfill({
+   json:{enabled:true,available:false,remaining_today:0,remaining_total:0,daily_limit:2,status:"unavailable"}
+ }));
+ await page.route("**/api/mentor",route=>{
+   submissions++;
+   return route.fulfill({status:502,json:{error:"Unexpected paid call."}});
+ });
+ await page.goto("/learn");
+ await expect(page.locator("#mentor-allowance")).toContainText("could not be checked");
+ await expect(page.locator("#ask-mentor")).toBeDisabled();
+ await page.locator("#start-fresh").click();
+ await expect(page.locator("#learning")).toBeVisible();
+ await page.locator("#answers .choice").first().click();
+ await page.locator("#check").click();
+ await expect(page.locator("#feedback")).toContainText("Correct.");
+ expect(submissions).toBe(0);
+});
+
+test("private custom SERV request is never run by preview or missing authorization",async({page})=>{
+ let calls=0;
+ await page.route("**/api/lessons",async route=>{
+  const original=await (await route.fetch()).json();
+  await route.fulfill({json:{...original,tutor_enabled:true,public_tutor_enabled:true,guest_daily_limit:2}});
+ });
+ await page.route("**/api/tutor/allowance",route=>route.fulfill({
+   json:{enabled:true,available:true,remaining_today:2,remaining_total:23,daily_limit:2,status:"available"}
+ }));
+ await page.route("**/api/try-serv",route=>{
+   calls++;
+   return route.fulfill({status:401,json:{error:"Invalid private demo access code"}});
+ });
+ await page.goto("/try");
+ await expect(page.locator("#builder")).toBeVisible();
+ await page.locator("#check").click();
+ await expect(page.locator("#request-preview")).toBeVisible();
+ expect(calls).toBe(0);
+ await expect(page.locator("#live-try-panel")).toBeVisible();
+ await page.locator("#run-serv").click();
+ await expect(page.locator("#try-result")).toContainText("Enter your private demo access code");
+ expect(calls).toBe(0);
+});
