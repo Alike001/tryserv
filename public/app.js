@@ -53,6 +53,17 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
      button.addEventListener("click",()=>openLesson(lesson.id));
    }
  }
+ function setLessonStage(stage){
+   const labels={read:"Understand the idea",check:"Check your understanding",apply:"Ready to move forward"};
+   const stages=["read","check","apply"];
+   $("lesson-state").textContent=labels[stage]??labels.read;
+   for(const item of document.querySelectorAll(".lesson-stages .stage")){
+     const index=stages.indexOf(item.dataset.stage);
+     const active=stages.indexOf(stage);
+     item.classList.toggle("active",index===active);
+     item.classList.toggle("complete",index<active);
+   }
+ }
  function notify(message,success=false){
    const host=$("feedback");
    host.hidden=!message;
@@ -82,7 +93,7 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
          b.classList.toggle("picked",selected);
          b.setAttribute("aria-pressed",String(selected));
        }
-       notify("");$("help-action").hidden=true;
+       notify("");$("help-action").hidden=true;setLessonStage("check");
      });
    }
  }
@@ -104,13 +115,21 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    $("mentor-topic").textContent=lesson.title;
    $("mentor-response").hidden=true;
    resetExercise();showChoices(lesson);updateProgress();
+   const position=lessons.findIndex(x=>x.id===id)+1;
+   $("lesson-count").textContent="LESSON "+String(position).padStart(2,"0")+" OF "+String(lessons.length).padStart(2,"0");
+   $("lesson-journey-track").setAttribute("aria-valuenow",String(position));
+   $("lesson-journey-fill").style.width=(position/lessons.length*100)+"%";
+   $("practice-guide").textContent=id==="build"
+     ?"Write a clear instruction and task. We check the request without calling SERV or using credits."
+     :"Choose one answer, then check your reasoning. The server grades it; no AI credits are spent.";
+   setLessonStage(done.has(id)?"apply":"read");
    window.scrollTo({top:0,behavior:"smooth"});
  }
  function complete(){
    const result=award([...done],current);
    done=new Set(result.completed);
    try{localStorage.setItem(storageKey,JSON.stringify(result.completed));}catch{}
-   updateProgress();
+   updateProgress();setLessonStage("apply");
    $("next").hidden=false;
    const ix=lessons.findIndex(l=>l.id===current);
    $("next").textContent=ix===lessons.length-1?"See your learning summary →":"Continue to next lesson →";
@@ -142,6 +161,7 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
        complete();
        if(data.request)showRequest(data);
      }else{
+       setLessonStage("check");
        notify(data.feedback+(data.hint?" Hint: "+data.hint:""),false);
        $("help-action").hidden=!tutorEnabled;
      }
@@ -176,6 +196,20 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
      const old=button.textContent;button.textContent="Copied ✓";
      setTimeout(()=>button.textContent=old,1600);
    }catch{notify("Couldn't copy automatically. Select the code and copy it manually.");}
+ }
+ function prefillCoach(kind){
+   const lesson=lessons.find(l=>l.id===current)??lessons[0];
+   if(!lesson)return;
+   const topic=lesson.title,claim=lesson.takeaway;
+   const prompts={
+     simplify:"In the lesson '"+topic+"', explain this concept to a complete beginner without giving away quiz answers: "+claim,
+     example:"Give one realistic developer example that illustrates the lesson '"+topic+"'. Use only the verified learning context and explain what I should try next.",
+     decision:"For the topic '"+topic+"', show when using SERV Reasoning is useful versus when deterministic code is better. Give one concrete decision and explain the tradeoff."
+   };
+   $("mentor-question").value=(prompts[kind]??prompts.simplify).slice(0,400);
+   $("tutor-panel").scrollIntoView({behavior:"smooth",block:"nearest"});
+   $("mentor-question").focus({preventScroll:true});
+   mentorMessage("Question prepared for "+topic+". No inference sent. Ask SERV tutor only when you want to use a guest trial request.");
  }
  function prepareTutorQuestion(){
    if(!tutorEnabled || !current)return;
@@ -270,10 +304,11 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
        body:JSON.stringify({lesson_id:current??lessons[0]?.id,question})
      });
      const host=$("mentor-response");clear(host);
-     item(host,"strong","SERV TUTOR · LIVE RESPONSE");
-     item(host,"p",result.explanation);
-     item(host,"strong","TRY NEXT");
-     item(host,"p",result.next_action);
+     item(host,"strong","LIVE SERV · EXPLANATION","coach-answer-label");
+     item(host,"p",result.explanation,"coach-answer-body");
+     item(host,"strong","YOUR NEXT STEP","coach-answer-label");
+     item(host,"p",result.next_action,"coach-answer-body");
+     item(host,"strong","CHECK THE ORIGINAL SOURCE","coach-answer-label");
      const link=item(host,"a",result.reference.title+" ↗");
      link.href=result.reference.url;link.target="_blank";link.rel="noopener noreferrer";
      item(host,"small","Model: "+result.model+" · Completion: "+(result.completion_id??"not supplied")+
@@ -298,6 +333,10 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    $("ask-mentor").addEventListener("click",askTutor);
    $("run-serv").addEventListener("click",runLiveRequest);
    $("ask-about-answer").addEventListener("click",prepareTutorQuestion);
+   for(const button of document.querySelectorAll("[data-coach]")){
+     button.addEventListener("click",()=>prefillCoach(button.dataset.coach));
+   }
+   $("builder").addEventListener("focusin",()=>setLessonStage("check"));
    $("copy-json").addEventListener("click",()=>copy(requestJson,$("copy-json")));
    $("copy-curl").addEventListener("click",()=>copy(curl,$("copy-curl")));
    try{
