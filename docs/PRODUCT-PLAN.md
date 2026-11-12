@@ -93,3 +93,15 @@ Source of truth for next chats: docs/CONTEXT-HANDOFF.md. Old ServSteps preview e
 - [ ] Prove one ACTUAL hosted SERV tutor/request completion using the operator's private demo code; synthetic tests do not establish this.
 - [ ] Design safer anonymous guest testing before dropping the private demo code; no public access token should be embedded in the frontend.
 - [ ] Browser/mobile and keyboard regression tests; only then polish visuals and finalize submission.
+
+## November 12 public tutor implementation checkpoint
+
+- [x] Remove instructor-code requirement from regular learner tutoring; the advanced custom-request lab remains private.
+- [x] Create an isolated Neon database to track guest allowances atomically across deployments.
+- [x] Cap guest use at 2 calls per visitor/day and 24 total lifetime calls; a reservation occurs before a paid request.
+- [x] Keep free lessons, deterministic grading, progress and XP usable when guest credits run out.
+- [x] Test unavailable database, invalid input, anonymous access, quota denials and retention of the protected custom-request lab.
+- [x] Set `PUBLIC_TUTOR_ENABLED=true` for the Render service, pending live hosted verification.
+- [ ] Prove one real hosted public SERV completion with a redacted completion ID and latency. Simulated upstream test responses are not proof of real inference.
+- [ ] Assess public demand and credit economics, and implement a refill/spend policy before exceeding the small lifetime cap.
+- [ ] Conduct mobile and desktop usability tests; defer larger visual overhaul until functional flow is stable.
