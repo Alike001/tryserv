@@ -7,8 +7,9 @@ import {publicLessons,checkExercise,findLesson} from "./curriculum.mjs";
 import {answerWithServ} from "./mentor.mjs";
 import {executeLearnerRequest} from "./try-live.mjs";
 import {guestTrialConfigured,reserveGuestTrial,guestFailure} from "./guest-budget.mjs";
+import {debugCases,validateDebugBlueprint} from "./debug-lab.mjs";
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
-const files={"/":["landing.html","text/html; charset=utf-8"],"/learn":["index.html","text/html; charset=utf-8"],"/try":["index.html","text/html; charset=utf-8"],"/landing.css":["landing.css","text/css; charset=utf-8"],"/styles.css":["styles.css","text/css; charset=utf-8"],"/app.js":["app.js","text/javascript; charset=utf-8"],"/progress.mjs":["progress.mjs","text/javascript; charset=utf-8"]};
+const files={"/":["landing.html","text/html; charset=utf-8"],"/learn":["index.html","text/html; charset=utf-8"],"/try":["index.html","text/html; charset=utf-8"],"/landing.css":["landing.css","text/css; charset=utf-8"],"/styles.css":["styles.css","text/css; charset=utf-8"],"/app.js":["app.js","text/javascript; charset=utf-8"],"/progress.mjs":["progress.mjs","text/javascript; charset=utf-8"],"/debug":["debug.html","text/html; charset=utf-8"],"/debug.js":["debug.js","text/javascript; charset=utf-8"],"/debug.css":["debug.css","text/css; charset=utf-8"]};
 function json(res,status,payload){res.writeHead(status,{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"});res.end(JSON.stringify(payload));}
 function tokenEquals(value,expected){
  if(typeof value!=="string"||!expected)return false;
@@ -49,6 +50,14 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
    return json(res,200,{status:"ok",service:"tryserv",tutor_enabled:enabled,public_tutor_enabled:publicTutorEnabled,mode:"independent learning pilot"});
   if(req.method==="GET"&&pathname==="/api/lessons")
    return json(res,200,{lessons:publicLessons(),tutor_enabled:enabled,public_tutor_enabled:publicTutorEnabled,guest_daily_limit:publicTutorEnabled?2:0,progress_storage:"on-device only"});
+  if(req.method==="GET"&&pathname==="/api/debug/scenarios")
+   return json(res,200,{scenarios:debugCases(),api_execution:false,progress_storage:"on-device only"});
+  if(req.method==="POST"&&pathname==="/api/debug/check"){
+   try{
+     const input=await readJson(req);
+     return json(res,200,{scenario_id:input?.id,...validateDebugBlueprint(input?.id,input?.config)});
+   }catch(e){return json(res,400,{error:String(e.message).slice(0,145)});}
+  }
   if(req.method==="POST"&&pathname==="/api/check"){
    try{
     const input=await readJson(req);
