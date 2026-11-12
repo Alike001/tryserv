@@ -79,3 +79,15 @@ The last lesson builds a request in preview mode. After passing validation, an o
 The private demo access code is NOT a teacher account and not required for normal learners. It protects paid inference while testing. Both paid endpoints share a small in-process allowance (3 requests per 10 minutes per connection peer and 35 per process lifetime); these limits reset on restart and are not production-grade protection for unrestricted public access.
 
 Integration tests use mocked SERV responses. **Live hosted SERV completion remains unverified** until the operator invokes the actual endpoint using the securely configured Render secrets.
+
+## Public SERV tutor — controlled guest trial
+
+TrySERV now offers **limited, account-free SERV tutoring** on the normal learning page. Learners do not enter an instructor code or API key. The tutor reads lesson context and explains a question or misconception using a real OpenServ API call.
+
+To protect the project owner’s SERV credits, the public trial has a **durable lifetime allowance of 24 guest calls** and **2 calls per visitor/browser-network identity per UTC day**. Usage is reserved atomically in a dedicated Neon PostgreSQL database **before** the external API call. Failed provider calls still consume allowance, so repeated upstream failures cannot result in unlimited spending. Each guest is represented by a keyed hash rather than a stored raw IP or user-agent. The global limit remains effective even if a visitor changes identity or restarts Render.
+
+When the guest allowance is exhausted, the free lessons, exercises, XP and JSON/curl request preview continue working. Database outages fail closed and never silently send a paid inference. This is a deliberately small public demonstration budget, **not an unlimited commercial tutor**.
+
+The **advanced live request-builder** still requires the private demo access code, since it accepts custom system/user prompts; the code is not required for ordinary lesson tutoring. Neither the SERV API key nor the database password is exposed to the browser.
+
+Operators: the standalone Neon project is named `tryserv-public-tutor-budget`. The Render secrets `DATABASE_URL`, `SERV_API_KEY`, and `LEARN_ACCESS_TOKEN` are server-side. `PUBLIC_TUTOR_ENABLED=true` opts in to free guest access; omitting it disables guest requests safely. All guest reservations are durable; do not reset quotas without reviewing credit consumption. Live inference should be verified with a single browser request before claiming it works end to end.
