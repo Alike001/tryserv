@@ -4,24 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f7f8fb">
-<meta name="description" content="A practical, independent guide to learning SERV Reasoning through short lessons and real exercises.">
+<meta name="description" content="Explore OpenServ through short guided lessons, practical challenges and checkable learning progress.">
 <title>TrySERV · Learn OpenServ by doing</title>
 <link rel="stylesheet" href="/styles.css">
-<script defer src="/app.js"></script>
+<script type="module" src="/app.js"></script>
 </head>
 <body>
 <div class="shell">
   <aside class="sidebar">
     <a class="brand" href="/" aria-label="TrySERV home">
-      <span class="mark">S<span>.</span></span><span><strong>TrySERV</strong><small>Learn by doing</small></span>
+      <span class="mark">t<span>.</span></span><span><strong>TrySERV</strong><small>Learn by doing</small></span>
     </a>
     <div class="navlabel">YOUR LEARNING PATH</div>
     <div class="progressbox">
       <div class="progressrow"><span id="progress-title">Your progress</span><strong id="progress-count">0 of 4</strong></div>
       <div class="progress-track" role="progressbar" aria-label="Lessons completed" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" id="progress-track"><div id="progress-fill"></div></div>
+      <div class="xp-line"><span>Learning XP <small>On this device</small></span><strong id="xp-count">0 XP</strong></div>
     </div>
     <nav id="lesson-nav" aria-label="Lesson navigation"></nav>
     <div class="side-footer">
+      <button type="button" id="reset-progress" class="reset-progress">Reset this device’s progress</button>
       <span class="standalone">Independent learning companion</span>
       <p>Built with OpenServ documentation, but not affiliated with OpenServ.</p>
       <a href="https://docs.openserv.ai/llms.txt" target="_blank" rel="noopener noreferrer">Official documentation <span aria-hidden="true">↗</span></a>
@@ -30,7 +32,7 @@
   <main class="main">
     <header class="topbar">
       <span class="breadcrumb">LEARNING STUDIO <span aria-hidden="true">/</span> <span id="current-crumb">OVERVIEW</span></span>
-      <div class="toplinks"><span class="live-indicator"><i></i> Guided practice</span><a href="https://console.openserv.ai/" target="_blank" rel="noopener noreferrer">OpenServ console ↗</a></div>
+      <div class="toplinks"><a href="/">← Home</a><span class="live-indicator"><i></i> Guided practice</span><a href="https://console.openserv.ai/" target="_blank" rel="noopener noreferrer">OpenServ console ↗</a></div>
     </header>
     <div class="maincontent">
       <section class="intro" id="intro">
@@ -38,10 +40,12 @@
         <h1>Understand OpenServ.<br><em>Then actually use it.</em></h1>
         <p class="intro-copy">Short explanations, hands-on challenges, and practical feedback. Go from “What is SERV?” to a request you can use in your own application.</p>
         <div class="entry-actions">
+          <button class="primary" id="resume" type="button" hidden>Resume learning →</button>
           <button class="primary" id="start-fresh">I'm new — start learning <span aria-hidden="true">→</span></button>
           <button class="secondary" id="jump-build">I already build — jump to code</button>
         </div>
         <div class="features-inline"><span>✓ No signup</span><span>✓ Real documentation</span><span>✓ Checkable exercises</span></div>
+        <p id="resume-hint" class="resume-hint" hidden>Your completed lessons and XP are saved on this browser.</p>
       </section>
       <section class="learning" id="learning" hidden>
         <div class="lesson-top"><div class="eyebrow" id="lesson-meta">LESSON 01 · UNDERSTAND</div><span class="time" id="lesson-time">3 MIN</span></div>
