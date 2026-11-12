@@ -242,3 +242,15 @@ test("mobile docs remains readable and its in-page navigation works",async({page
  expect(overflow).toBeLessThanOrEqual(2);
  await expect(page.locator("#security")).toBeVisible();
 });
+
+
+test("keyboard users can skip homepage navigation and reach main content",async({page})=>{
+ await page.goto("/");
+ await page.keyboard.press("Tab");
+ const skip=page.getByRole("link",{name:"Skip to main content"});
+ await expect(skip).toBeFocused();
+ await expect(skip).toBeVisible();
+ await page.keyboard.press("Enter");
+ await expect(page).toHaveURL(/#main-content$/);
+ await expect(page.locator("main#main-content")).toBeVisible();
+});
