@@ -449,3 +449,17 @@ test("capture public route previews for visual QA (no credentials, no paid SERV 
   });
  }
 });
+
+
+test("debug hero teaches SERV's specific role without claiming an executed call",async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto("/debug");
+ await expect(page.locator(".debug-hero-preview")).toBeVisible();
+ await expect(page.locator(".debug-hero-preview")).toContainText("Ask SERV why it matters");
+ await expect(page.locator(".debug-hero-preview")).toContainText("WORKFLOW EXAMPLE");
+ await page.locator(".debug-hero-link").click();
+ await expect(page).toHaveURL(/\/debug#editor$/);
+ await page.setViewportSize({width:375,height:812});
+ await expect(page.locator(".debug-hero-preview")).toBeHidden();
+ await expect(page.locator("#editor")).toBeVisible();
+});
