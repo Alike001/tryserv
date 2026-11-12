@@ -82,3 +82,14 @@ https://docs.openserv.ai/serv-reasoning/introduction
 - [ ] Browser/mobile accessibility and first-time learner walkthrough.
 - [ ] Public safe guest SERV try-it flow and final submission evidence.
 Source of truth for next chats: docs/CONTEXT-HANDOFF.md. Old ServSteps preview environment secrets are not automatically available in the new Render service.
+
+
+## November 12 release-gate checkpoint
+
+- [x] Wrong-answer feedback uses option-specific hints without exposing the correct choice.
+- [x] Learners can opt in to SERV guidance about a mistake; preparing the question itself never spends credits.
+- [x] Request-builder lesson has a separate access-gated real SERV execution path, with bounded input and output, shared staging rate limits and returned model, completion ID, latency and tokens.
+- [x] Stubbed HTTP tests cover refusal without access, invalid models, response failures, and shared paid-call limit.
+- [ ] Prove one ACTUAL hosted SERV tutor/request completion using the operator's private demo code; synthetic tests do not establish this.
+- [ ] Design safer anonymous guest testing before dropping the private demo code; no public access token should be embedded in the frontend.
+- [ ] Browser/mobile and keyboard regression tests; only then polish visuals and finalize submission.
