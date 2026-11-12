@@ -18,3 +18,15 @@
 .help-button:hover{background:#e7edff}
 .help-action span{font-size:10px;line-height:1.55;color:#8597ab}
 @media(max-width:620px){.help-button{width:100%}}
+
+
+/* Actual paid SERV lab remains opt-in and separate from copied preview. */
+.live-run{margin-top:14px;align-self:flex-start}
+.live-result{padding:14px;margin-top:14px;border-radius:10px;border:1px solid #c8d6eb;background:#eef5ff;color:#405c75;line-height:1.75;overflow-wrap:anywhere;white-space:pre-wrap}
+.live-result.success{border-color:#b5e5cb;background:#eaf8ef;color:#265f49}
+.live-result.error{border-color:#eac7b6;background:#fff5eb;color:#945639}
+.live-result p{font-size:13px;white-space:pre-wrap;line-height:1.75}
+.live-result small{display:block;margin-top:12px;opacity:.8;word-break:break-word}
+#live-try-panel label{display:block;margin:14px 0 8px;font-size:12px;font-weight:700}
+#try-access{max-width:100%}
+@media(max-width:620px){.live-run{width:100%}}
