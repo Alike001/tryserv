@@ -68,3 +68,14 @@ OpenServ Edition 02, proposed Open Track; deadline November 15, 2026, 23:59 UTC.
 https://www.openserv.ai/hackathon-2
 
 This Dedicated public repository; previously developed in an isolated Opsra branch.
+
+
+## November 12 update — learning guidance and real SERV practice
+
+Wrong answers now give option-specific hints instead of immediately revealing the correct choice. When private tutoring is enabled, **Ask SERV to explain my mistake** prepares a context-specific question without sending a paid request automatically.
+
+The last lesson builds a request in preview mode. After passing validation, an operator can use **Run this request with SERV** with the same private demo access code to execute an actual SERV call. The page then shows response text, model, completion ID, measured latency, and token usage. **No paid call occurs when simply previewing or copying code.**
+
+The private demo access code is NOT a teacher account and not required for normal learners. It protects paid inference while testing. Both paid endpoints share a small in-process allowance (3 requests per 10 minutes per connection peer and 35 per process lifetime); these limits reset on restart and are not production-grade protection for unrestricted public access.
+
+Integration tests use mocked SERV responses. **Live hosted SERV completion remains unverified** until the operator invokes the actual endpoint using the securely configured Render secrets.
