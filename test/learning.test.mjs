@@ -63,6 +63,9 @@ test("tutor uses a real SERV call shape with ground truth and returns source",as
  assert.equal(captured.body.messages[0].role,"system");
  assert.equal(captured.body.model,"gpt-5.4-mini");
  assert.equal(captured.body.max_completion_tokens,1200);
+ assert.match(captured.body.messages[0].content,/Never disclose the correct multiple-choice option/);
+ assert.match(captured.body.messages[0].content,/concrete developer scenario/);
+ assert.match(captured.body.messages[0].content,/only previewed from calls actually executed/);
  assert.equal(result.completion_id,"serv-live-stub-1");
  assert.ok(result.reference.url.includes("docs.openserv.ai"));
  assert.ok(!JSON.stringify(result).includes("test-key-long-enough"));
