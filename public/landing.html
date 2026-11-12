@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Learn OpenServ by doing. Explore agents, workflows and SERV Reasoning through real interactive exercises.">
+<meta name="theme-color" content="#f7f9fc">
+<title>TrySERV — Understand OpenServ. Try it yourself.</title>
+<link rel="stylesheet" href="/landing.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="brand" aria-label="TrySERV homepage"><span class="brand-icon">t<span>.</span></span><strong>tryserv</strong></a>
+    <nav aria-label="Main navigation"><a href="#how">How it works</a><a href="#journey">Learning path</a><a href="https://docs.openserv.ai/" target="_blank" rel="noopener noreferrer">Official docs <span aria-hidden="true">↗</span></a></nav>
+    <a class="header-cta" href="/learn">Start learning <span aria-hidden="true">↗</span></a>
+  </div>
+</header>
+<main>
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="eyebrow"><span class="pulse"></span> AN INDEPENDENT OPENSERV LEARNING COMPANION</div>
+      <h1>Stop reading about it.<br><span>Start trying it.</span></h1>
+      <p class="hero-subtitle">Meet OpenServ, understand what its tools actually do, and build your first SERV request—one practical step at a time.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="/learn">I'm new — start here <span aria-hidden="true">→</span></a>
+        <a class="button secondary" href="/try">I can code — let's build <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="hero-points"><span><b>01</b> No signup needed</span><span><b>02</b> Short, checkable exercises</span><span><b>03</b> Real docs, not guesses</span></div>
+    </div>
+    <div class="hero-visual" aria-label="Illustration of an interactive lesson with checkable answers">
+      <div class="float-label label-top"><span class="star">✦</span> LEARN BY DOING</div>
+      <div class="preview-window">
+        <div class="preview-top"><span class="circles"><i></i><i></i><i></i></span><span>YOUR FIRST LESSON</span><span class="lesson-fraction">01 / 04</span></div>
+        <div class="mini-eyebrow">EXPLORE OPENSERV</div>
+        <h2>Where do agents<br>fit in a workflow?</h2>
+        <p>See the concept, make your choice, get practical feedback.</p>
+        <div class="preview-choice"><span class="radio"></span> Agents are components of a workflow</div>
+        <div class="preview-choice selected"><span class="radio">✓</span> Workflows coordinate steps across agents</div>
+        <div class="preview-choice"><span class="radio"></span> Every workflow requires a blockchain transaction</div>
+        <div class="preview-bottom"><div><span class="check-icon">✓</span> A real exercise, with checkable answers</div><span class="small-tag">EXAMPLE</span></div>
+      </div>
+      <div class="float-label label-bottom"><span class="star">✳</span> CONTEXTUAL SERV TUTOR</div>
+    </div>
+  </div>
+</section>
+<section class="trust-row">
+  <div class="section-width"><span>THE PRACTICAL APPROACH</span><p>Understand the ecosystem <b>→</b> make a decision <b>→</b> write a real request</p></div>
+</section>
+<section class="section" id="how">
+  <div class="section-width">
+    <div class="section-lead"><span class="kicker">HOW IT WORKS</span><h2>Learn a little.<br><em>Do something real.</em></h2><p>Each lesson finishes with a small task you can check. Your progress is yours—even without an account.</p></div>
+    <div class="step-grid">
+      <article class="step"><span class="step-number">01</span><span class="step-icon">◈</span><h3>Explore</h3><p>Understand OpenServ's agents, workflows, connections and SDK without getting lost in jargon.</p></article>
+      <article class="step"><span class="step-number">02</span><span class="step-icon">◎</span><h3>Practice</h3><p>Make decisions and get immediate feedback. Find out why an answer is right or wrong.</p></article>
+      <article class="step"><span class="step-number">03</span><span class="step-icon">⌘</span><h3>Build</h3><p>Construct a valid SERV request you can copy into your own project. No API key needed to learn.</p></article>
+    </div>
+  </div>
+</section>
+<section class="section path-section" id="journey">
+  <div class="section-width path-layout">
+    <div class="path-copy"><span class="kicker">YOUR FIRST PATH</span><h2>Four lessons.<br><em>One real starting point.</em></h2><p>Choose a beginner-friendly introduction or jump straight to the code exercise. Every concept links back to OpenServ's official documentation.</p><a href="/learn" class="text-link">See the learning studio <span aria-hidden="true">→</span></a></div>
+    <ol class="lesson-list">
+      <li><span class="lesson-index">01</span><div><strong>Explore the OpenServ ecosystem</strong><small>Agents, workflows, Connect and SDK</small></div><span class="lesson-time">4 MIN</span></li>
+      <li><span class="lesson-index">02</span><div><strong>Understand SERV Reasoning</strong><small>What it does and how it fits in</small></div><span class="lesson-time">3 MIN</span></li>
+      <li><span class="lesson-index">03</span><div><strong>Know when reasoning helps</strong><small>Use judgment only where it matters</small></div><span class="lesson-time">4 MIN</span></li>
+      <li><span class="lesson-index">04</span><div><strong>Build your first request</strong><small>Create valid JSON and curl commands</small></div><span class="lesson-time">5 MIN</span></li>
+    </ol>
+  </div>
+</section>
+<section class="section code-section">
+  <div class="section-width code-grid">
+    <div><span class="kicker">GO BEYOND THE THEORY</span><h2>From “what is SERV?”<br><em>to your first request.</em></h2><p>Learn the request shape, build it with guided validation, then copy real code. The preview is never presented as an executed call.</p><a class="button dark" href="/try">Open the request builder <span aria-hidden="true">→</span></a></div>
+    <div class="code-card"><div class="code-head"><span><i></i><i></i><i></i></span><strong>POST /v1/chat/completions</strong><small>REQUEST SHAPE · EXAMPLE</small></div><pre><code>{
+  <span class="key">"model"</span>: <span class="string">"gpt-5.4-mini"</span>,
+  <span class="key">"messages"</span>: [
+    {
+      <span class="key">"role"</span>: <span class="string">"system"</span>,
+      <span class="key">"content"</span>: <span class="string">"Be helpful and precise."</span>
+    },
+    {
+      <span class="key">"role"</span>: <span class="string">"user"</span>,
+      <span class="key">"content"</span>: <span class="string">"Explain SERV simply."</span>
+    }
+  ]
+}</code></pre><div class="code-foot">Preview only · No API calls or charges</div></div>
+  </div>
+</section>
+<section class="last-cta"><div class="section-width"><div><span class="kicker">READY TO TRY?</span><h2>Understand more by doing more.</h2><p>Start with a simple concept. Leave with something you can use.</p></div><a class="button primary" href="/learn">Start learning for free <span aria-hidden="true">→</span></a></div></section>
+</main>
+<footer class="footer"><div class="section-width"><div class="footer-brand"><span class="brand-icon">t<span>.</span></span><strong>tryserv</strong></div><p>An independent learning companion. Not affiliated with or endorsed by OpenServ.</p><div class="footer-links"><a href="/learn">Learn</a><a href="/try">Build</a><a href="https://docs.openserv.ai/" target="_blank" rel="noopener noreferrer">Official docs ↗</a><a href="https://github.com/Alike001/tryserv" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></div></footer>
+</body>
+</html>
