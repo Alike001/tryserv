@@ -115,3 +115,23 @@ test("malformed requests return 400, no crash",async()=>{
    assert.equal(r2.status,400);
  });
 });
+
+test("dedicated landing page and both learning entry routes serve usable HTML",async()=>{
+ await withApp({},async url=>{
+   const home=await fetch(url+"/");
+   assert.equal(home.status,200);
+   const homeHtml=await home.text();
+   assert.match(homeHtml,/Stop reading about it/);
+   assert.match(homeHtml,/href="\/learn"/);
+   assert.match(homeHtml,/href="\/try"/);
+   assert.match(homeHtml,/independent learning companion/i);
+   const learn=await fetch(url+"/learn");
+   assert.equal(learn.status,200);
+   assert.match(await learn.text(),/YOUR LEARNING PATH/);
+   const builder=await fetch(url+"/try");
+   assert.equal(builder.status,200);
+   assert.match(await builder.text(),/Build your first valid request|id="builder"/);
+   assert.equal((await fetch(url+"/landing.css")).status,200);
+   assert.equal((await fetch(url+"/progress.mjs")).status,200);
+ });
+});
