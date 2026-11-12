@@ -119,6 +119,7 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    $("lesson-count").textContent="LESSON "+String(position).padStart(2,"0")+" OF "+String(lessons.length).padStart(2,"0");
    $("lesson-journey-track").setAttribute("aria-valuenow",String(position));
    $("lesson-journey-fill").style.width=(position/lessons.length*100)+"%";
+   $("reasoning-clinic").hidden=id!=="decide";
    $("practice-guide").textContent=id==="build"
      ?"Write a clear instruction and task. We check the request without calling SERV or using credits."
      :"Choose one answer, then check your reasoning. The server grades it; no AI credits are spent.";
@@ -196,6 +197,17 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
      const old=button.textContent;button.textContent="Copied ✓";
      setTimeout(()=>button.textContent=old,1600);
    }catch{notify("Couldn't copy automatically. Select the code and copy it manually.");}
+ }
+ function prefillDecisionClinic(){
+   if(current!=="decide")return;
+   $("mentor-question").value=(
+     "In this hypothetical refund case, the customer missed the return window because delivery was delayed. "+
+     "Explain which checks deterministic code should handle and which conflicting policy exceptions SERV Reasoning can help a human reviewer weigh. "+
+     "Do not decide an actual refund or invent a real merchant policy."
+   ).slice(0,400);
+   $("tutor-panel").scrollIntoView({behavior:"smooth",block:"nearest"});
+   $("mentor-question").focus({preventScroll:true});
+   mentorMessage("The reasoning case is prepared. This is a hypothetical example, and no SERV request or refund action has been sent.");
  }
  function prefillCoach(kind){
    const lesson=lessons.find(l=>l.id===current)??lessons[0];
@@ -333,6 +345,7 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    $("ask-mentor").addEventListener("click",askTutor);
    $("run-serv").addEventListener("click",runLiveRequest);
    $("ask-about-answer").addEventListener("click",prepareTutorQuestion);
+   $("clinic-ask").addEventListener("click",prefillDecisionClinic);
    for(const button of document.querySelectorAll("[data-coach]")){
      button.addEventListener("click",()=>prefillCoach(button.dataset.coach));
    }
