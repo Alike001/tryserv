@@ -293,3 +293,21 @@ test("refreshed studio stays readable at 320, 375, 768, 1024 and 1440 pixels",as
    expect(overflow, "horizontal overflow at "+width+"px").toBeLessThanOrEqual(2);
  }
 });
+
+test("reasoning clinic uses SERV only after explicit approval, never on question preparation",async({page})=>{
+ let paid=0;
+ await page.route("**/api/mentor",route=>{
+   paid++;
+   return route.fulfill({status:503,json:{error:"No spending expected from preparation."}});
+ });
+ await page.goto("/learn");
+ await page.locator("#start-fresh").click();
+ await page.locator("#lesson-nav .nav-lesson").nth(2).click();
+ await expect(page.locator("#reasoning-clinic")).toBeVisible();
+ await page.locator("#clinic-ask").click();
+ await expect(page.locator("#mentor-question")).toHaveValue(/hypothetical refund case/);
+ await expect(page.locator("#mentor-response")).toContainText("no SERV request");
+ expect(paid).toBe(0);
+ await page.locator("#lesson-nav .nav-lesson").nth(0).click();
+ await expect(page.locator("#reasoning-clinic")).toBeHidden();
+});
