@@ -132,3 +132,18 @@ Canonical research: [docs/INTERACTIVE-LEARNING-RESEARCH.md](INTERACTIVE-LEARNING
 - [x] Free tutor button disabled when daily/global quota is exhausted or budget status cannot be read; no inference is attempted when protections are down.
 - [ ] Validate this branch in CI, merge only after green tests, confirm Render's final deployment and request a browser screenshot.
 - [ ] Evaluate real usability with one beginner and one developer before comprehensive visuals. Keep total trial budget at 24 until spending is reviewed; don't silently raise it.
+
+
+## Nov 12 inspiration: first-class documentation and guided discovery
+
+- [x] Review NimQuest's public README, source and the supplied landing, quest, proof and docs screenshots.
+- [x] Preserve TrySERV differentiation: OpenServ-focused learning + SERV tutoring, not Nimiq wallet proof, rewards, leaderboards or invented certified learning.
+- [x] Add a dedicated /docs portal explaining beginner vs developer paths, course rules, SERV request shape, real inference, quota, troubleshooting, architecture, privacy and FAQs.
+- [x] Add homepage newcomer/builder/troubleshooter route cards, each linked to a working feature.
+- [x] Add docs links across homepage, studio, builder, and debug lab. Avoid redirecting ordinary learners to external technical references as the only explanation.
+- [x] Fix the outdated statement that the live tutor is the only paid SERV path; the separately protected live request builder also exists.
+- [ ] Node + Playwright checks must pass before feature PR merge; verify Render deployment only after merging.
+- [ ] Human check at 320px/mobile for layout, topic findability, focus order, readable copy and navigation.
+- [ ] Continue final hackathon packaging and truthful showcase, not feature sprawl.
+
+Research notes: docs/NIMQUEST-DESIGN-RESEARCH.md .

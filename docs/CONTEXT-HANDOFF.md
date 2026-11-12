@@ -127,3 +127,19 @@ Resume in a new chat: "Continue TrySERV in Alike001/tryserv main. Read docs/CONT
 ## Resume next chat
 
 "Continue TrySERV in Alike001/tryserv main. Read docs/CONTEXT-HANDOFF.md and docs/BROWSER-RELIABILITY.md. Verify CI and Render service srv-dbqvo68ae00c73bepbj0, and the merged PR #5 quota/browser tests. Focus on real-user end-to-end acceptance and remaining hackathon submission checks. Do not touch Opsra. Do not reveal SERV or database secrets."
+
+
+## Nov 12 inspiration milestone — NimQuest comparison and TrySERV product guides
+
+User supplied ten screenshots of https://nimquest.midelabs.xyz and requested learning from its UI/UX, quest flow and docs; reference repository https://github.com/mystiquemide/nimquest . Research confirms its server-graded quiz + Nimiq Pay wallet signature proof sequence, visually strong discovery cards and dedicated docs. DO NOT copy Nimiq branding, photos, code or proof mechanism, and do not imply TrySERV XP is wallet-verified.
+
+Work in feat/docs-and-learning-navigation:
+- Added public /docs with guides: overview, choice of learning paths, progress, SERV integration, validated request, debug examples, architecture, safety/privacy and FAQ.
+- Added homepage task-based entry cards for beginner, developer and troubleshooter, with separate documentation preview; original mint, blue and peach cards retain TrySERV's navy/cobalt identity.
+- Added accessible docs links to learning studio, request builder and debug lab.
+- Fixed stale curriculum detail about operator-only paid request executions.
+- Added Node route tests and Chromium browser tests including 320px and /docs navigation.
+- Research write-up at docs/NIMQUEST-DESIGN-RESEARCH.md .
+- Do NOT claim merged or deployed without checking CI + Render. If tests fail, fix on this branch and recheck.
+- Keep real SERV inference proof already reported in screenshots, shared guest budget (2 per day / 24 global), three debugging scenarios, four lessons and 80 local XP unchanged.
+- Next: inspect PR checks, merge when green, deploy, conduct human first-time learner and developer testing, then final UI/UX and hackathon demo/submission.

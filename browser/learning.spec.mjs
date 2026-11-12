@@ -133,7 +133,7 @@ test("public tutor quota can be read without a paid call and errors stay nonfina
 test("responsive layout has no unexpected page-wide horizontal scrolling",async({page})=>{
   for(const width of [320,375,768,1024,1440]){
     await page.setViewportSize({width,height:850});
-    for(const path of ["/","/learn","/debug","/try"]){
+    for(const path of ["/","/learn","/debug","/try","/docs"]){
       await page.goto(path);
       await expect(page.locator("body")).toBeVisible();
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
@@ -212,4 +212,33 @@ test("private custom SERV request is never run by preview or missing authorizati
  await page.locator("#run-serv").click();
  await expect(page.locator("#try-result")).toContainText("Enter your private demo access code");
  expect(calls).toBe(0);
+});
+
+
+test("new guide page has working navigation, documentation anchors, and learning handoff",async({page})=>{
+ await page.goto("/");
+ await expect(page.locator(".trail-card")).toHaveCount(3);
+ await page.locator("a[href='/docs']:visible").first().click();
+ await expect(page).toHaveURL(/\/docs$/);
+ await expect(page.getByRole("heading",{name:/Understand it/})).toBeVisible();
+ await expect(page.locator(".docs-sidebar nav a")).toHaveCount(9);
+ await page.locator(".docs-sidebar a[href='#serv']").click();
+ await expect(page).toHaveURL(/\/docs#serv$/);
+ await expect(page.locator("#serv")).toBeVisible();
+ await page.locator(".path-card[href='/debug']").click();
+ await expect(page).toHaveURL(/\/debug$/);
+ await expect(page.locator("#editor")).toBeVisible();
+ await page.getByRole("link",{name:"Docs",exact:true}).click();
+ await expect(page).toHaveURL(/\/docs$/);
+});
+
+test("mobile docs remains readable and its in-page navigation works",async({page})=>{
+ await page.setViewportSize({width:320,height:700});
+ await page.goto("/docs");
+ await expect(page.locator(".docs-intro")).toBeVisible();
+ await page.locator(".docs-sidebar a[href='#security']").click();
+ await expect(page).toHaveURL(/\/docs#security$/);
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+ expect(overflow).toBeLessThanOrEqual(2);
+ await expect(page.locator("#security")).toBeVisible();
 });
