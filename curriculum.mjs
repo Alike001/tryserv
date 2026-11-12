@@ -14,6 +14,10 @@ const modules=[
       {id:"token",text:"Start by launching a token before testing the idea"}
     ],
     answer:"flow",
+    hints:{
+      reason:"Changing your model endpoint can affect reasoning, but it doesn't arrange multiple agents into a coordinated process. Which feature handles the sequence?",
+      token:"You can explore no-code workflows without creating a token. Look for the feature that connects steps and agents."
+    },
     explanation:"OpenServ's Workflows and Agents are designed for composing multi-step agent processes, including no-code setups. SERV Reasoning serves a different role: improving model decisions.",
     source:{title:"What is OpenServ? · Official docs",url:"https://docs.openserv.ai/no-code/what-is-openserv"}
   },
@@ -30,6 +34,10 @@ const modules=[
       {id:"wallet",text:"Deploy an on-chain contract before making an AI request"}
     ],
     answer:"endpoint",
+    hints:{
+      rewrite:"The official quickstart starts with an existing OpenAI-compatible client. Look for the smallest integration change, not a full rewrite.",
+      wallet:"SERV Reasoning is accessed through an API. Think about a model endpoint and authorization before blockchain deployment."
+    },
     explanation:"The official quickstart shows an OpenAI-compatible client using the SERV base URL and a SERV API key. No blockchain contract or framework rewrite is required.",
     source:{title:"SERV Reasoning quickstart",url:"https://docs.openserv.ai/serv-reasoning/introduction"}
   },
@@ -46,6 +54,10 @@ const modules=[
       {id:"lookup",text:"Fetch an order by its known database ID"}
     ],
     answer:"decision",
+    hints:{
+      sum:"Exact arithmetic is verifiable by a calculator. Which option needs an interpretation of competing constraints?",
+      lookup:"Fetching a known record is an exact query. Which option requires weighing exceptions and ambiguous policy language?"
+    },
     explanation:"SERV is useful for judgment across constraints, policy interpretation, prioritization and tool selection. Exact calculations and database lookups should stay deterministic.",
     source:{title:"Day One with SERV",url:"https://docs.openserv.ai/serv-reasoning/day-one"}
   },
@@ -61,7 +73,7 @@ const modules=[
 ];
 export const LESSON_IDS=Object.freeze(modules.map(x=>x.id));
 export function findLesson(id){return modules.find(x=>x.id===id)??null;}
-export function publicLessons(){return modules.map(({answer,explanation,...safe})=>safe);}
+export function publicLessons(){return modules.map(({answer,explanation,hints,...safe})=>safe);}
 function string(v,max){return typeof v==="string"&&v.trim().length>0&&v.length<=max;}
 export function checkExercise(id,answer){
  const lesson=findLesson(id);
@@ -83,6 +95,8 @@ export function checkExercise(id,answer){
  const valid=lesson.choices.some(c=>c.id===answer);
  if(!valid)throw new Error("That option is not available.");
  const passed=answer===lesson.answer;
- return {passed,feedback:passed?lesson.explanation:"Not quite. "+lesson.explanation,source:lesson.source,
-   correct_choice_id:passed?undefined:lesson.answer};
+ return passed
+   ? {passed:true,feedback:lesson.explanation,source:lesson.source}
+   : {passed:false,feedback:"Not quite. Think about what the task actually needs, then try again.",
+      hint:lesson.hints?.[answer]??"Review the lesson explanation and compare the options.",source:lesson.source};
 }
