@@ -312,3 +312,20 @@ test("reasoning clinic uses SERV only after explicit approval, never on question
  await page.locator("#lesson-nav .nav-lesson").nth(0).click();
  await expect(page.locator("#reasoning-clinic")).toBeHidden();
 });
+
+
+test("debug lab has clear repair stages, accessible entry and no mobile overflow",async({page})=>{
+ await page.goto("/debug");
+ const skip=page.getByRole("link",{name:"Skip to debug lab"});
+ await page.keyboard.press("Tab");
+ await expect(skip).toBeFocused();
+ await page.keyboard.press("Enter");
+ await expect(page).toHaveURL(/\/debug#debug-main$/);
+ await expect(page.locator(".debug-journey span")).toHaveCount(3);
+ for(const width of [320,375,768,1440]){
+   await page.setViewportSize({width,height:850});
+   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+   expect(overflow,"debug overflow at "+width).toBeLessThanOrEqual(2);
+   await expect(page.locator("#editor")).toBeVisible();
+ }
+});
