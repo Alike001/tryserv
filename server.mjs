@@ -6,6 +6,7 @@ import {readFile} from "node:fs/promises";
 import {publicLessons,checkExercise,findLesson} from "./curriculum.mjs";
 import {answerWithServ} from "./mentor.mjs";
 import {executeLearnerRequest} from "./try-live.mjs";
+import {guestTrialConfigured,reserveGuestTrial,guestFailure} from "./guest-budget.mjs";
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 const files={"/":["landing.html","text/html; charset=utf-8"],"/learn":["index.html","text/html; charset=utf-8"],"/try":["index.html","text/html; charset=utf-8"],"/landing.css":["landing.css","text/css; charset=utf-8"],"/styles.css":["styles.css","text/css; charset=utf-8"],"/app.js":["app.js","text/javascript; charset=utf-8"],"/progress.mjs":["progress.mjs","text/javascript; charset=utf-8"]};
 function json(res,status,payload){res.writeHead(status,{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"});res.end(JSON.stringify(payload));}
@@ -23,8 +24,9 @@ async function readJson(req){
  }
  try{return JSON.parse(body);}catch{throw new Error("Invalid request JSON.");}
 }
-export function createApp({env=process.env,fetchImpl=fetch}={}){
+export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveGuestTrial}={}){
  const enabled=Boolean(env.SERV_API_KEY&&env.LEARN_ACCESS_TOKEN);
+ const publicTutorEnabled=enabled&&guestTrialConfigured(env);
  const recent=new Map();
  let total=0;
  function reservePaidCall(req){
@@ -44,9 +46,9 @@ export function createApp({env=process.env,fetchImpl=fetch}={}){
   const url=new URL(req.url??"/","http://localhost");
   const pathname=url.pathname;
   if(req.method==="GET"&&pathname==="/healthz")
-   return json(res,200,{status:"ok",service:"tryserv",tutor_enabled:enabled,mode:"independent learning pilot"});
+   return json(res,200,{status:"ok",service:"tryserv",tutor_enabled:enabled,public_tutor_enabled:publicTutorEnabled,mode:"independent learning pilot"});
   if(req.method==="GET"&&pathname==="/api/lessons")
-   return json(res,200,{lessons:publicLessons(),tutor_enabled:enabled,progress_storage:"on-device only"});
+   return json(res,200,{lessons:publicLessons(),tutor_enabled:enabled,public_tutor_enabled:publicTutorEnabled,guest_daily_limit:publicTutorEnabled?2:0,progress_storage:"on-device only"});
   if(req.method==="POST"&&pathname==="/api/check"){
    try{
     const input=await readJson(req);
@@ -76,25 +78,43 @@ export function createApp({env=process.env,fetchImpl=fetch}={}){
    }catch(error){return json(res,502,{error:"Live SERV call failed: "+String(error.message).slice(0,140)});}
   }
   if(req.method==="POST"&&pathname==="/api/mentor"){
-   if(!enabled)return json(res,503,{error:"Live SERV tutor is not configured on this server. Free practice still works."});
-   if(!tokenEquals(req.headers["x-learn-access-token"],env.LEARN_ACCESS_TOKEN))
-     return json(res,401,{error:"A valid instructor access code is required for live tutoring."});
+   if(!enabled)return json(res,503,{error:"Live SERV tutor is not configured. Free practice still works."});
+   const supplied=req.headers["x-learn-access-token"];
+   const ownerAuthorized=tokenEquals(supplied,env.LEARN_ACCESS_TOKEN);
+   if(supplied&&!ownerAuthorized)
+     return json(res,401,{error:"Invalid private testing code. Leave the field empty for the free guest tutor."});
+   if(!ownerAuthorized&&!publicTutorEnabled)
+     return json(res,503,{error:"Free guest tutoring is not enabled yet. Free exercises still work."});
+   let input;
    try{
-    const input=await readJson(req);
-    if(!findLesson(input?.lesson_id))return json(res,400,{error:"Select a valid lesson."});
-    if(typeof input?.question!=="string"||input.question.length<8||input.question.length>400)
-      return json(res,400,{error:"Enter a question between 8 and 400 characters."});
-    if(!reservePaidCall(req))return json(res,429,{error:"Live demo limit reached. Practice lessons remain available."});
+     input=await readJson(req);
+     if(!findLesson(input?.lesson_id))return json(res,400,{error:"Select a valid lesson."});
+     if(typeof input?.question!=="string"||input.question.trim().length<8||input.question.length>400)
+       return json(res,400,{error:"Enter a question between 8 and 400 characters."});
+   }catch(e){return json(res,400,{error:String(e.message).slice(0,145)});}
+   let remaining=null;
+   if(ownerAuthorized){
+     if(!reservePaidCall(req))return json(res,429,{error:"Private testing limit reached. Practice lessons remain available."});
+   }else{
+     const guest=await guestReserve({req,env});
+     if(!guest.allowed){
+       const failure=guestFailure(guest.reason);
+       return json(res,failure.status,{error:failure.message});
+     }
+     remaining=guest.remaining;
+   }
+   try{
     const result=await answerWithServ({lessonId:input.lesson_id,question:input.question,
       apiKey:env.SERV_API_KEY,model:env.SERV_MODEL??"gpt-5.4-mini",fetchImpl});
     console.info("tryserv.serv_result",JSON.stringify({
-      kind:"tutor",lesson_id:input.lesson_id,model:result.model,
+      kind:"tutor",guest:!ownerAuthorized,lesson_id:input.lesson_id,model:result.model,
       latency_ms:result.latency_ms,completion_id:result.completion_id,
       input_tokens:result.usage.input_tokens,output_tokens:result.usage.output_tokens
     }));
-    return json(res,200,{mode:"live-serv-tutor",...result});
+    return json(res,200,{mode:"live-serv-tutor",guest_trial:!ownerAuthorized,
+      guest_remaining:remaining,...result});
    }catch(e){
-    return json(res,502,{error:"Tutor failed safely: "+String(e.message).slice(0,150)});
+    return json(res,502,{error:"Tutor failed safely: "+String(e.message).slice(0,145)});
    }
   }
   if(req.method==="GET"&&Object.hasOwn(files,pathname)){
