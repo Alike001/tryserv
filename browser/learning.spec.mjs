@@ -218,7 +218,7 @@ test("private custom SERV request is never run by preview or missing authorizati
 test("new guide page has working navigation, documentation anchors, and learning handoff",async({page})=>{
  await page.goto("/");
  await expect(page.locator(".trail-card")).toHaveCount(3);
- await page.locator("a[href='/docs']").first().click();
+ await page.locator("a[href='/docs']:visible").first().click();
  await expect(page).toHaveURL(/\/docs$/);
  await expect(page.getByRole("heading",{name:/Understand it/})).toBeVisible();
  await expect(page.locator(".docs-sidebar nav a")).toHaveCount(9);
