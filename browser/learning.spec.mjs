@@ -180,7 +180,7 @@ test("quota database unavailable: paid tutor remains disabled, free learning wor
    return route.fulfill({status:502,json:{error:"Unexpected paid call."}});
  });
  await page.goto("/learn");
- await expect(page.locator("#mentor-allowance")).toContainText("usage");
+ await expect(page.locator("#mentor-allowance")).toContainText("could not be checked");
  await expect(page.locator("#ask-mentor")).toBeDisabled();
  await page.locator("#start-fresh").click();
  await expect(page.locator("#learning")).toBeVisible();
