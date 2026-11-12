@@ -65,3 +65,14 @@ Next: verify latest GitHub CI and Render (srv-dbqvo68ae00c73bepbj0) live. Operat
 - GitHub source uses pinned `@neondatabase/serverless` 1.2.0, installed in the cloud build, and automated tests verify fail-closed guest access and owner-only custom request lab.
 - Real hosted SERV answer is not yet independently confirmed. In a follow-up, test one guest question from https://tryserv.onrender.com/learn, then check Render logs for `tryserv.serv_result` (does not include prompt or secret) and Neon SQL `SELECT used FROM tryserv_guest_budget WHERE id=1`. Never reveal API key, database URL or private demo code.
 - Existing feature roadmap: beginner-to-builder lessons, source-backed corrections, XP, guest tutor, private real request lab, mobile/keyboard/browser checks, hackathon demo. Leave Opsra untouched.
+
+
+## Nov 12 continuation — learning product research and deployed developer lab
+
+- User asked to **continue the project functionally before final visual polish**, and to study existing educational products whose proven learning mechanics we can adapt.
+- Research checked Codecademy (checked steps, contextual help), Scrimba (editable code), freeCodeCamp (progressive labs), MDN (official sources with skills checks), and Postman LiftOff (API learning missions). Summary: \`docs/INTERACTIVE-LEARNING-RESEARCH.md\`. Do not copy logos, code or copyrighted lesson content.
+- Created feature branch \`feat/request-debug-lab\`, PR #1; merged after passing tests into \`Alike001/tryserv\` main (merge SHA \`23050ab9725b248e2a822307a729a58e0bd75068\`).
+- NEW \`https://tryserv.onrender.com/debug\`: three real-contract SERV request repair missions. Learner edits a request blueprint, /api/debug/check validates endpoint/model/system/user messages, feedback guides repairs, and the corrected HTTP request blueprint is previewed only. No keys, model inference or credits spent. /api/debug/scenarios serves cases; browser stores completed mission IDs only. Links from landing and studio now exist.
+- 42 tests passed, 0 failed. Render reports deployment live. Independent page screenshot/keyboard/mobile check has NOT yet occurred; direct public browsing from assistant was blocked.
+- Public tutor real SERV completion has already been confirmed by user screenshot (real model, completion ID and latency). Guest tutoring remains limited to 2/day and 24 lifetime in durable Neon budget; do not increase without reviewing costs.
+- Next: beginner/developer full-journey validation, access and use of /debug, clearer final learning completion and usage visibility, then visual polish and hackathon submission. Old Opsra remains untouched.
