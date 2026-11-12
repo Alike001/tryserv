@@ -106,3 +106,14 @@ It complements the existing \`/try\` request builder and separate limited public
 Current test gate: 42 tests pass on commit \`23050ab\`; Render reports the /debug release live. Browser-based visual/keyboard verification remains to be performed.
 
 See [interactive learning research](docs/INTERACTIVE-LEARNING-RESEARCH.md) for comparisons with Codecademy, Scrimba, freeCodeCamp, Postman LiftOff and MDN.
+
+
+## Product guide and discovery routes
+
+The public site now has a first-class documentation portal at https://tryserv.onrender.com/docs covering the independent product, practical learning paths, SERV integration, examples, debugging, progress, architecture, privacy, and honest operating limits.
+
+The homepage offers three functional starting points: a beginner learning path (/learn), an API request builder (/try), and an error-repair lab (/debug). Each route connects to the documentation, and the homepage includes a preview of the available guides. Practice does not require accounts or API keys; live tutoring remains a separately limited paid inference feature.
+
+Design inspiration was drawn from the interaction *patterns* visible in https://github.com/mystiquemide/nimquest (clear steps, learning cards, meaningful result review, and documentation). No NimQuest code, wording, artwork or assets were copied. See docs/NIMQUEST-DESIGN-RESEARCH.md.
+
+The finished experience must be checked in Chromium CI and with a human on mobile. The new documentation is not a substitute for OpenServ's official technical reference: https://docs.openserv.ai/ .
