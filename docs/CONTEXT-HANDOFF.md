@@ -143,3 +143,14 @@ Work in feat/docs-and-learning-navigation:
 - Do NOT claim merged or deployed without checking CI + Render. If tests fail, fix on this branch and recheck.
 - Keep real SERV inference proof already reported in screenshots, shared guest budget (2 per day / 24 global), three debugging scenarios, four lessons and 80 local XP unchanged.
 - Next: inspect PR checks, merge when green, deploy, conduct human first-time learner and developer testing, then final UI/UX and hackathon demo/submission.
+
+
+## 12 November — NimQuest-inspired documentation release merged
+
+- User supplied ten NimQuest screenshots and asked to study its visual hierarchy, learning steps, detailed quest flow and dedicated docs. Public comparison: https://github.com/mystiquemide/nimquest and https://nimquest.midelabs.xyz/ . Research notes: docs/NIMQUEST-DESIGN-RESEARCH.md. No NimQuest source, assets or brand copy were reused.
+- Feature PR #6 https://github.com/Alike001/tryserv/pull/6 **MERGED** to main as commit e84b0853b2f03ce3160c55ed22ae075d4ff5345c after green checks: Node CI https://github.com/Alike001/tryserv/actions/runs/43318495081 and desktop/mobile Chromium https://github.com/Alike001/tryserv/actions/runs/43318495060 .
+- New first-class product documentation at https://tryserv.onrender.com/docs: Overview; learner/builder paths; four lessons and local XP; how real SERV tutoring and budget work; validated request example; three debugging missions; small architecture; data and privacy boundaries; FAQ. Static page has original responsive styling and accessible anchors.
+- Homepage now has three colored, navigable learning starting points for a newcomer, builder and troubleshooter, plus an in-app documentation preview. Learning studio and /debug have guide links. Mobile header has discoverable Docs and compact visible Start action at 320px.
+- Browser CI originally caught mobile navigation regressions; they were fixed before merge. Final feature branch tests passed across desktop/mobile and responsive widths. No SERV quotas, authentication, payments or scoring rules were changed.
+- Do not claim success of the production deployment until checking latest Render service srv-dbqvo68ae00c73bepbj0. No need to change old Opsra repo.
+- Next: manually inspect public homepage and /docs on the user's browser, run novice and developer acceptance walkthroughs, fix any UX blockers, and prepare submission/video assets truthfully ahead of Nov 15 23:59 UTC.
