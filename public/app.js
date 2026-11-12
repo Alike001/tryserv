@@ -57,6 +57,9 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    const labels={read:"Understand the idea",check:"Check your understanding",apply:"Ready to move forward"};
    const stages=["read","check","apply"];
    $("lesson-state").textContent=labels[stage]??labels.read;
+   const step=Math.max(1,stages.indexOf(stage)+1);
+   $("lesson-journey-track").setAttribute("aria-valuenow",String(step));
+   $("lesson-journey-fill").style.width=(step/3*100)+"%";
    for(const item of document.querySelectorAll(".lesson-stages .stage")){
      const index=stages.indexOf(item.dataset.stage);
      const active=stages.indexOf(stage);
@@ -107,6 +110,13 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    $("lesson-time").textContent=lesson.minutes+" MIN";
    $("lesson-title").textContent=lesson.title;
    $("lesson-summary").textContent=lesson.summary;
+   const outcomes={
+     ecosystem:"Choose the right OpenServ building block for a practical task.",
+     understand:"Understand how SERV Reasoning fits an existing application.",
+     decide:"Distinguish exact code checks from decisions that benefit from reasoning.",
+     build:"Produce a validated SERV API request you can copy and use."
+   };
+   $("lesson-outcome").textContent="YOUR GOAL  ·  "+(outcomes[id]??lesson.summary);
    $("lesson-takeaway").textContent=lesson.takeaway;
    $("lesson-detail").textContent=lesson.detail;
    $("lesson-source").textContent=lesson.source.title+" ↗";
@@ -117,8 +127,8 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    resetExercise();showChoices(lesson);updateProgress();
    const position=lessons.findIndex(x=>x.id===id)+1;
    $("lesson-count").textContent="LESSON "+String(position).padStart(2,"0")+" OF "+String(lessons.length).padStart(2,"0");
-   $("lesson-journey-track").setAttribute("aria-valuenow",String(position));
-   $("lesson-journey-fill").style.width=(position/lessons.length*100)+"%";
+   // The progress bar reflects the active Understand/Practice/Apply stage,
+   // not the lesson index. A user jumping to lesson 4 is not automatically 100% done.
    $("reasoning-clinic").hidden=id!=="decide";
    $("practice-guide").textContent=id==="build"
      ?"Write a clear instruction and task. We check the request without calling SERV or using credits."
@@ -336,6 +346,12 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    host.className="mentor-response"+(failed?" error":"");
  }
  async function init(){
+   const buildPage=window.location.pathname==="/try";
+   const routes=document.querySelectorAll(".brand-route-nav a");
+   for(const link of routes){
+     if(link.getAttribute("href")===(buildPage?"/try":"/learn"))link.setAttribute("aria-current","page");
+     else link.removeAttribute("aria-current");
+   }
    $("start-fresh").addEventListener("click",()=>openLesson("ecosystem"));
    $("resume").addEventListener("click",resumeLearning);
    $("reset-progress").addEventListener("click",resetProgress);
