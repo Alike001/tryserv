@@ -421,3 +421,14 @@ test("debug SERV trial fails closed while deterministic request repair stays ava
  await expect(page.locator("#serv-diagnostic-status")).toContainText("shared SERV trial is exhausted");
  expect(calls).toBe(0);
 });
+
+
+test("all four learning modules stay discoverable without a horizontal scroll on phones",async({page})=>{
+ await page.setViewportSize({width:375,height:812});
+ await page.goto("/learn");
+ const nav=page.locator("#lesson-nav");
+ await expect(nav.locator(".nav-lesson")).toHaveCount(4);
+ for(let i=0;i<4;i++)await expect(nav.locator(".nav-lesson").nth(i)).toBeInViewport();
+ const overflow=await nav.evaluate(x=>x.scrollWidth-x.clientWidth);
+ expect(overflow).toBeLessThanOrEqual(2);
+});
