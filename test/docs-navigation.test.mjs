@@ -24,7 +24,7 @@ test("documentation is a real public route with correct content and assets",asyn
    assert.match(html,new RegExp('id="'+section+'"'),section);
   }
   assert.match(html,/independent learning companion/i);
-  assert.match(html,/not a certificate or a verified credential/i);
+  assert.match(html,/does not issue a certificate or a verified credential/i);
   assert.match(html,/shared lifetime pilot budget/i);
   assert.match(html,/https:\/\/docs\.openserv\.ai\/serv-reasoning\/introduction/);
   assert.match(html,/https:\/\/docs\.openserv\.ai\/serv-reasoning\/api\/chat-completions/);
