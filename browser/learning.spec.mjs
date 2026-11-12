@@ -329,3 +329,94 @@ test("debug lab has clear repair stages, accessible entry and no mobile overflow
    await expect(page.locator("#editor")).toBeVisible();
  }
 });
+
+
+test("all pages share the landing's navy/blue brand and mobile page navigation",async({page})=>{
+ await page.setViewportSize({width:375,height:812});
+ for(const route of ["/","/learn","/try","/debug","/docs"]){
+   await page.goto(route);
+   await expect(page.locator('link[href="/brand.css"]')).toHaveCount(1);
+   const visibleNav=page.getByRole("navigation",{name:"TrySERV pages"});
+   await expect(visibleNav).toBeVisible();
+   for(const href of ["/","/learn","/try","/debug","/docs"]){
+     await expect(visibleNav.locator('a[href="'+href+'"]')).toBeVisible();
+   }
+   const bg=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
+   expect(bg).toBe(route==="/"?"rgb(255, 255, 255)":"rgb(247, 249, 252)");
+   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+   expect(overflow,"shared UI overflow at "+route).toBeLessThanOrEqual(2);
+ }
+ await page.goto("/docs");
+ await page.getByRole("navigation",{name:"TrySERV pages"}).locator('a[href="/debug"]').click();
+ await expect(page).toHaveURL(/\/debug$/);
+ await page.getByRole("navigation",{name:"TrySERV pages"}).locator('a[href="/learn"]').click();
+ await expect(page).toHaveURL(/\/learn$/);
+});
+
+test("a late lesson does not display false 100 percent stage completion",async({page})=>{
+ await page.goto("/try");
+ await expect(page.locator("#lesson-count")).toHaveText("LESSON 04 OF 04");
+ const bar=page.locator("#lesson-journey-track");
+ await expect(bar).toHaveAttribute("aria-valuenow","1");
+ const initial=await page.locator("#lesson-journey-fill").evaluate(x=>x.style.width);
+ expect(initial).toBe("33.33333333333333%");
+ await page.locator("#check").click();
+ await expect(bar).toHaveAttribute("aria-valuenow","3");
+ await expect(page.locator("#lesson-journey-fill")).toHaveAttribute("style",/100%/);
+});
+
+test("SERV debug explanation requires a verified error and explicit click, never sends user JSON",async({page})=>{
+ let paid=0,request=null;
+ await page.route("**/api/lessons",async route=>{
+  const original=await (await route.fetch()).json();
+  await route.fulfill({json:{...original,tutor_enabled:true,public_tutor_enabled:true,guest_daily_limit:2}});
+ });
+ await page.route("**/api/tutor/allowance",route=>route.fulfill({
+  json:{enabled:true,available:true,status:"available",remaining_today:2,remaining_total:23,daily_limit:2}
+ }));
+ await page.route("**/api/mentor",route=>{
+  paid++;request=route.request().postDataJSON();
+  return route.fulfill({json:{
+   mode:"live-serv-tutor",guest_trial:true,
+   explanation:"The request has a missing system instruction, so the intended assistant behavior is underspecified. Correct the configuration before making any real SERV API call.",
+   next_action:"Add a concise system instruction and validate the request blueprint again.",
+   reference:{title:"Chat completions",url:"https://docs.openserv.ai/serv-reasoning/api/chat-completions"},
+   model:"gpt-5.4-mini",completion_id:"stub-serv-debug-id",latency_ms:91,
+   usage:{input_tokens:55,output_tokens:31}
+  }});
+ });
+ await page.goto("/debug");
+ await expect(page.locator("#serv-diagnostic")).toBeHidden();
+ const blueprint=await page.locator("#editor").inputValue();
+ await page.locator("#editor").fill(blueprint.replace("Explain when SERV Reasoning is appropriate.","PRIVATE_DUMMY_DONT_SEND_THIS_JSON"));
+ await page.locator("#check").click();
+ await expect(page.locator("#serv-diagnostic")).toBeVisible();
+ await expect(page.locator("#serv-explain")).toBeEnabled();
+ expect(paid).toBe(0);
+ await page.locator("#serv-explain").click();
+ await expect(page.locator("#serv-ai-response")).toContainText("stub-serv-debug-id");
+ expect(paid).toBe(1);
+ expect(request.lesson_id).toBe("build");
+ expect(request.question).toContain("Chat Completions");
+ expect(request.question).not.toContain("PRIVATE_DUMMY_DONT_SEND_THIS_JSON");
+ await expect(page.locator("#serv-ai-response a")).toHaveAttribute("href",/docs\.openserv\.ai/);
+});
+
+test("debug SERV trial fails closed while deterministic request repair stays available",async({page})=>{
+ let calls=0;
+ await page.route("**/api/lessons",async route=>{
+  const original=await (await route.fetch()).json();
+  await route.fulfill({json:{...original,tutor_enabled:true,public_tutor_enabled:true,guest_daily_limit:2}});
+ });
+ await page.route("**/api/tutor/allowance",route=>route.fulfill({
+  json:{enabled:true,available:false,status:"trial_exhausted",remaining_today:0,remaining_total:0,daily_limit:2}
+ }));
+ await page.route("**/api/mentor",route=>{calls++;return route.fulfill({status:429,json:{error:"budget exhausted"}});});
+ await page.goto("/debug");
+ await page.locator("#check").click();
+ await expect(page.locator("#result")).toBeVisible();
+ await expect(page.locator("#serv-diagnostic")).toBeVisible();
+ await expect(page.locator("#serv-explain")).toBeDisabled();
+ await expect(page.locator("#serv-diagnostic-status")).toContainText("shared SERV trial is exhausted");
+ expect(calls).toBe(0);
+});
