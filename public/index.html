@@ -80,6 +80,14 @@
             <pre id="curl-preview"></pre>
             <button type="button" class="copy" id="copy-curl">Copy curl command</button>
           </div>
+          <div id="live-try-panel" class="request-preview" hidden>
+            <div class="request-head"><strong>Try it with real SERV</strong><span>REAL API CALL · MAY USE CREDITS</span></div>
+            <p>Run the validated request against OpenServ and inspect a real response. Private testing only: use your demo access code, <strong>not</strong> your SERV API key. Do not enter sensitive data in prompts.</p>
+            <label for="try-access">Private demo access code</label>
+            <input type="password" id="try-access" autocomplete="off" placeholder="The same private code used for the tutor">
+            <button type="button" class="primary live-run" id="run-serv">Run this request with SERV ↗</button>
+            <div id="try-result" class="live-result" role="status" aria-live="polite" hidden></div>
+          </div>
         </div>
       </section>
     </div>
