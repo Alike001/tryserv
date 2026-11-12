@@ -112,3 +112,18 @@ The user confirmed https://tryserv.onrender.com/debug visually loads and asked t
 - Permanent browser testing notes: `docs/BROWSER-RELIABILITY.md`. Keep this handoff updated after material changes.
 
 Resume in a new chat: "Continue TrySERV in Alike001/tryserv main. Read docs/CONTEXT-HANDOFF.md and docs/PRODUCT-PLAN.md. Verify GitHub CI and Render service srv-dbqvo68ae00c73bepbj0. Browser regression PR #3 is merged with 14/14 Chromium tests. Next focus on real-user flow review and final UX/submission. Leave Opsra untouched."
+
+
+## 12 November 2026 — verified browser reliability, guest credit safeguards
+
+- Canonical code: https://github.com/Alike001/tryserv main; old Alike001/opsra remains untouched.
+- PR #3 https://github.com/Alike001/tryserv/pull/3 merged browser-level Chromium reliability tests. Its GitHub Actions workflow is `.github/workflows/browser-journeys.yml`, its specs are `browser/learning.spec.mjs`, and details are in `docs/BROWSER-RELIABILITY.md`. The tests cover the landing page, full four-lesson path, wrong-answer hints, XP idempotency and persistence, all three developer debugging missions, keyboard/Enter/Space, guest allowance, and no horizontal overflow across 320/375/768/1024/1440px. GitHub cloud runners install Chromium; the user's laptop needs no Docker or browser dependencies. Test models and API calls are mocked where appropriate; don't misrepresent them as live SERV inference.
+- A redundant PR #4 was closed without merging because PR #3 already provided the browser testing suite. Avoid duplicate browser workflows.
+- PR #5 https://github.com/Alike001/tryserv/pull/5 **merged** as commit `0272bf418fe65c4be670bb4ec976f98ec640d4cf`; browser CI succeeded. It adds three more real-Chromium cases: global trial exhaustion, quota database outage, and private SERV custom-request preview not spending credits without authorization. It uses mocked network routes, makes no actual paid calls, and leaves production budgets unchanged.
+- Underlying public SERV tutoring previously succeeded in a real user screenshot, with genuine model/completion/timing. It remains bounded by 2 guest questions/day per approximate identity and 24 global guest calls in Neon; do not increase quotas without budget review.
+- After pushing docs, verify GitHub CI and Render deploy status. Do NOT claim actual browser walkthrough by a human; hosted Chromium automation and human UX tests are different.
+- **Next product milestone**: real-user acceptance test with one first-timer and one experienced developer, source/lesson freshness review, accessible mobile/focus/contrast check, and truthful OpenServ hackathon submission assets before Nov 15 2026 23:59 UTC. Avoid unnecessary feature sprawl and final UI redesign until core acceptance gates pass.
+
+## Resume next chat
+
+"Continue TrySERV in Alike001/tryserv main. Read docs/CONTEXT-HANDOFF.md and docs/BROWSER-RELIABILITY.md. Verify CI and Render service srv-dbqvo68ae00c73bepbj0, and the merged PR #5 quota/browser tests. Focus on real-user end-to-end acceptance and remaining hackathon submission checks. Do not touch Opsra. Do not reveal SERV or database secrets."
