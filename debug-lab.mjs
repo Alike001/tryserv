@@ -61,6 +61,9 @@ export function validateDebugBlueprint(id,config){
  if(!config||typeof config!=="object"||Array.isArray(config))
   throw new Error("The request blueprint must be a JSON object.");
  const problems=[];
+ const allowedFields=new Set(["endpoint","model","messages"]);
+ if(Object.keys(config).some(k=>!allowedFields.has(k)))
+  problems.push({field:"fields",message:"This learning blueprint accepts only endpoint, model and messages.",hint:"Remove extra fields. Never paste Authorization headers, tokens or API keys into the practice editor."});
  if(typeof config.endpoint!=="string"||config.endpoint!==CHAT_URL)
   problems.push({field:"endpoint",message:"This is not the documented SERV Chat Completions endpoint.",hint:"Check the official HTTP example and its exact host and path."});
  if(typeof config.model!=="string"||!AVAILABLE.has(config.model))
