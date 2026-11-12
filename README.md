@@ -1,119 +1,101 @@
-# TrySERV — learn OpenServ by doing
+# TrySERV — Learn OpenServ by doing
 
-> **Working name; independent community project, not an official OpenServ site.**
+**A free, hands-on OpenServ learning companion.** Understand agents and workflows, practise making a valid SERV Reasoning request, and repair realistic API integration mistakes. An optional, budget-limited live SERV tutor provides context-aware help.
 
-## Why this exists
+**Independent community project.** Not affiliated with, endorsed by, or operated by OpenServ. No wallet, account, or API key is needed to finish the learning exercises.
 
-Official documentation explains OpenServ and its APIs. TrySERV is an **interactive practice layer**: four short, sourced lessons, deterministic feedback on real exercises, a copyable first SERV request, and an optional SERV-powered tutor that explains the current lesson.
+[**Open TrySERV**](https://tryserv.onrender.com/) · [**Learn**](https://tryserv.onrender.com/learn) · [**Try a request**](https://tryserv.onrender.com/try) · [**Fix a request**](https://tryserv.onrender.com/debug) · [**Docs**](https://tryserv.onrender.com/docs)
 
-Unlike a general AI chat interface, every lesson has a concrete outcome and links to the official source. Learners can finish the free path with no signup, API key or paid inference.
+## The problem and the result
 
-## How to test
+Getting started with an AI infrastructure platform often means reading multiple documentation pages without knowing whether you understand them—or how to make the first request. TrySERV turns that uncertainty into small, checkable tasks. A newcomer can complete four short lessons; a developer can go directly to the request builder and debug lab.
 
-1. Open https://tryserv.onrender.com/. Use **I'm new** for the four lessons, or **I can code** for the builder.
-2. Complete "Find your way around OpenServ" (Agents, Workflows, Connect), then "What is SERV?" and observe why a wrong choice is wrong.
-3. Complete "When reasoning helps" with an ambiguous decision scenario. No SERV inference is used for exact grading.
-4. Complete "Build your first request". Copy the JSON and curl command; nothing is executed on this screen.
-5. Earn 20 XP per passed lesson (maximum 80 XP). Repeating a lesson does not add XP. Refresh and verify resume, or use the reset option. Progress/XP are on this browser only.
-6. **Optional live SERV tutor:** configure `SERV_API_KEY` and a separate `LEARN_ACCESS_TOKEN` as Render secrets. Enter only the instructor access code in the browser, then ask a lesson-related question. The real model, completion ID and source appear.
-7. With no secrets configured, the tutor is visibly unavailable and all free lessons remain functional.
+Unlike a generic documentation chatbot:
+- **Exact answers are graded in code on the server.** The model neither selects the correct quiz answer nor grants XP.
+- **Wrong answers receive specific, non-spoiler hints.** Learners can try again.
+- **A request builder validates the official Chat Completions shape** and produces copyable JSON/curl examples. A preview is never disguised as an API execution.
+- **Three editable debugging missions** teach how to repair missing instructions, a wrong endpoint, and an invalid model choice. All three are free and deterministic.
+- **SERV Reasoning is genuinely integrated** as an optional lesson-aware tutor. A successful provider response exposes the returned model, completion ID, measured latency, and usage rather than substituting a scripted answer.
 
-## Run independently (no Docker, no npm dependencies)
+## Try it as a judge or first-time visitor
 
-Node 22+:
+| Visit | What to do | What proves it works |
+| --- | --- | --- |
+| [Home](https://tryserv.onrender.com/) | Choose **I'm new**, **I can code**, or the debugging path | Task-specific links lead to working routes |
+| [Lessons](https://tryserv.onrender.com/learn) | Finish four short, sourced exercises; deliberately answer one incorrectly first | Specific hint, server-graded result, 20 XP once per lesson |
+| [Request builder](https://tryserv.onrender.com/try) | Validate a system instruction, user task and supported model; copy JSON/curl | Request structure and feedback, explicitly **NOT EXECUTED** |
+| [Debug lab](https://tryserv.onrender.com/debug) | Repair three broken request examples | Each fix is checked and saved locally; no API credits |
+| [SERV tutor](https://tryserv.onrender.com/learn) | Ask a lesson question, **if** public allowance remains | A live answer, official reference, provider model/ID and latency |
+| [Docs](https://tryserv.onrender.com/docs) | Explore integration, safety, progress and troubleshooting | A dedicated in-app guide portal |
 
-```bash
-node --check server.mjs
-node --test test/*.test.mjs
-node index.mjs
+Lesson progress is kept in **this browser only**: 4 × 20 XP = **80 XP maximum**. Repeating a lesson does not earn more XP. The three debugging missions are a separate 0–3 count. Progress is not independently certified and can disappear if browser storage is cleared.
+
+A previously tested public SERV response was confirmed in the operator's real browser. Automated integration/browser tests use mocks where appropriate; they are **not** a replacement for a fresh production live-inference verification.
+
+## Why SERV Reasoning belongs here
+
+TrySERV sends a constrained, source-grounded lesson question from its server to OpenServ's Chat Completions endpoint (`POST https://inference-api.openserv.ai/v1/chat/completions`). The tutor returns an explanation and one next action, with a link to an official lesson reference. A model answer can be wrong; factual learning and grading stay deterministic. User-facing prompts never need a user-supplied API key.
+
+The separate optional **operator-only** request execution lets an authorized tester make a live call with a custom validated request. Copying or validating a request never consumes SERV credits.
+
+[OpenServ SERV Reasoning API reference](https://docs.openserv.ai/serv-reasoning/api/chat-completions) · [SERV introduction](https://docs.openserv.ai/serv-reasoning/introduction)
+
+## Safety and real operating limits
+
+- The normal public tutor is explicitly opt-in for the deployment and **budget-limited**: at most **2 guest calls per approximate visitor identity per UTC day**, and **24 shared lifetime guest calls** for the pilot. Allowance is checked before calling SERV.
+- A dedicated Neon PostgreSQL budget reservation guards the shared cap across deployments. When budget storage is unavailable or exhausted, paid guest inference stops; free lessons, previews and debug missions still work. Upstream failures can consume a reservation.
+- The protected custom-request executor requires a separate private operator access code. Never share that code, the SERV API key, or database connection string.
+- The server owns the API key. The browser cannot issue arbitrary direct OpenServ requests through the free tutor.
+- No wallet signatures, payments, token rewards, verified certificates, or fictitious usage figures.
+- This is a public pilot, not a promise of unlimited free inference or production-grade commercial billing.
+- The repo is not presented as security-audited; AI output is informational, not independently guaranteed.
+
+## Architecture at a glance
+
+```text
+Browser (landing / lessons / builder / debug / docs)
+    |          free server-graded /api/check and /api/debug/check
+    +----> Node HTTP server
+             |-- deterministic grading, validated request previews
+             |-- optional /api/mentor -> atomic Neon guest-budget reservation
+             |                        -> SERV Reasoning Chat Completions
+             |-- operator-gated /api/try-serv -> authorized SERV call
+Browser localStorage: completed lesson IDs, XP, debug repair markers
 ```
 
-Visit http://localhost:3000 (landing), /learn (studio), or /try (builder).
+Node 22+, minimal front-end JavaScript/CSS, Neon for limited public guest-credit accounting, GitHub Actions for Node and Chromium tests, Render for deployment. No account database is used for learners.
 
-## Server endpoints
+## Run and test locally
 
-- `GET /`: public landing page
-- `GET /learn`: learning studio
-- `GET /try`: direct request-building lesson
-- `GET /api/lessons`: four source-linked lessons, correct answers excluded
-- `POST /api/check`: deterministic assessment / validated API request preview
-- `GET /healthz`: health and tutor-enabled status
-- `POST /api/mentor`: access-gated live SERV Reasoning tutor, using source-specific grounding, strict response validation and per-process limits
+```bash
+git clone https://github.com/Alike001/tryserv.git
+cd tryserv
+npm install
+npm run check
+npm test
+npm start
+```
 
-Request previews do **not** make paid calls. No one is asked to paste an OpenServ API key into the webpage. Local learning progress stays in the browser and does not imply an account.
+Open `http://localhost:3000`. With no inference secrets, learning and debugging remain functional. The dedicated GitHub Actions browser workflow runs real Chromium desktop/mobile journeys. Do not put tokens in public repository files or client-side JavaScript.
 
-## Source trust and safety
+See [release acceptance tasks](docs/RELEASE-ACCEPTANCE.md), [browser regression record](docs/BROWSER-RELIABILITY.md), and [product plan](docs/PRODUCT-PLAN.md) for the test boundaries and open human-testing work.
 
-- Verified teaching sources: https://docs.openserv.ai/serv-reasoning/introduction, https://docs.openserv.ai/serv-reasoning/day-one and https://docs.openserv.ai/serv-reasoning/api/chat-completions
-- A tutor request includes explicit verified lesson context, not a live web crawl.
-- An incorrect model response, failure, or timeout is shown as an error, not hidden behind a prerecorded response.
-- Inference is disabled unless both server environment secrets are set.
-- The service restricts tutor calls to 3 per client/10 minutes and 35 per process lifetime. This is temporary staging protection, not a production multi-tenant billing service.
-- No claims of official OpenServ endorsement, teaching certification, or AI explanation accuracy.
+## Evidence and limitations
 
-## Current phase / not yet done
+- Public source: [Alike001/tryserv](https://github.com/Alike001/tryserv)
+- Live Render deployment: [tryserv.onrender.com](https://tryserv.onrender.com/)
+- Automated tests: [GitHub Actions](https://github.com/Alike001/tryserv/actions)
+- Product design comparison: [NimQuest design research](docs/NIMQUEST-DESIGN-RESEARCH.md)
+- **Pending for release:** unassisted first-time learner and developer walkthroughs on the production site, human mobile/screen-reader inspection, final video and X launch post. The browser CI is not a substitute for those human checks.
 
-- [x] Polished standalone landing page with functional beginner/builder entry routes
-- [x] Four sourced interactive lessons, browser-only XP and resume, and a request-builder preview
-- [x] API backend with deterministic checks
-- [x] SERV tutor implementation with HTTP stub tests
-- [ ] Cloud live SERV call with operator-provisioned secret
-- [ ] Live usability session with a first-time learner
-- [ ] Expanded curriculum, stronger learning analytics and public billing safeguards
-- [ ] Brand and dedicated repository
+## Hackathon
 
-## Competition
+**OpenServ SERV Hackathon Edition 02 · Open Track.** The official rules require use of SERV Reasoning, a public code repository, a demo link or video, a short explanation of the project and its track, plus a public X post linked in the submission form. Deadline: **November 15, 2026 at 23:59 UTC**.
 
-OpenServ Edition 02, proposed Open Track; deadline November 15, 2026, 23:59 UTC. Public repo, working demo, short write-up and X post required:
-https://www.openserv.ai/hackathon-2
+Judging focuses on **creativity, user readiness and revenue potential**. A possible future revenue path is onboarding/training tools for developer ecosystems; this is **an unvalidated opportunity**, not traction or revenue.
 
-This Dedicated public repository; previously developed in an isolated Opsra branch.
+[Official rules](https://www.openserv.ai/hackathon-2) · [Submission preparation](docs/HACKATHON-SUBMISSION.md)
 
+## License
 
-## November 12 update — learning guidance and real SERV practice
-
-Wrong answers now give option-specific hints instead of immediately revealing the correct choice. When private tutoring is enabled, **Ask SERV to explain my mistake** prepares a context-specific question without sending a paid request automatically.
-
-The last lesson builds a request in preview mode. After passing validation, an operator can use **Run this request with SERV** with the same private demo access code to execute an actual SERV call. The page then shows response text, model, completion ID, measured latency, and token usage. **No paid call occurs when simply previewing or copying code.**
-
-The private demo access code is NOT a teacher account and not required for normal learners. It protects paid inference while testing. Both paid endpoints share a small in-process allowance (3 requests per 10 minutes per connection peer and 35 per process lifetime); these limits reset on restart and are not production-grade protection for unrestricted public access.
-
-Integration tests use mocked SERV responses. **Live hosted SERV completion remains unverified** until the operator invokes the actual endpoint using the securely configured Render secrets.
-
-## Public SERV tutor — controlled guest trial
-
-TrySERV now offers **limited, account-free SERV tutoring** on the normal learning page. Learners do not enter an instructor code or API key. The tutor reads lesson context and explains a question or misconception using a real OpenServ API call.
-
-To protect the project owner’s SERV credits, the public trial has a **durable lifetime allowance of 24 guest calls** and **2 calls per visitor/browser-network identity per UTC day**. Usage is reserved atomically in a dedicated Neon PostgreSQL database **before** the external API call. Failed provider calls still consume allowance, so repeated upstream failures cannot result in unlimited spending. Each guest is represented by a keyed hash rather than a stored raw IP or user-agent. The global limit remains effective even if a visitor changes identity or restarts Render.
-
-When the guest allowance is exhausted, the free lessons, exercises, XP and JSON/curl request preview continue working. Database outages fail closed and never silently send a paid inference. This is a deliberately small public demonstration budget, **not an unlimited commercial tutor**.
-
-The **advanced live request-builder** still requires the private demo access code, since it accepts custom system/user prompts; the code is not required for ordinary lesson tutoring. Neither the SERV API key nor the database password is exposed to the browser.
-
-Operators: the standalone Neon project is named `tryserv-public-tutor-budget`. The Render secrets `DATABASE_URL`, `SERV_API_KEY`, and `LEARN_ACCESS_TOKEN` are server-side. `PUBLIC_TUTOR_ENABLED=true` opts in to free guest access; omitting it disables guest requests safely. All guest reservations are durable; do not reset quotas without reviewing credit consumption. Live inference should be verified with a single browser request before claiming it works end to end.
-
-
-## New: Fix a SERV request — hands-on developer lab
-
-Visit [the TrySERV troubleshooting lab](https://tryserv.onrender.com/debug).
-
-Three editable API request blueprints demonstrate real, documented integration mistakes: a missing system/developer instruction, an incorrect Chat Completions endpoint, and a model not supported by the current learning lab. Edit the JSON, choose **Validate my fix**, inspect precise feedback and correct it. Each scenario links to the official SERV docs.
-
-This lab makes **zero SERV inference calls**, requires **no account or API key**, and records only the three scenario completion markers on your device. On success it generates a validated HTTP request blueprint labeled **PREVIEW ONLY**; it does **not** claim the request was executed.
-
-It complements the existing \`/try\` request builder and separate limited public SERV tutor. The advanced **Run with SERV** action in \`/try\` remains private, as it allows custom prompts and consumes credits.
-
-Current test gate: 42 tests pass on commit \`23050ab\`; Render reports the /debug release live. Browser-based visual/keyboard verification remains to be performed.
-
-See [interactive learning research](docs/INTERACTIVE-LEARNING-RESEARCH.md) for comparisons with Codecademy, Scrimba, freeCodeCamp, Postman LiftOff and MDN.
-
-
-## Product guide and discovery routes
-
-The public site now has a first-class documentation portal at https://tryserv.onrender.com/docs covering the independent product, practical learning paths, SERV integration, examples, debugging, progress, architecture, privacy, and honest operating limits.
-
-The homepage offers three functional starting points: a beginner learning path (/learn), an API request builder (/try), and an error-repair lab (/debug). Each route connects to the documentation, and the homepage includes a preview of the available guides. Practice does not require accounts or API keys; live tutoring remains a separately limited paid inference feature.
-
-Design inspiration was drawn from the interaction *patterns* visible in https://github.com/mystiquemide/nimquest (clear steps, learning cards, meaningful result review, and documentation). No NimQuest code, wording, artwork or assets were copied. See docs/NIMQUEST-DESIGN-RESEARCH.md.
-
-The finished experience must be checked in Chromium CI and with a human on mobile. The new documentation is not a substitute for OpenServ's official technical reference: https://docs.openserv.ai/ .
+[MIT](LICENSE).
