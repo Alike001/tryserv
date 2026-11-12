@@ -154,3 +154,13 @@ Work in feat/docs-and-learning-navigation:
 - Browser CI originally caught mobile navigation regressions; they were fixed before merge. Final feature branch tests passed across desktop/mobile and responsive widths. No SERV quotas, authentication, payments or scoring rules were changed.
 - Do not claim success of the production deployment until checking latest Render service srv-dbqvo68ae00c73bepbj0. No need to change old Opsra repo.
 - Next: manually inspect public homepage and /docs on the user's browser, run novice and developer acceptance walkthroughs, fix any UX blockers, and prepare submission/video assets truthfully ahead of Nov 15 23:59 UTC.
+
+
+## November 12 final-release preparation — PR #7 merged
+
+- The NimQuest-inspired docs/navigation release remains merged as PR #6; its production deployment was verified LIVE on Render at commit `224edb15fed2de5642a5d5cfe494ed3a023baa24`.
+- Follow-up PR #7 https://github.com/Alike001/tryserv/pull/7 **MERGED** as `8783d5efb2d2e9ba34a78a2803575c460a569115` after GitHub Node CI, security and real Chromium browser jobs all reported SUCCESS (GitHub Actions browser workflow run 43320703998). Adds a keyboard-accessible landing-page skip link, Playwright regression, fully current README, and `docs/HACKATHON-SUBMISSION.md` with track description, video storyboard, honest claims and X-post draft.
+- Verified OpenServ official Hackathon Edition 02 rules Nov 12: Open Track requires SERV Reasoning, public repo, demo/video, short write-up, X post and Typeform submission. Deadline **November 15, 2026 23:59 UTC** (November 16 00:59 Africa/Lagos). Criteria: creativity, user readiness, revenue potential. Official source https://www.openserv.ai/hackathon-2 .
+- No source or artwork copied from NimQuest. No quotas, auth, app server, AI spending or Opsra code changed in PR #7. Guest tutor is still capped at 2/visitor/day and 24 shared calls lifetime, with private operator-only custom execution.
+- **Remaining:** verify freshest Render deployment of main (including this handoff docs commit); perform real unassisted novice and developer acceptance walkthroughs and human mobile/screen-reader audit. Take actual production screenshots, record/upload a truthful demo, publish X post and fill submission form. Neither human testing nor submission is complete; do not infer it from passing automation.
+- This is the current cross-chat resume checkpoint; use `docs/HACKATHON-SUBMISSION.md`, `docs/RELEASE-ACCEPTANCE.md`, and `docs/PRODUCT-PLAN.md`. Do NOT alter `Alike001/opsra`.
