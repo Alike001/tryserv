@@ -34,6 +34,8 @@ export async function answerWithServ({lessonId,question,apiKey,model="gpt-5.4-mi
            official_reference:lesson.source,learner_question:question.trim()
          })}
        ],
+       // Fixed upper bound so a guest cannot purchase an unbounded completion.
+       max_completion_tokens:1200,
        response_format:{type:"json_object"}
      }),
      signal:controller.signal
