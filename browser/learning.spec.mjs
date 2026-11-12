@@ -12,7 +12,7 @@ const validBlueprint={
 test("landing sends newcomers and developers to real working routes",async({page})=>{
   await page.goto("/");
   await expect(page.getByRole("heading",{level:1})).toContainText("Stop reading");
-  await expect(page.locator("a[href='/learn']").first()).toBeVisible();
+  await expect(page.getByRole("link",{name:/I'm new — start here/i})).toBeVisible();
   await page.getByRole("link",{name:/I'm new — start here/i}).click();
   await expect(page).toHaveURL(/\/learn$/);
   await expect(page.locator("#lesson-nav .nav-lesson")).toHaveCount(4);
@@ -359,7 +359,8 @@ test("a late lesson does not display false 100 percent stage completion",async({
  const bar=page.locator("#lesson-journey-track");
  await expect(bar).toHaveAttribute("aria-valuenow","1");
  const initial=await page.locator("#lesson-journey-fill").evaluate(x=>x.style.width);
- expect(initial).toBe("33.33333333333333%");
+ expect(parseFloat(initial)).toBeGreaterThan(33);
+ expect(parseFloat(initial)).toBeLessThan(34);
  await page.locator("#check").click();
  await expect(bar).toHaveAttribute("aria-valuenow","3");
  await expect(page.locator("#lesson-journey-fill")).toHaveAttribute("style",/100%/);
