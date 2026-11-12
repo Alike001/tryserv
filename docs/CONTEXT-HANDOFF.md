@@ -86,3 +86,13 @@ The user confirmed https://tryserv.onrender.com/debug visually loads and asked t
 - Added GET /api/tutor/allowance reading Neon counters without consuming credits or reserving an allowance. The public tutor UI shows visitor/day and shared remaining. Free questions are disabled if the budget is exhausted or status check fails. The actual paid POST retains atomic reservation and protection; no change to budgets (2/visitor/day, 24 lifetime).
 - Added tests for quota status read-only/no SERV calls, exhaustion, DB failure and summary derivation. Inspect GitHub CI and Render before any LIVE claim.
 - Next milestone: real browser walkthrough all four lessons plus debugging repair and tutor exhaustion flow; then final UI/UX review and submission. No laptop Docker required.
+
+## Nov 12 verified release — learning journey and tutor allowance
+- Feature PR #2 https://github.com/Alike001/tryserv/pull/2 was merged into main as commit `579c658b6950d26bbbc6526a04b3d50884df3558`.
+- GitHub CI run https://github.com/Alike001/tryserv/actions/runs/43295096842 completed successfully.
+- Render deploy `dep-dbr1jbm7bikc73cht8gg` reported LIVE; deployment logs showed 47 tests, 47 pass, 0 fail and server started on port 10000.
+- Learning studio shows a truthful summary once all 4 lessons are finished (80 on-device XP). /debug leads through any remaining missions, then navigates to the learning summary. Debug repairs are not extra XP.
+- Read-only GET /api/tutor/allowance returns today's available guest requests and remaining total shared quota, based on existing Neon counters. It never calls SERV or reserves credits. Learners see availability before asking; paid requests continue to require atomic reservation.
+- Existing limits remain 2 guest questions per approximate visitor/day and 24 total guest calls. No budget increase or price assertion was made.
+- Browser interaction across all new states is NOT yet manually verified. User screenshot confirmed prior /debug first challenge; ask for full path test next.
+- Next priorities: independent novice and developer walkthrough, mobile/keyboard browser regression, source/lesson review and final demo/submission. Existing old Opsra repository remains untouched.
