@@ -10,6 +10,7 @@
 <script type="module" src="/app.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#studio-content">Skip to lesson content</a>
 <div class="shell">
   <aside class="sidebar">
     <a class="brand" href="/" aria-label="TrySERV home">
@@ -29,10 +30,10 @@
       <a href="/docs">TrySERV guides <span aria-hidden="true">↗</span></a><a href="https://docs.openserv.ai/llms.txt" target="_blank" rel="noopener noreferrer">Official documentation <span aria-hidden="true">↗</span></a>
     </div>
   </aside>
-  <main class="main">
+  <main class="main" id="studio-content" tabindex="-1">
     <header class="topbar">
       <span class="breadcrumb">LEARNING STUDIO <span aria-hidden="true">/</span> <span id="current-crumb">OVERVIEW</span></span>
-      <div class="toplinks"><a href="/">← Home</a><a href="/debug">Debug lab ↗</a><a href="/docs">TrySERV guides ↗</a><span class="live-indicator"><i></i> Guided practice</span><a href="https://console.openserv.ai/" target="_blank" rel="noopener noreferrer">OpenServ console ↗</a></div>
+      <div class="toplinks"><a href="/">← Home</a><a href="/debug">Debug lab ↗</a><a href="/docs">Guides ↗</a><a href="#tutor-panel">SERV coach ↓</a><span class="live-indicator"><i></i> Guided practice</span><a href="https://console.openserv.ai/" target="_blank" rel="noopener noreferrer">OpenServ console ↗</a></div>
     </header>
     <div class="maincontent">
       <section class="intro" id="intro">
@@ -45,6 +46,11 @@
           <button class="secondary" id="jump-build">I already build — jump to code</button>
         </div>
         <div class="features-inline"><span>✓ No signup</span><span>✓ Real documentation</span><span>✓ Checkable exercises</span></div>
+        <div class="journey-visual" aria-label="How your learning journey works">
+          <div><span class="journey-number">01</span><strong>Understand</strong><small>Short, sourced ideas</small></div>
+          <div><span class="journey-number">02</span><strong>Practice</strong><small>Get useful feedback</small></div>
+          <div><span class="journey-number">03</span><strong>Build</strong><small>Leave with a request</small></div>
+        </div>
         <p id="resume-hint" class="resume-hint" hidden>Your completed lessons and XP are saved on this browser.</p>
         <section id="completion-panel" class="completion-panel" hidden aria-label="Completed learning path">
           <div class="eyebrow">YOUR LEARNING SUMMARY</div>
@@ -58,18 +64,23 @@
         </section>
       </section>
       <section class="learning" id="learning" hidden>
+        <div class="lesson-journey" aria-label="Lesson progress">
+          <div class="lesson-journey-head"><span id="lesson-count">LESSON 01 OF 04</span><span id="lesson-state">Ready to learn</span></div>
+          <div class="lesson-journey-track" role="progressbar" aria-label="Current lesson number" aria-valuemin="0" aria-valuemax="4" aria-valuenow="1" id="lesson-journey-track"><span id="lesson-journey-fill"></span></div>
+          <div class="lesson-stages" aria-label="Lesson stages"><span class="stage active" data-stage="read"><b>01</b> Understand</span><span class="stage" data-stage="check"><b>02</b> Practice</span><span class="stage" data-stage="apply"><b>03</b> Apply</span></div>
+        </div>
         <div class="lesson-top"><div class="eyebrow" id="lesson-meta">LESSON 01 · UNDERSTAND</div><span class="time" id="lesson-time">3 MIN</span></div>
         <h1 id="lesson-title"></h1>
         <p class="lesson-lead" id="lesson-summary"></p>
         <div class="lesson-content">
-          <div class="content-eyebrow">THE IDEA</div>
+          <div class="content-eyebrow">01 / THE CORE IDEA</div>
           <h2 id="lesson-takeaway"></h2>
           <p id="lesson-detail"></p>
           <a id="lesson-source" target="_blank" rel="noopener noreferrer" href="https://docs.openserv.ai/serv-reasoning/introduction">Verify in official docs ↗</a>
         </div>
         <div class="exercise">
-          <div class="exercise-head"><span class="exercise-icon">✦</span><span>TRY IT YOURSELF</span></div>
-          <h2 id="challenge"></h2>
+          <div class="exercise-head"><span class="exercise-icon">✦</span><span>02 / TRY IT YOURSELF</span><span class="exercise-chip">Checked on the server</span></div>
+          <h2 id="challenge"></h2><p id="practice-guide" class="practice-guide">Choose the best answer, then check why it works. No SERV credits are used.</p>
           <div id="answers" class="choices" role="group" aria-label="Choose an answer"></div>
           <form id="builder" hidden>
             <label for="model">Model</label>
@@ -103,10 +114,16 @@
     </div>
   </main>
   <aside class="mentor" id="tutor-panel">
-    <div class="mentor-head"><div class="mentor-symbol">✳</div><div><strong>Your learning companion</strong><span>Powered by SERV Reasoning</span></div></div>
-    <p class="mentor-intro">Stuck on a concept? Get a focused explanation connected to the lesson you're working on.</p>
+    <div class="mentor-head"><div class="mentor-symbol">✳</div><div><strong>SERV learning coach</strong><span>Context-aware help • real SERV Reasoning</span></div></div>
+    <p class="mentor-intro">Get unstuck without skipping the learning. Choose a useful starting question or write your own. Preparing a question is free—only pressing <strong>Ask SERV tutor</strong> sends an optional live request.</p>
     <div class="mentor-context"><span>CURRENT TOPIC</span><strong id="mentor-topic">Getting started</strong></div>
-    <label for="mentor-question">What would you like clarified?</label>
+    <div class="mentor-prompt-label">START WITH A QUESTION</div>
+    <div class="mentor-prompts" role="group" aria-label="Suggested coaching questions">
+      <button type="button" data-coach="simplify">Explain it simply</button>
+      <button type="button" data-coach="example">Show an example</button>
+      <button type="button" data-coach="decision">When should I use it?</button>
+    </div>
+    <label for="mentor-question">Your question to SERV</label>
     <textarea id="mentor-question" rows="5" maxlength="400" placeholder="For example: why does SERV need a system prompt?"></textarea>
     <div id="mentor-gate" class="mentor-gate">Checking tutor availability…</div>
     <div id="mentor-allowance" class="mentor-allowance" role="status" aria-live="polite" hidden></div>
@@ -114,7 +131,7 @@
     <input id="mentor-access" type="password" autocomplete="off" placeholder="Demo access code — not your SERV API key" hidden>
     <button id="ask-mentor" type="button" class="mentor-button" disabled>Ask SERV tutor <span aria-hidden="true">↗</span></button>
     <div id="mentor-response" class="mentor-response" aria-live="polite" hidden></div>
-    <div class="mentor-foot">Free tutor questions depend on a shared trial allowance. Your lesson progress remains available even when the tutor is exhausted. Responses may be mistaken; verify the linked source.</div>
+    <div class="mentor-foot"><strong>Know what happens:</strong> This is a genuine OpenServ inference request, not a scripted answer. The response shows model, completion ID and latency when returned. Shared guest credits are limited; practice always works when they're gone. Verify AI claims using the linked source.</div>
   </aside>
 </div>
 <footer class="mobile-footer">TrySERV is an independent learning companion. <a href="/docs">Product guides ↗</a> · <a href="https://docs.openserv.ai/" target="_blank" rel="noopener noreferrer">Official docs ↗</a></footer>
