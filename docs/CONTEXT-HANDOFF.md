@@ -54,3 +54,14 @@ The instructor access code is NOT a teacher account: LEARN_ACCESS_TOKEN is a sep
 Latest feature commits on https://github.com/Alike001/tryserv (main): non-spoiler, per-choice wrong-answer hints; a button to prefill a focused SERV tutoring question; measured tutor latency/usage; optional actual paid SERV request execution in lesson 4, distinct from request preview; shared per-process paid-call quota (3 per 10 minutes per connection peer, maximum 35 per process lifetime); integration tests with simulated SERV replies.
 
 Next: verify latest GitHub CI and Render (srv-dbqvo68ae00c73bepbj0) live. Operator tests ONE real SERV call at https://tryserv.onrender.com/learn or /try using only their private demo access code. Collect completion ID, model and latency; do not claim actual completion before verifying. Fix any real API error, then assess learner task success and mobile/browser UX. Previous unrelated Opsra repo must stay untouched.
+
+## November 12 follow-up — public no-code tutor
+
+- User asked to remove the private instructor code so anyone can use the SERV tutor, while focusing on functionality before visual polish.
+- IMPLEMENTED: normal `/api/mentor` and learning studio are accessible without a code when `PUBLIC_TUTOR_ENABLED=true` and DATABASE_URL+SERV_API_KEY+LEARN_ACCESS_TOKEN exist. The advanced `/api/try-serv` remains guarded by the private demo access code.
+- New dedicated free Neon project: `tryserv-public-tutor-budget`, id `autumn-field-84765264` (Frankfurt). Created tables `tryserv_guest_budget`, `tryserv_guest_daily` and atomic function `tryserv_reserve_guest(...)`.
+- Server protects owner credits with persistent hard total budget 24 guest calls and 2 per visitor identity/day. Actor id stored as HMAC using server SERV_API_KEY (not raw visitor IP). Spent attempts are reserved before inference. Database outages or exhausted credits fail closed. No unlimited inference.
+- DATABASE_URL was added privately to the existing Render service srv-dbqvo68ae00c73bepbj0. `PUBLIC_TUTOR_ENABLED=true` was enabled; verify latest deployment and public browser first.
+- GitHub source uses pinned `@neondatabase/serverless` 1.2.0, installed in the cloud build, and automated tests verify fail-closed guest access and owner-only custom request lab.
+- Real hosted SERV answer is not yet independently confirmed. In a follow-up, test one guest question from https://tryserv.onrender.com/learn, then check Render logs for `tryserv.serv_result` (does not include prompt or secret) and Neon SQL `SELECT used FROM tryserv_guest_budget WHERE id=1`. Never reveal API key, database URL or private demo code.
+- Existing feature roadmap: beginner-to-builder lessons, source-backed corrections, XP, guest tutor, private real request lab, mobile/keyboard/browser checks, hackathon demo. Leave Opsra untouched.
