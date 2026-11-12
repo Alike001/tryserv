@@ -105,3 +105,19 @@ Source of truth for next chats: docs/CONTEXT-HANDOFF.md. Old ServSteps preview e
 - [ ] Prove one real hosted public SERV completion with a redacted completion ID and latency. Simulated upstream test responses are not proof of real inference.
 - [ ] Assess public demand and credit economics, and implement a refill/spend policy before exceeding the small lifetime cap.
 - [ ] Conduct mobile and desktop usability tests; defer larger visual overhaul until functional flow is stable.
+
+
+## Next milestone update — interactive practice lab (12 November)
+
+- [x] Research actual learning mechanics of Codecademy, Scrimba, freeCodeCamp, MDN and Postman LiftOff. Write up reusable interaction patterns, not copied content/code.
+- [x] Add \`/debug\`: three editable SERV Chat Completions request repair missions, clear server-validated issue feedback, reset, copy, progress and official source links.
+- [x] Keep repair missions free, no key, no paid SERV calls, no false success assertions.
+- [x] Wire the troubleshooting lab into landing and learning navigation.
+- [x] Correct outdated private-access wording in the ordinary public tutor interface.
+- [x] PR #1 merged after green CI: https://github.com/Alike001/tryserv/pull/1. Render reports commit \`23050ab\` live and 42 automated tests passing.
+- [ ] Verify \`/debug\` visually in desktop and mobile browser; don't conflate HTTP-route unit tests with a real browser usability check.
+- [ ] Improve lesson-to-debug-lab handoff and add practical exercise review, without new unnecessary product categories.
+- [ ] Show transparent public tutor usage/remaining budget; review actual SERV cost before lifting the 2/day quota.
+- [ ] Test a new learner end-to-end and prepare final submission.
+
+Canonical research: [docs/INTERACTIVE-LEARNING-RESEARCH.md](INTERACTIVE-LEARNING-RESEARCH.md).
