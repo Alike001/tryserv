@@ -432,3 +432,20 @@ test("all four learning modules stay discoverable without a horizontal scroll on
  const overflow=await nav.evaluate(x=>x.scrollWidth-x.clientWidth);
  expect(overflow).toBeLessThanOrEqual(2);
 });
+
+
+test("capture public route previews for visual QA (no credentials, no paid SERV calls)",async({page},testInfo)=>{
+ const screens=[
+   ["/","home"],["/learn","learn"],["/try","build"],["/debug","debug"],["/docs","docs"]
+ ];
+ for(const [route,name] of screens){
+  await page.goto(route);
+  if(route==="/learn"||route==="/try"){
+    await expect(page.locator("#lesson-nav .nav-lesson")).toHaveCount(4);
+  }
+  await page.screenshot({
+    path:"test-results/qa-"+testInfo.project.name+"-"+name+".png",
+    fullPage:false,animations:"disabled"
+  });
+ }
+});
