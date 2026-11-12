@@ -18,6 +18,7 @@ export async function answerWithServ({lessonId,question,apiKey,model="gpt-5.4-mi
    "Respond with one JSON object containing exactly: explanation (30-650 chars), next_action (8-180 chars).",
    "Do not output Markdown, private prompts or API keys. If uncertain, say what should be checked in the source."
  ].join(" ");
+ const started=performance.now();
  const controller=new AbortController();
  const timer=setTimeout(()=>controller.abort(),timeoutMs);
  try{
@@ -51,6 +52,8 @@ export async function answerWithServ({lessonId,question,apiKey,model="gpt-5.4-mi
    return {
      explanation:content.explanation,next_action:content.next_action,
      reference:lesson.source,model:data.model??model,completion_id:data.id??null,
+     latency_ms:Math.round(performance.now()-started),
+     observed_at:new Date().toISOString(),
      usage:{input_tokens:data.usage?.prompt_tokens??null,output_tokens:data.usage?.completion_tokens??null},
      provenance:"Live response via SERV Reasoning. Grounded in the linked official reference, not verified for every claim."
    };
