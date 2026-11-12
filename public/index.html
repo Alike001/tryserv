@@ -71,6 +71,7 @@
           </form>
           <div class="exercise-actions"><button class="primary" id="check" type="button">Check my answer <span aria-hidden="true">→</span></button><button class="next-button" id="next" type="button" hidden>Continue to next lesson →</button></div>
           <div id="feedback" class="feedback" role="status" aria-live="polite" hidden></div>
+          <div class="help-action" id="help-action" hidden><button type="button" id="ask-about-answer" class="help-button">Ask SERV to explain my mistake ↗</button><span>Opens a lesson-specific question. You decide whether to send a paid request.</span></div>
           <div id="request-preview" class="request-preview" hidden>
             <div class="request-head"><strong>Your valid API request</strong><span>PREVIEW · NOT EXECUTED</span></div>
             <p>Copy the JSON into <code>request.json</code>, then run the command below in your own terminal with <code>SERV_API_KEY</code> set securely.</p>
@@ -83,18 +84,18 @@
       </section>
     </div>
   </main>
-  <aside class="mentor">
+  <aside class="mentor" id="tutor-panel">
     <div class="mentor-head"><div class="mentor-symbol">✳</div><div><strong>Your learning companion</strong><span>Powered by SERV Reasoning</span></div></div>
     <p class="mentor-intro">Stuck on a concept? Get a focused explanation connected to the lesson you're working on.</p>
     <div class="mentor-context"><span>CURRENT TOPIC</span><strong id="mentor-topic">Getting started</strong></div>
     <label for="mentor-question">What would you like clarified?</label>
     <textarea id="mentor-question" rows="5" maxlength="400" placeholder="For example: why does SERV need a system prompt?"></textarea>
     <div id="mentor-gate" class="mentor-gate">Checking tutor availability…</div>
-    <label for="mentor-access" id="mentor-access-label" hidden>Instructor access code</label>
-    <input id="mentor-access" type="password" autocomplete="off" placeholder="Access code for live tutoring" hidden>
+    <label for="mentor-access" id="mentor-access-label" hidden>Private demo access code</label>
+    <input id="mentor-access" type="password" autocomplete="off" placeholder="Demo access code — not your SERV API key" hidden>
     <button id="ask-mentor" type="button" class="mentor-button" disabled>Ask SERV tutor <span aria-hidden="true">↗</span></button>
     <div id="mentor-response" class="mentor-response" aria-live="polite" hidden></div>
-    <div class="mentor-foot">Official links are included with every lesson. AI explanations can be mistaken; check the cited source.</div>
+    <div class="mentor-foot">This private access code protects SERV API credits during testing. Free lessons work without it. Tutor explanations can be mistaken; check the cited source.</div>
   </aside>
 </div>
 <footer class="mobile-footer">TrySERV is an independent learning companion. <a href="https://docs.openserv.ai/" target="_blank" rel="noopener noreferrer">Official docs ↗</a></footer>
