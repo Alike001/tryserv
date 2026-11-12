@@ -8,17 +8,19 @@
 <script type="module" src="/debug.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#debug-main">Skip to debug lab</a>
 <header class="site-header"><a class="brand" href="/">t<span>.</span> <strong>tryserv</strong></a><nav aria-label="Navigation"><a href="/">Home</a><a href="/learn">Learning studio</a><a href="/try">Build a request</a><a href="/docs">Docs</a></nav></header>
-<main class="page">
+<main class="page" id="debug-main" tabindex="-1">
  <section class="intro">
    <div class="eyebrow">PRACTICAL DEVELOPER LAB · NO SIGNUP</div>
    <h1>Fix a broken<br><em>SERV request.</em></h1>
    <p>Real integrations fail for specific reasons. Repair three small request blueprints, check each change against official OpenServ rules, and leave with a valid request structure.</p>
    <div class="qualifiers"><span>✓ No keys or accounts</span><span>✓ No SERV credits spent</span><span>✓ Checkable corrections</span></div>
+   <div class="debug-journey" aria-label="Three steps to repair a request"><span><b>01</b> Read the issue</span><span><b>02</b> Edit the request</span><span><b>03</b> Verify the fix</span></div>
  </section>
  <div class="workbench">
   <aside class="sidebar">
-    <div class="sidebar-title">DEBUGGING MISSIONS</div>
+    <div class="sidebar-title">YOUR REPAIR MISSIONS</div>
     <div class="progress"><span id="progress">0 / 3 repaired</span><div class="track"><div id="fill"></div></div><small>Progress is saved on this browser only.</small><p id="debug-complete" hidden>All three repairs completed. Return to the learning studio for your full progress summary.</p></div>
     <nav id="cases" aria-label="Troubleshooting cases"></nav>
     <a class="back-link" href="/learn">← Return to learning</a>
@@ -28,7 +30,7 @@
     <h2 id="title">Preparing the lab…</h2>
     <p class="symptom" id="symptom"></p>
     <p class="task" id="task"></p>
-    <div class="editor-title"><strong>REQUEST BLUEPRINT</strong><span>EDITABLE JSON · NOT EXECUTED</span></div>
+    <div class="editor-title"><strong>REQUEST BLUEPRINT</strong><span>EDITABLE JSON · NEVER EXECUTED HERE</span></div>
     <label for="editor" class="editor-label">Find the issue and edit the configuration</label>
     <textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" rows="15" aria-describedby="privacy-note"></textarea>
     <p id="privacy-note" class="privacy">This is a learning blueprint, not a direct API request body. Never paste API keys, passwords, or personal information here. The checker makes no request to OpenServ.</p>
