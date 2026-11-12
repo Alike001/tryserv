@@ -19,7 +19,7 @@ export default defineConfig({
     {name:"mobile-chromium",use:{...devices["Desktop Chrome"],viewport:{width:375,height:812},isMobile:true,hasTouch:true}}
   ],
   webServer:{
-    command:"node index.mjs",
+    command:"node ../index.mjs",
     url:"http://127.0.0.1:3000/healthz",
     reuseExistingServer: !process.env.CI,
     timeout:30000,
