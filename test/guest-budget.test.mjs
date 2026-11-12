@@ -2,14 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createApp} from "../server.mjs";
 import {GUEST_GLOBAL_LIFETIME_LIMIT,GUEST_PER_ACTOR_DAILY_LIMIT,
-  guestActorHash,guestTrialConfigured,reserveGuestTrial,guestFailure} from "../guest-budget.mjs";
+  guestActorHash,guestTrialConfigured,reserveGuestTrial,getGuestTrialStatus,guestFailure} from "../guest-budget.mjs";
 
 const key="example-secret-api-key-only-for-tests";
 const access="demo-owner-testing-code";
 const env={SERV_API_KEY:key,LEARN_ACCESS_TOKEN:access,DATABASE_URL:"postgresql://example.invalid/test",PUBLIC_TUTOR_ENABLED:"true"};
 
-async function withApp(config,fn,fetchImpl=fetch,guestReserve){
- const server=createApp({env:config,fetchImpl,guestReserve});
+async function withApp(config,fn,fetchImpl=fetch,guestReserve,guestStatus){
+ const server=createApp({env:config,fetchImpl,guestReserve,guestStatus});
  await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));
  try{await fn("http://127.0.0.1:"+server.address().port);}
  finally{await new Promise(resolve=>server.close(resolve));}
@@ -128,4 +128,42 @@ test("without guest flag a public caller is denied and owner still has private d
   assert.equal(status.public_tutor_enabled,false);
   assert.equal(used,0);
  },async()=>{used++;return serv();},async()=>({allowed:true,reason:"reserved",remaining:23}));
+});
+
+test("read-only allowance shows today's remaining questions without spending credits",async()=>{
+ const req={headers:{"x-forwarded-for":"203.0.113.8","user-agent":"LessonBrowser"},socket:{remoteAddress:"127.0.0.1"}};
+ let calls=0;
+ const query=async(_db,actor)=>{calls++;assert.match(actor,/^[0-9a-f]{64}$/);return [{global_used:"1",actor_used:"1"}];};
+ const status=await getGuestTrialStatus({req,env,query});
+ assert.deepEqual(status,{enabled:true,available:true,remaining_today:1,remaining_total:23,daily_limit:2,status:"available"});
+ assert.equal(calls,1);
+});
+test("read-only quota status fails closed when exhausted or unavailable",async()=>{
+ const req={headers:{},socket:{remoteAddress:"127.0.0.1"}};
+ const statuses=[
+  await getGuestTrialStatus({req,env,query:async()=>[{global_used:"24",actor_used:"1"}]}),
+  await getGuestTrialStatus({req,env,query:async()=>[{global_used:"1",actor_used:"2"}]}),
+  await getGuestTrialStatus({req,env,query:async()=>{throw Error("db down");}}),
+  await getGuestTrialStatus({req,env:{...env,PUBLIC_TUTOR_ENABLED:"false"}})
+ ];
+ assert.deepEqual(statuses.map(x=>x.status),["trial_exhausted","daily_exhausted","unavailable","disabled"]);
+ assert.ok(statuses.every(x=>x.available===false&&x.remaining_today===0));
+});
+test("GET /api/tutor/allowance never calls SERV or reserves a guest credit",async()=>{
+ let servCalls=0,guestReserves=0,statusCalls=0;
+ await withApp(env,async url=>{
+  const response=await fetch(url+"/api/tutor/allowance");
+  assert.equal(response.status,200);
+  const body=await response.json();
+  assert.equal(body.available,true);
+  assert.equal(body.remaining_today,2);
+  assert.equal(body.remaining_total,23);
+  assert.ok(!JSON.stringify(body).includes(key));
+  assert.ok(!JSON.stringify(body).includes(env.DATABASE_URL));
+  assert.equal(servCalls,0);
+  assert.equal(guestReserves,0);
+  assert.equal(statusCalls,1);
+ },async()=>{servCalls++;throw Error("should not call SERV");},
+ async()=>{guestReserves++;throw Error("should not reserve");},
+ async()=>{statusCalls++;return {enabled:true,available:true,remaining_today:2,remaining_total:23,daily_limit:2,status:"available"};});
 });

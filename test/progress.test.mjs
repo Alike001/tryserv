@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {LESSON_IDS,XP_PER_LESSON,normalizeProgress,loadProgress,pointsFor,award} from "../public/progress.mjs";
+import {LESSON_IDS,XP_PER_LESSON,normalizeProgress,loadProgress,pointsFor,award,summaryProgress,debugProgressCount} from "../public/progress.mjs";
 
 test("only known lesson IDs are counted",()=>{
  assert.deepEqual(normalizeProgress(["decide","unknown","ecosystem","decide"]),["ecosystem","decide"]);
@@ -25,4 +25,24 @@ test("progress is resilient to invalid storage and duplicate IDs",()=>{
  assert.deepEqual(loadProgress("not valid JSON"),[]);
  assert.deepEqual(loadProgress('["ecosystem","ecosystem","unknown"]'),["ecosystem"]);
  assert.deepEqual(loadProgress('"misleading-string"'),[]);
+});
+
+test("four passed lessons give an honest summary with the separate debugging track",()=>{
+ const lessons=[...LESSON_IDS];
+ const none=summaryProgress(lessons,[]);
+ assert.equal(none.learningPathComplete,true);
+ assert.equal(none.practiceComplete,false);
+ assert.equal(none.lessonsCompleted,4);
+ assert.equal(none.repairsCompleted,0);
+ assert.equal(none.points,80);
+ const debug=["wrong-endpoint","missing-instructions","unknown-model"];
+ const complete=summaryProgress(lessons,debug);
+ assert.equal(complete.practiceComplete,true);
+ assert.equal(complete.repairsCompleted,3);
+ assert.equal(complete.points,80);
+});
+test("debug mission progress ignores duplicates and unknown names",()=>{
+ assert.equal(debugProgressCount(["wrong-endpoint","wrong-endpoint","fake"]),1);
+ assert.equal(debugProgressCount("wrong-endpoint"),0);
+ assert.equal(summaryProgress(["ecosystem"],["wrong-endpoint"]).learningPathComplete,false);
 });

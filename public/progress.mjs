@@ -17,3 +17,22 @@ export function award(progress,id){
   const completed=normalizeProgress([...current,id]);
   return {completed,awarded,points:pointsFor(completed)};
 }
+
+export const DEBUG_CASE_IDS=Object.freeze(["missing-instructions","wrong-endpoint","unknown-model"]);
+export function debugProgressCount(value){
+ const list=Array.isArray(value)?value:[];
+ return DEBUG_CASE_IDS.filter(id=>list.includes(id)).length;
+}
+export function summaryProgress(lessons,debugCases){
+ const lessonsCompleted=normalizeProgress(lessons).length;
+ const repairsCompleted=debugProgressCount(debugCases);
+ return {
+  lessonsCompleted,
+  lessonsTotal:LESSON_IDS.length,
+  repairsCompleted,
+  repairsTotal:DEBUG_CASE_IDS.length,
+  learningPathComplete:lessonsCompleted===LESSON_IDS.length,
+  practiceComplete:repairsCompleted===DEBUG_CASE_IDS.length,
+  points:lessonsCompleted*XP_PER_LESSON
+ };
+}

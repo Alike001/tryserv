@@ -30,3 +30,13 @@
 #live-try-panel label{display:block;margin:14px 0 8px;font-size:12px;font-weight:700}
 #try-access{max-width:100%}
 @media(max-width:620px){.live-run{width:100%}}
+
+/* Learning completion summary and read-only credit allowance */
+.completion-panel{margin-top:30px;padding:26px;border:1px solid #cddce9;border-radius:15px;background:#fff}
+.completion-panel h2{font-size:23px;line-height:1.35;letter-spacing:-.5px;margin:12px 0}
+.completion-panel p{color:#637b8e;line-height:1.75;font-size:13px}
+.completion-panel .practice-progress{font-weight:750;color:#3861bd}
+.completion-panel .entry-actions{margin-top:18px}
+.completion-panel .entry-actions a{text-decoration:none}
+.mentor-allowance{background:#fff;border:1px solid #d5e5ed;border-radius:10px;margin:12px 0;padding:11px 12px;line-height:1.7;color:#38657a;font-size:11px}
+@media(max-width:620px){.completion-panel{padding:19px}.completion-panel .entry-actions{align-items:stretch}}

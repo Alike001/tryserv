@@ -190,7 +190,10 @@ test("dedicated landing page and both learning entry routes serve usable HTML",a
    assert.match(homeHtml,/independent learning companion/i);
    const learn=await fetch(url+"/learn");
    assert.equal(learn.status,200);
-   assert.match(await learn.text(),/YOUR LEARNING PATH/);
+   const studio=await learn.text();
+   assert.match(studio,/YOUR LEARNING PATH/);
+   assert.match(studio,/id="completion-panel"/);
+   assert.match(studio,/id="mentor-allowance"/);
    const builder=await fetch(url+"/try");
    assert.equal(builder.status,200);
    assert.match(await builder.text(),/Build your first valid request|id="builder"/);
