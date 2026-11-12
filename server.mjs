@@ -30,7 +30,7 @@ export function createApp({env=process.env,fetchImpl=fetch}={}){
   res.setHeader("X-Content-Type-Options","nosniff");
   res.setHeader("X-Frame-Options","DENY");
   res.setHeader("Referrer-Policy","no-referrer");
-  res.setHeader("Content-Security-Policy","default-src 'none'; style-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; frame-ancestors 'none'");
+  res.setHeader("Content-Security-Policy","default-src 'none'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; img-src 'self'; base-uri 'none'; frame-ancestors 'none'");
   const url=new URL(req.url??"/","http://localhost");
   const pathname=url.pathname;
   if(req.method==="GET"&&pathname==="/healthz")
