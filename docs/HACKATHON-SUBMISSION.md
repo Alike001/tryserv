@@ -1,6 +1,6 @@
 # TrySERV — OpenServ Edition 02 submission pack
 
-**Status:** Draft, not submitted. Last reviewed November 12, 2026 (Africa/Lagos).
+**Status:** Draft, not submitted. Last reviewed November 13, 2026 (Africa/Lagos).
 
 **Track:** Open Track (must use SERV Reasoning)
 
@@ -21,15 +21,15 @@
 
 **Name:** TrySERV
 
-**One-line pitch:** Learn OpenServ by doing: complete checkable lessons, fix real API mistakes, and ask a bounded SERV Reasoning tutor for help.
+**One-line pitch:** Learn OpenServ by doing: validate real API mistakes, ask SERV Reasoning why they matter, and apply your own verified repair.
 
 **Project description:**
 
-TrySERV is an independent interactive learning companion for OpenServ. Instead of sending beginners into long reference docs or offering a general-purpose chatbot, TrySERV gives them a path to a real, valid SERV request. Four server-graded lessons explain agents, workflows and reasoning. A request builder produces correctly structured JSON/curl previews; a debugging lab gives three editable integration repair missions. A limited live SERV Reasoning tutor can explain a learner's misconception using the relevant official source. Lesson correctness, progress and request-shape validation are deterministic and never delegated to the model.
+TrySERV is an independent interactive learning companion for OpenServ. Instead of sending beginners into long reference docs or offering a general-purpose chatbot, TrySERV gives them a path to a real, valid SERV request. Four server-graded lessons explain agents, workflows and reasoning. A request builder produces correctly structured JSON/curl previews; a debugging lab gives three editable integration repair missions. A limited SERV Reasoning tutor can explain a learner's misconception or why a server-validated API request failed, using verified scenario details and an official reference. Lesson correctness, progress and request-shape validation are deterministic and never delegated to the model.
 
 **How SERV is used:**
 
-TrySERV's backend calls OpenServ's Chat Completions API for constrained lesson-specific tutoring and returns provider model/completion metadata, latency, and usage alongside a source link and next action. This is the AI-powered capability; it is separate from free deterministic quizzes and safe request previews. Visitor calls are restricted by a durable Neon-backed 2/day, 24-total guest pilot budget. The owner-only custom request runner is separately gated. The provider was previously observed responding in the operator's public browser; record a fresh redacted live demo if the shared budget allows.
+TrySERV's backend calls OpenServ's Chat Completions API for constrained lesson-specific tutoring AND opt-in diagnostic explanations after deterministic request validation. The debug lab sends only pre-authored scenario context and known validator field labels—not the editor's raw JSON. A successful SERV response returns model, completion ID, measured latency, usage, an official-source link and a next action. The learner applies and revalidates the repair; SERV neither authorizes execution nor grades progress. Visitor calls are restricted by a durable Neon-backed 2/day, 24-total guest pilot budget. The owner-only custom request runner is separately gated. The provider was previously observed responding in the operator's public browser; record a fresh redacted live demo if the shared budget allows.
 
 **What was built for the hackathon:**
 
@@ -45,13 +45,15 @@ A developer-onboarding product that could eventually be commissioned by SDK, API
 
 | Sequence | Real page | What to show | Boundary |
 | --- | --- | --- | --- |
-| 0:00–0:25 | / | Position the problem and the two beginner/builder paths | Independent learning companion |
-| 0:25–1:10 | /learn | Explain a lesson; deliberately answer wrongly; show contextual hint, then pass | Server validation awards XP, not AI |
-| 1:10–1:45 | /learn or /try | Validate a request; show JSON/curl and copy | Explicit **preview, not executed** |
-| 1:45–2:25 | /debug | Repair an incorrect endpoint or missing instruction and submit | Free deterministic repair |
-| 2:25–3:05 | /learn | **Only if real guest allowance remains:** make one live SERV tutor question and show model, completion ID (partially redacted), latency and official source | No fake or recorded 'live' model response |
-| 3:05–3:30 | /docs and /learn | Show guides, saved 80 XP/3 repair markers if genuinely completed | Local progress, no certificate |
-| 3:30–3:45 | GitHub | CI tests, source and next milestone | Don't imply paid users or an audit |
+| 0:00–0:25 | / | Explain the problem and the beginner/build/debug routes; original unified navy/cobalt design | Independent community product |
+| 0:25–1:10 | /debug | Select missing instructions, submit broken JSON and show deterministic field-level error | **No inference and no credits** |
+| 1:10–1:55 | /debug | **Only if guest quota is available:** click Ask SERV, show a genuine explanation, partially redacted completion ID, model, latency and linked source | Paid inference ONLY after click; no raw editor JSON sent |
+| 1:55–2:20 | /debug | Correct the instruction, validate again and copy blueprint | Fix remains user-directed, never executed here |
+| 2:20–2:55 | /learn | Finish or review a sourced lesson, show non-spoiler feedback and real on-device XP | XP is local, not an official credential |
+| 2:55–3:20 | /try | Validate and copy example request/curl; show clearly labeled preview | Not a live request unless separately authorized |
+| 3:20–3:40 | /docs and GitHub | Real product guides, source, and passing Chromium tests | No fabricated users, payments or revenue |
+
+**Evidence requirement:** the cloud browser tests use a mocked SERV response; a fresh hosted debug explanation is not considered independently verified until the actual site returns a real model/completion ID in the production browser. If credits are unavailable, label a previously captured genuine hosted response as a recorded example rather than pretending a new request succeeded.
 
 Keep personal browser secrets, private access codes, network addresses and private logs outside screenshots. For an unavailable SERV trial, show the truthful capped/unavailable UI and use an explicitly labeled earlier **genuine recorded** live inference clip if one exists.
 
@@ -63,8 +65,8 @@ Most AI infrastructure onboarding stops at documentation. TrySERV turns OpenServ
 
 • Four short, server-graded lessons with useful correction hints
 • A valid SERV Chat Completions request builder
-• Three editable API debugging missions
-• Live, source-grounded SERV Reasoning tutoring with real provider metadata and a tightly capped public trial
+• Three editable API debugging missions with exact server-validated errors
+• Optional SERV Reasoning explanations of those errors, with actual model metadata and a tightly capped public trial
 
 No account or API key is needed for free practice. XP stays in your browser; request previews do not send inference calls.
 
@@ -78,11 +80,11 @@ Code: https://github.com/Alike001/tryserv
 ## Release gate
 
 - [x] Public TrySERV repository and working demo URL exist.
-- [x] Latest docs/navigation release merged and Render reported LIVE on current main as of Nov 12.
-- [x] Node and cloud Chromium CI previously passed for the docs/browser release.
+- [x] Unified UX and SERV diagnostic PR #10 merged as `0cde1376`; the Render deploy for that code is LIVE.
+- [x] Node, GitGuardian and **48 cloud Chromium browser checks passed** for PR #10, including mobile navigation, quota fail-closed, and simulated SERV debug response.
 - [x] Official rules, deadline and Open Track requirements checked Nov 12.
-- [ ] Merge the launch-readiness PR after fresh Node + Chromium CI.
-- [ ] Confirm final Render service LIVE at the new main commit.
+- [x] Reproducible desktop/phone UI snapshots created in the GitHub browser workflow.
+- [ ] Verify Render LIVE at the final documentation-only commit as well as the merged code.
 - [ ] Run two genuine user journeys (one beginner, one developer) without coaching; record actual blockers.
 - [ ] Inspect actual mobile/desktop focus and screen-reader experience; don't equate responsive tests with human review.
 - [ ] Capture genuine final screenshots and optionally one budgeted live SERV tutoring response.
