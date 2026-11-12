@@ -5,7 +5,7 @@ import {answerWithServ} from "../mentor.mjs";
 import {createApp} from "../server.mjs";
 
 const lessons=publicLessons();
-test("three progressive lessons grounded in official documentation",()=>{
+test("four progressive lessons grounded in official documentation",()=>{
  assert.deepEqual(lessons.map(l=>l.id),["ecosystem","understand","decide","build"]);
  assert.ok(lessons.every(l=>l.source.url.startsWith("https://docs.openserv.ai/")));
  assert.ok(lessons.every(l=>!Object.hasOwn(l,"answer")&&!Object.hasOwn(l,"explanation")));
@@ -17,6 +17,17 @@ test("exact learning assessment accepts the grounded choice, refuses invented an
  assert.equal(checkExercise("decide","sum").passed,false);
  assert.throws(()=>checkExercise("decide","unlisted"),/not available/);
 });
+test("wrong answer receives a useful, non-spoiler hint; answers never reach public lessons",()=>{
+ const wrong=checkExercise("decide","sum");
+ assert.equal(wrong.passed,false);
+ assert.match(wrong.hint,/arithmetic|calculator|constraints/i);
+ assert.equal(Object.hasOwn(wrong,"correct_choice_id"),false);
+ assert.equal(JSON.stringify(wrong).includes("decision"),false);
+ assert.ok(!Object.hasOwn(publicLessons().find(x=>x.id==="decide"),"hints"));
+ assert.ok(!Object.hasOwn(publicLessons().find(x=>x.id==="decide"),"answer"));
+ assert.equal(checkExercise("decide","decision").passed,true);
+});
+
 test("real API request builder enforces system prompt, user task, model",()=>{
  const good=checkExercise("build",{model:"gpt-5.4-mini",system:"You are a careful developer helper with clear boundaries.",user:"Explain when SERV is valuable."});
  assert.equal(good.passed,true);
@@ -99,6 +110,42 @@ test("wrong instructor code fails before any paid call",async()=>{
    assert.equal(calls,0);
  },async()=>{calls++;throw Error("Should not call SERV");});
 });
+test("authorized tutor executes one real-shaped SERV call and returns measured provenance (stubbed upstream)",async()=>{
+ let count=0;
+ const mock=async(url,options)=>{
+   count++;
+   const request=JSON.parse(options.body);
+   assert.equal(url,"https://inference-api.openserv.ai/v1/chat/completions");
+   assert.equal(request.messages[0].role,"system");
+   assert.equal(request.model,"gpt-5.4-mini");
+   return {ok:true,status:200,json:async()=>({
+     id:"serv-verified-integration-stub",model:"gpt-5.4-mini",
+     usage:{prompt_tokens:31,completion_tokens:23},
+     choices:[{finish_reason:"stop",message:{content:JSON.stringify({
+       explanation:"SERV Reasoning improves ambiguous decisions and can work with a supported model through the compatible inference endpoint.",
+       next_action:"Compare a simple lookup with a policy-based reasoning example."
+     })}}]
+   })};
+ };
+ await withApp({SERV_API_KEY:"a-long-mocked-serv-api-key",LEARN_ACCESS_TOKEN:"private-test-access-token"},async url=>{
+   const response=await fetch(url+"/api/mentor",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","x-learn-access-token":"private-test-access-token"},
+      body:JSON.stringify({lesson_id:"decide",question:"Why does arithmetic not require reasoning?"})
+   });
+   assert.equal(response.status,200);
+   const data=await response.json();
+   assert.equal(data.mode,"live-serv-tutor");
+   assert.equal(data.completion_id,"serv-verified-integration-stub");
+   assert.equal(data.usage.input_tokens,31);
+   assert.ok(Number.isInteger(data.latency_ms));
+   assert.ok(data.latency_ms>=0);
+   assert.ok(!JSON.stringify(data).includes("a-long-mocked-serv-api-key"));
+   assert.ok(!JSON.stringify(data).includes("private-test-access-token"));
+   assert.equal(count,1);
+ },mock);
+});
+
 test("server refuses private source code and exposes only intentional public assets",async()=>{
  await withApp({},async url=>{
    assert.equal((await fetch(url+"/")).status,200);
@@ -107,6 +154,21 @@ test("server refuses private source code and exposes only intentional public ass
    assert.equal((await fetch(url+"/../package.json")).status,404);
  });
 });
+test("public exercise API does not leak solution on a wrong choice",async()=>{
+ await withApp({},async url=>{
+   const response=await fetch(url+"/api/check",{
+     method:"POST",headers:{"Content-Type":"application/json"},
+     body:JSON.stringify({lesson_id:"understand",answer:"rewrite"})
+   });
+   assert.equal(response.status,200);
+   const data=await response.json();
+   assert.equal(data.passed,false);
+   assert.ok(data.hint.length>20);
+   assert.equal(Object.hasOwn(data,"correct_choice_id"),false);
+   assert.ok(!JSON.stringify(data).includes("endpoint"));
+ });
+});
+
 test("malformed requests return 400, no crash",async()=>{
  await withApp({},async url=>{
    const r=await fetch(url+"/api/check",{method:"POST",headers:{"Content-Type":"application/json"},body:"this is not json"});
