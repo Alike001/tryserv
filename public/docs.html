@@ -7,8 +7,9 @@
   <meta name="description" content="TrySERV documentation: understand the learning paths, real SERV integration, practice labs, quotas, architecture, and privacy limitations.">
   <title>Documentation — TrySERV</title>
   <link rel="stylesheet" href="/docs.css">
+  <link rel="stylesheet" href="/brand.css">
 </head>
-<body>
+<body data-page="docs">
 <a class="skip" href="#content">Skip to documentation</a>
 <div class="notice"><span>LEARN → PRACTICE → BUILD</span><a href="/learn">Start a guided lesson <span aria-hidden="true">→</span></a></div>
 <header class="site-header">
@@ -19,6 +20,7 @@
   </nav>
   <a class="nav-cta" href="/learn">Start learning <span aria-hidden="true">→</span></a>
 </header>
+<nav class="brand-route-nav" aria-label="TrySERV pages"><a href="/">Home</a><a href="/learn">Learn</a><a href="/try">Build</a><a href="/debug">Debug</a><a href="/docs" aria-current="page">Docs</a></nav>
 <div class="docs-shell">
   <aside class="docs-sidebar" aria-label="Documentation sections">
     <p class="sidebar-label">DOCUMENTATION</p>
@@ -49,6 +51,7 @@
         <a class="action primary" href="/learn">Explore the lessons <span aria-hidden="true">→</span></a>
         <a class="action outline" href="/debug">Fix a broken request <span aria-hidden="true">↗</span></a>
       </div>
+      <div class="docs-hero-use"><strong>From your first question to a verifiable repair.</strong><p>Free deterministic practice, optional real SERV explanations, and honest API-request previews—all in one place.</p></div>
       <div class="facts" aria-label="What is available">
         <span><strong>04</strong> beginner lessons</span><span><strong>03</strong> debugging cases</span><span><strong>80</strong> maximum local XP</span>
       </div>
@@ -93,6 +96,7 @@
         <span>Response + source link + actual model metadata</span>
       </div>
       <p>The AI explanation may still be mistaken. TrySERV supplies an official source for human checking. Answers to quizzes and request-structure validation are deterministic, <em>not</em> graded by the model.</p>
+      <div class="note"><strong>Integrated debugging, not a general chatbot</strong><p>In the <a class="inline-link" href="/debug">request repair lab</a>, the normal checker first identifies exact request-shape mistakes for free. The learner may then explicitly ask SERV Reasoning to explain the known scenario and validated error fields. The request sends no pasted code or secret keys, and returns genuine model, completion ID, latency, usage, and an official source when successful. Asking consumes a reservation from the same limited public tutor allowance; verification and copying remain free.</p><p>Use SERV to understand uncertainty and tradeoffs; rely on deterministic code to grade, validate and award local XP. The tutor does not repair or execute the request on the learner's behalf.</p></div>
       <div class="note"><strong>See reasoning in context</strong><p>In lesson three, a hypothetical refund case contrasts exact code checks (such as dates) with policy exceptions that may benefit from reasoned human review. The learner can prepare a SERV coaching question, but preparing it makes no inference call. The question is sent only after explicit approval and available guest allowance; TrySERV never approves or pays refunds.</p><p><a class="inline-link" href="/learn">Open lesson three in the learning studio ↗</a></p></div>
       <p>Prefer a focused explanation? The tutor now includes ready-to-edit question starters for a simple explanation, realistic developer example, or reasoning-versus-code tradeoff. These suggestions are free to prepare and never reveal hidden quiz answers.</p>
       <div class="note"><strong>Free public tutoring has limits</strong><p>At this stage, guest tutoring allows up to two requests per approximate visitor identity per UTC day and a shared lifetime pilot budget of 24 guest calls. Remaining requests are shown in the learning studio when the budget service is available. The quota is stored in a database; when it is exhausted or unavailable, paid guest calls stop but free lessons still work. These limits can change after measured cost and abuse review.</p></div>

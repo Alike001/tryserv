@@ -5,18 +5,31 @@
 <meta name="description" content="Practice fixing real SERV API request mistakes, with instant feedback and official documentation.">
 <title>Fix a SERV Request · TrySERV</title>
 <link rel="stylesheet" href="/debug.css">
+<link rel="stylesheet" href="/brand.css">
 <script type="module" src="/debug.js"></script>
 </head>
-<body>
+<body data-page="debug">
 <a class="skip-link" href="#debug-main">Skip to debug lab</a>
-<header class="site-header"><a class="brand" href="/">t<span>.</span> <strong>tryserv</strong></a><nav aria-label="Navigation"><a href="/">Home</a><a href="/learn">Learning studio</a><a href="/try">Build a request</a><a href="/docs">Docs</a></nav></header>
+<header class="site-header"><a class="brand" href="/" aria-label="TrySERV homepage"><span class="mark">t<span>.</span></span><strong>TrySERV</strong></a><nav aria-label="Navigation"><a href="/">Home</a><a href="/learn">Learning studio</a><a href="/try">Build a request</a><a href="/docs">Docs</a></nav></header>
+<nav class="brand-route-nav" aria-label="TrySERV pages"><a href="/">Home</a><a href="/learn">Learn</a><a href="/try">Build</a><a href="/debug" aria-current="page">Debug</a><a href="/docs">Docs</a></nav>
 <main class="page" id="debug-main" tabindex="-1">
  <section class="intro">
+  <div class="debug-intro-copy">
    <div class="eyebrow">PRACTICAL DEVELOPER LAB · NO SIGNUP</div>
    <h1>Fix a broken<br><em>SERV request.</em></h1>
    <p>Real integrations fail for specific reasons. Repair three small request blueprints, check each change against official OpenServ rules, and leave with a valid request structure.</p>
    <div class="qualifiers"><span>✓ No keys or accounts</span><span>✓ No SERV credits spent</span><span>✓ Checkable corrections</span></div>
    <div class="debug-journey" aria-label="Three steps to repair a request"><span><b>01</b> Read the issue</span><span><b>02</b> Edit the request</span><span><b>03</b> Verify the fix</span></div>
+  </div>
+  <div class="debug-hero-preview" aria-label="Illustrative SERV integration troubleshooting steps">
+    <div class="debug-hero-card-head"><strong>SERV REQUEST CLINIC</strong><span>WORKFLOW EXAMPLE</span></div>
+    <div class="debug-hero-row"><b class="hero-step error">01</b><div><strong>Detect an invalid request</strong><small>The free checker identifies a missing instruction.</small></div><span class="hero-status">CHECKED</span></div>
+    <div class="debug-hero-arrow" aria-hidden="true">↓</div>
+    <div class="debug-hero-row reasoning"><b class="hero-step reason">02</b><div><strong>Ask SERV why it matters</strong><small>Optional live explanation when trial credits allow.</small></div><span class="hero-status">OPT IN</span></div>
+    <div class="debug-hero-arrow" aria-hidden="true">↓</div>
+    <div class="debug-hero-row"><b class="hero-step success">03</b><div><strong>Recheck your repair</strong><small>Apply the correction and validate again for free.</small></div><span class="hero-status">YOUR ACTION</span></div>
+    <a class="debug-hero-link" href="#editor">Start your first repair →</a>
+  </div>
  </section>
  <div class="workbench">
   <aside class="sidebar">
@@ -39,6 +52,15 @@
       <button type="button" id="reset" class="secondary">Reset example</button>
     </div>
     <div id="result" role="status" aria-live="polite" hidden></div>
+    <section id="serv-diagnostic" class="serv-diagnostic" hidden aria-labelledby="serv-diagnostic-title">
+      <span class="diagnostic-kicker">OPTIONAL • POWERED BY SERV REASONING</span>
+      <h3 id="serv-diagnostic-title">Understand why this request failed.</h3>
+      <p>The deterministic checker has already inspected this exercise. Ask SERV for a separate, source-grounded explanation and one practical next step. We send only this exercise's known scenario and validation field names—not the JSON you typed.</p>
+      <p id="serv-diagnostic-status" class="serv-diagnostic-status" role="status" aria-live="polite">Checking trial capacity…</p>
+      <button type="button" id="serv-explain" disabled>Ask SERV to explain this issue →</button>
+      <div id="serv-ai-response" class="serv-ai-response" role="status" aria-live="polite" hidden></div>
+      <p>AI may be mistaken. A request is made only after your click, and uses the same limited public trial as the lesson tutor. Free repairs never require SERV credits.</p>
+    </section>
     <div id="solution" hidden>
       <div class="solution-head"><strong>Validated HTTP request blueprint</strong><span>PREVIEW ONLY</span></div>
       <pre id="solution-code"></pre>

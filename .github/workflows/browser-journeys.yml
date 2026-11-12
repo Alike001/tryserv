@@ -23,6 +23,14 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Test real desktop and mobile user journeys
         run: npx playwright test --config=browser/playwright.config.mjs
+      - name: Preserve public UI previews for visual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tryserv-ui-snapshots
+          path: test-results/qa-*.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Preserve browser report on failure
         if: failure()
         uses: actions/upload-artifact@v4

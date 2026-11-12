@@ -46,6 +46,18 @@ The separate optional **operator-only** request execution lets an authorized tes
 
 [OpenServ SERV Reasoning API reference](https://docs.openserv.ai/serv-reasoning/api/chat-completions) · [SERV introduction](https://docs.openserv.ai/serv-reasoning/introduction)
 
+## Why SERV Reasoning is central — a reproducible example
+
+The developer/debugging journey is now more than a code preview. Visit [the repair lab](https://tryserv.onrender.com/debug), choose **A request without instructions**, and submit the broken example.
+
+1. **Exact validation (free):** server-side deterministic code reports the missing instruction.
+2. **SERV diagnosis (optional, live):** when guest trial capacity is available, explicitly click **Ask SERV to explain this issue**. A constrained prompt uses only the pre-authored scenario and validated error field names—never the user's editable JSON—and asks for a concrete explanation and next check. A successful response displays SERV model, completion ID, latency, usage, and an official reference.
+3. **Apply and revalidate (free):** add a system/developer instruction, validate the repair, and copy the checked blueprint. The AI never writes or executes a request for the user.
+
+If guest capacity is exhausted or its status cannot be checked, SERV explanations fail closed, while the entire deterministic lab remains usable. Tests stub the upstream provider; separately verify the live hosted diagnostic before calling it a demonstrated production completion.
+
+The visual system now uses the original [landing page](https://tryserv.onrender.com/) navy/cobalt/mint palette across all routes, with a common responsive Home / Learn / Build / Debug / Docs navigation. Static content and exercise grading are unaffected by brand CSS.
+
 ## Safety and real operating limits
 
 - The normal public tutor is explicitly opt-in for the deployment and **budget-limited**: at most **2 guest calls per approximate visitor identity per UTC day**, and **24 shared lifetime guest calls** for the pilot. Allowance is checked before calling SERV.

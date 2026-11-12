@@ -147,3 +147,17 @@ Canonical research: [docs/INTERACTIVE-LEARNING-RESEARCH.md](INTERACTIVE-LEARNING
 - [ ] Continue final hackathon packaging and truthful showcase, not feature sprawl.
 
 Research notes: docs/NIMQUEST-DESIGN-RESEARCH.md .
+
+## Release focus — brand coherence and SERV diagnostic workflow (November 13, 2026)
+
+**What we actually build:** a hands-on OpenServ learning and API-integration studio with three measurable steps: learn concepts, validate a real request shape, and understand a verified mistake with optional SERV Reasoning assistance. It is not an official OpenServ site, a passive documentation chatbot or a certificate issuer.
+
+**Design system:** the landing is canonical. Navy `#132b42`, cobalt `#4269e9`, mint `#38d4ad`, restrained blue/mint/peach supporting cards, white/light blue-gray surfaces and readable type are consistent across landing, lesson studio, debug lab and docs. A common mobile Home/Learn/Build/Debug/Docs navigation appears on each route. Shared stylesheet `public/brand.css` is the single cross-page override while existing route CSS is consolidated after the submission window. Hero sections explain the user task and SERV's role without inventing user metrics or completed work.
+
+**Core functional differentiation:** the free deterministic debug checker spots an actual documented API shape error. If the quota service confirms availability, an optional button requests SERV's explanation of the known scenario and validator issue fields through the existing lesson-grounded `/api/mentor` endpoint. No pasted JSON, keys or arbitrary prompts are sent from the debug editor to the tutor. UI shows genuine model/completion/latency/usage when available. Quotas remain **2/day per approximate visitor and 24 shared lifetime**, with durable reservation and database fail-closed. New debug inference is a live feature path; automated tests use mocked provider responses and do not independently prove a fresh hosted completion.
+
+**User readiness gate:** at 320/375/768/1024/1440 check no overflow, keyboard navigation, task completion, result explanations, local progress and explicit preview vs executed states. Have at least one actual beginner and one developer walk through independently; record feedback rather than assuming browser CI equals human acceptance.
+
+**Revenue potential hypothesis:** the product could eventually become an onboarding and diagnostics layer licensed to developer platforms or used in paid team training. No customers, conversion rate or revenue is claimed. Validate willingness to pay and cost/retention before adding billing or private team workspaces.
+
+**Submission and release plan:** ship one cohesive demo URL, a genuine SERV completion in the recorded user flow if trial allows, a working repair walkthrough, a concise technical/architectural write-up, an X launch post and public code. Keep the November 15 23:59 UTC official deadline in view. Do not add wallet proof, leaderboard, complex authentication or unsupported AI capability claims.

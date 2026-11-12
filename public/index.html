@@ -7,10 +7,12 @@
 <meta name="description" content="Explore OpenServ through short guided lessons, practical challenges and checkable learning progress.">
 <title>TrySERV · Learn OpenServ by doing</title>
 <link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/brand.css">
 <script type="module" src="/app.js"></script>
 </head>
-<body>
+<body data-page="learn">
 <a class="skip-link" href="#studio-content">Skip to lesson content</a>
+<nav class="brand-route-nav" aria-label="TrySERV pages"><a href="/">Home</a><a href="/learn" aria-current="page">Learn</a><a href="/try">Build</a><a href="/debug">Debug</a><a href="/docs">Docs</a></nav>
 <div class="shell">
   <aside class="sidebar">
     <a class="brand" href="/" aria-label="TrySERV home">
@@ -27,13 +29,13 @@
       <button type="button" id="reset-progress" class="reset-progress">Reset this device’s progress</button>
       <span class="standalone">Independent learning companion</span>
       <p>Built with OpenServ documentation, but not affiliated with OpenServ.</p>
-      <a href="/docs">TrySERV guides <span aria-hidden="true">↗</span></a><a href="https://docs.openserv.ai/llms.txt" target="_blank" rel="noopener noreferrer">Official documentation <span aria-hidden="true">↗</span></a>
+      <a href="/docs">TrySERV guides <span aria-hidden="true">↗</span></a><a href="https://console.openserv.ai/" target="_blank" rel="noopener noreferrer">OpenServ console ↗</a><a href="https://docs.openserv.ai/llms.txt" target="_blank" rel="noopener noreferrer">Official documentation <span aria-hidden="true">↗</span></a>
     </div>
   </aside>
   <main class="main" id="studio-content" tabindex="-1">
     <header class="topbar">
       <span class="breadcrumb">LEARNING STUDIO <span aria-hidden="true">/</span> <span id="current-crumb">OVERVIEW</span></span>
-      <div class="toplinks"><a href="/">← Home</a><a href="/debug">Debug lab ↗</a><a href="/docs">Guides ↗</a><a href="#tutor-panel">SERV coach ↓</a><span class="live-indicator"><i></i> Guided practice</span><a href="https://console.openserv.ai/" target="_blank" rel="noopener noreferrer">OpenServ console ↗</a></div>
+      <div class="toplinks"><a href="/">Home</a><a href="/learn">Lessons</a><a href="/try">Build</a><a href="/debug">Debug lab</a><a href="/docs">Docs</a><a href="#tutor-panel">SERV coach ↓</a></div>
     </header>
     <div class="maincontent">
       <section class="intro" id="intro">
@@ -66,12 +68,12 @@
       <section class="learning" id="learning" hidden>
         <div class="lesson-journey" aria-label="Lesson progress">
           <div class="lesson-journey-head"><span id="lesson-count">LESSON 01 OF 04</span><span id="lesson-state">Ready to learn</span></div>
-          <div class="lesson-journey-track" role="progressbar" aria-label="Current lesson number" aria-valuemin="0" aria-valuemax="4" aria-valuenow="1" id="lesson-journey-track"><span id="lesson-journey-fill"></span></div>
+          <div class="lesson-journey-track" role="progressbar" aria-label="Current lesson stage" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" id="lesson-journey-track"><span id="lesson-journey-fill"></span></div>
           <div class="lesson-stages" aria-label="Lesson stages"><span class="stage active" data-stage="read"><b>01</b> Understand</span><span class="stage" data-stage="check"><b>02</b> Practice</span><span class="stage" data-stage="apply"><b>03</b> Apply</span></div>
         </div>
         <div class="lesson-top"><div class="eyebrow" id="lesson-meta">LESSON 01 · UNDERSTAND</div><span class="time" id="lesson-time">3 MIN</span></div>
         <h1 id="lesson-title"></h1>
-        <p class="lesson-lead" id="lesson-summary"></p>
+        <p class="lesson-lead" id="lesson-summary"></p><p class="lesson-outcome" id="lesson-outcome"><strong>Your outcome:</strong> Finish this lesson with something useful.</p>
         <div class="lesson-content">
           <div class="content-eyebrow">01 / THE CORE IDEA</div>
           <h2 id="lesson-takeaway"></h2>
