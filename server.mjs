@@ -6,7 +6,7 @@ import {readFile} from "node:fs/promises";
 import {publicLessons,checkExercise,findLesson} from "./curriculum.mjs";
 import {answerWithServ} from "./mentor.mjs";
 import {executeLearnerRequest} from "./try-live.mjs";
-import {guestTrialConfigured,reserveGuestTrial,guestFailure} from "./guest-budget.mjs";
+import {guestTrialConfigured,reserveGuestTrial,guestFailure,getGuestTrialStatus} from "./guest-budget.mjs";
 import {debugCases,validateDebugBlueprint} from "./debug-lab.mjs";
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 const files={"/":["landing.html","text/html; charset=utf-8"],"/learn":["index.html","text/html; charset=utf-8"],"/try":["index.html","text/html; charset=utf-8"],"/landing.css":["landing.css","text/css; charset=utf-8"],"/styles.css":["styles.css","text/css; charset=utf-8"],"/app.js":["app.js","text/javascript; charset=utf-8"],"/progress.mjs":["progress.mjs","text/javascript; charset=utf-8"],"/debug":["debug.html","text/html; charset=utf-8"],"/debug.js":["debug.js","text/javascript; charset=utf-8"],"/debug.css":["debug.css","text/css; charset=utf-8"]};
@@ -25,7 +25,7 @@ async function readJson(req){
  }
  try{return JSON.parse(body);}catch{throw new Error("Invalid request JSON.");}
 }
-export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveGuestTrial}={}){
+export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveGuestTrial,guestStatus=getGuestTrialStatus}={}){
  const enabled=Boolean(env.SERV_API_KEY&&env.LEARN_ACCESS_TOKEN);
  const publicTutorEnabled=enabled&&guestTrialConfigured(env);
  const recent=new Map();
@@ -48,6 +48,10 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
   const pathname=url.pathname;
   if(req.method==="GET"&&pathname==="/healthz")
    return json(res,200,{status:"ok",service:"tryserv",tutor_enabled:enabled,public_tutor_enabled:publicTutorEnabled,mode:"independent learning pilot"});
+  if(req.method==="GET"&&pathname==="/api/tutor/allowance"){
+   const status=await guestStatus({req,env});
+   return json(res,200,status);
+  }
   if(req.method==="GET"&&pathname==="/api/lessons")
    return json(res,200,{lessons:publicLessons(),tutor_enabled:enabled,public_tutor_enabled:publicTutorEnabled,guest_daily_limit:publicTutorEnabled?2:0,progress_storage:"on-device only"});
   if(req.method==="GET"&&pathname==="/api/debug/scenarios")
