@@ -76,3 +76,13 @@ Next: verify latest GitHub CI and Render (srv-dbqvo68ae00c73bepbj0) live. Operat
 - 42 tests passed, 0 failed. Render reports deployment live. Independent page screenshot/keyboard/mobile check has NOT yet occurred; direct public browsing from assistant was blocked.
 - Public tutor real SERV completion has already been confirmed by user screenshot (real model, completion ID and latency). Guest tutoring remains limited to 2/day and 24 lifetime in durable Neon budget; do not increase without reviewing costs.
 - Next: beginner/developer full-journey validation, access and use of /debug, clearer final learning completion and usage visibility, then visual polish and hackathon submission. Old Opsra remains untouched.
+
+
+## Nov 12 later milestone — completed path + quota visibility
+
+The user confirmed https://tryserv.onrender.com/debug visually loads and asked to keep executing the functional roadmap. Working feature branch: feat/learning-journey-allowance in Alike001/tryserv, pending CI and merge at time of writing.
+- Four passed lessons now show a meaningful completion summary, not a certificate; links to /debug and /try. The existing four lesson XP points remain maximum 80, on-device only.
+- Debug lab fixed to guide the learner to unfinished missions, then return to /learn when all three are completed. Debug missions have a separate on-device counter; not added to XP.
+- Added GET /api/tutor/allowance reading Neon counters without consuming credits or reserving an allowance. The public tutor UI shows visitor/day and shared remaining. Free questions are disabled if the budget is exhausted or status check fails. The actual paid POST retains atomic reservation and protection; no change to budgets (2/visitor/day, 24 lifetime).
+- Added tests for quota status read-only/no SERV calls, exhaustion, DB failure and summary derivation. Inspect GitHub CI and Render before any LIVE claim.
+- Next milestone: real browser walkthrough all four lessons plus debugging repair and tutor exhaustion flow; then final UI/UX review and submission. No laptop Docker required.
