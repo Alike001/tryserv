@@ -5,6 +5,7 @@ import {fileURLToPath} from "node:url";
 import {readFile} from "node:fs/promises";
 import {publicLessons,checkExercise,findLesson} from "./curriculum.mjs";
 import {answerWithServ} from "./mentor.mjs";
+import {executeLearnerRequest} from "./try-live.mjs";
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 const files={"/":["landing.html","text/html; charset=utf-8"],"/learn":["index.html","text/html; charset=utf-8"],"/try":["index.html","text/html; charset=utf-8"],"/landing.css":["landing.css","text/css; charset=utf-8"],"/styles.css":["styles.css","text/css; charset=utf-8"],"/app.js":["app.js","text/javascript; charset=utf-8"],"/progress.mjs":["progress.mjs","text/javascript; charset=utf-8"]};
 function json(res,status,payload){res.writeHead(status,{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"});res.end(JSON.stringify(payload));}
@@ -26,6 +27,15 @@ export function createApp({env=process.env,fetchImpl=fetch}={}){
  const enabled=Boolean(env.SERV_API_KEY&&env.LEARN_ACCESS_TOKEN);
  const recent=new Map();
  let total=0;
+ function reservePaidCall(req){
+   const remote=req.socket.remoteAddress??"unknown";
+   const now=Date.now();
+   const history=(recent.get(remote)??[]).filter(t=>now-t<600000);
+   // Both paid features share the same strict staging allowance.
+   if(history.length>=3||total>=35)return false;
+   history.push(now);recent.set(remote,history);total++;
+   return true;
+ }
  return http.createServer(async(req,res)=>{
   res.setHeader("X-Content-Type-Options","nosniff");
   res.setHeader("X-Frame-Options","DENY");
@@ -43,22 +53,45 @@ export function createApp({env=process.env,fetchImpl=fetch}={}){
     return json(res,200,{lesson_id:input?.lesson_id,...checkExercise(input?.lesson_id,input?.answer)});
    }catch(e){return json(res,400,{error:String(e.message).slice(0,160)});}
   }
+  if(req.method==="POST"&&pathname==="/api/try-serv"){
+   if(!enabled)return json(res,503,{error:"Live SERV testing is not yet configured. The request preview still works."});
+   if(!tokenEquals(req.headers["x-learn-access-token"],env.LEARN_ACCESS_TOKEN))
+     return json(res,401,{error:"A valid private demo access code is needed for live SERV calls."});
+   let input;
+   try{
+     const body=await readJson(req);
+     input=body?.request;
+     const result=checkExercise("build",input);
+     if(!result.passed)return json(res,400,{error:result.feedback});
+   }catch(error){return json(res,400,{error:String(error.message).slice(0,140)});}
+   if(!reservePaidCall(req))return json(res,429,{error:"Live demo limit reached. You can still use the request preview."});
+   try{
+     const result=await executeLearnerRequest({input,apiKey:env.SERV_API_KEY,fetchImpl});
+     console.info("tryserv.serv_result",JSON.stringify({
+       kind:"request-lab",model:result.model,latency_ms:result.latency_ms,
+       completion_id:result.completion_id,input_tokens:result.usage.input_tokens,
+       output_tokens:result.usage.output_tokens
+     }));
+     return json(res,200,result);
+   }catch(error){return json(res,502,{error:"Live SERV call failed: "+String(error.message).slice(0,140)});}
+  }
   if(req.method==="POST"&&pathname==="/api/mentor"){
    if(!enabled)return json(res,503,{error:"Live SERV tutor is not configured on this server. Free practice still works."});
    if(!tokenEquals(req.headers["x-learn-access-token"],env.LEARN_ACCESS_TOKEN))
      return json(res,401,{error:"A valid instructor access code is required for live tutoring."});
-   const remote=req.socket.remoteAddress??"unknown";
-   const now=Date.now();
-   const last=(recent.get(remote)??[]).filter(t=>now-t<600000);
-   if(last.length>=3||total>=35)return json(res,429,{error:"Tutor rate limit reached. Practice lessons remain available."});
    try{
     const input=await readJson(req);
     if(!findLesson(input?.lesson_id))return json(res,400,{error:"Select a valid lesson."});
     if(typeof input?.question!=="string"||input.question.length<8||input.question.length>400)
       return json(res,400,{error:"Enter a question between 8 and 400 characters."});
-    last.push(now);recent.set(remote,last);total++;
+    if(!reservePaidCall(req))return json(res,429,{error:"Live demo limit reached. Practice lessons remain available."});
     const result=await answerWithServ({lessonId:input.lesson_id,question:input.question,
       apiKey:env.SERV_API_KEY,model:env.SERV_MODEL??"gpt-5.4-mini",fetchImpl});
+    console.info("tryserv.serv_result",JSON.stringify({
+      kind:"tutor",lesson_id:input.lesson_id,model:result.model,
+      latency_ms:result.latency_ms,completion_id:result.completion_id,
+      input_tokens:result.usage.input_tokens,output_tokens:result.usage.output_tokens
+    }));
     return json(res,200,{mode:"live-serv-tutor",...result});
    }catch(e){
     return json(res,502,{error:"Tutor failed safely: "+String(e.message).slice(0,150)});
