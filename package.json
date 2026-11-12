@@ -8,8 +8,11 @@
   },
   "scripts": {
     "start": "node index.mjs",
-    "check": "node --check server.mjs && node --check curriculum.mjs && node --check mentor.mjs && node --check try-live.mjs && node --check public/app.js",
+    "check": "node --check server.mjs && node --check curriculum.mjs && node --check mentor.mjs && node --check guest-budget.mjs && node --check try-live.mjs && node --check public/app.js",
     "test": "node --test test/*.test.mjs",
-    "build": "npm run check && npm test"
+    "build": "npm install --ignore-scripts --no-audit --no-fund && npm run check && npm test"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "1.2.0"
   }
 }
