@@ -43,3 +43,9 @@ a:focus-visible{outline:3px solid #6183ef;outline-offset:3px}
 @media(max-width:760px){.entry-trails,.docs-spotlight{padding:63px 0}.trail-grid{grid-template-columns:1fr}.trail-card{min-height:220px;padding:25px}.trail-card h3{margin-top:40px}.docs-spotlight-grid{grid-template-columns:1fr}.site-header .header-inner{gap:14px}}
 @media(max-width:420px){.trail-card{padding:21px}.trail-card h3{font-size:23px}.trail-foot{display:block}.trail-foot b{display:block;margin-top:10px}.docs-preview-head{padding:17px;font-size:8px}.docs-preview a{padding:18px 14px;gap:10px;font-size:13px}.docs-count{width:30px;height:30px}}
 @media(prefers-reduced-motion:reduce){.trail-card{transition:none}.trail-card:hover{transform:none}}
+
+
+/* The Docs entry stays discoverable when the desktop navigation collapses. */
+.header-docs{display:none;text-decoration:none;font-weight:800;font-size:12px;color:#294bad;padding:8px 11px;border:1px solid #cad9e9;background:#fff;border-radius:9px}
+@media(max-width:760px){.header-docs{display:inline-flex;margin-left:auto}.header-cta{margin-left:0}}
+@media(max-width:420px){.header-cta{display:none}.header-docs{margin-left:auto}}
