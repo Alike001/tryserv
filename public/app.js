@@ -3,7 +3,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
 (() => {
  "use strict";
  const $=(id)=>document.getElementById(id);
- let lessons=[],current=null,chosen=null,requestJson="",curl="",tutorEnabled=false;
+ let lessons=[],current=null,chosen=null,requestJson="",curl="",tutorEnabled=false,publicTutorEnabled=false;
  const clear=(node)=>{while(node.firstChild)node.removeChild(node.firstChild);};
  const item=(parent,tag,text,cls)=>{
    const node=document.createElement(tag);
@@ -219,14 +219,18 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    const question=$("mentor-question").value.trim();
    if(question.length<8)return mentorMessage("Enter a specific question of at least eight characters.",true);
    const code=$("mentor-access").value;
-   if(!code)return mentorMessage("Enter the private demo access code. Free practice does not require it.",true);
+   if(!publicTutorEnabled&&!code)return mentorMessage("The free SERV tutor is unavailable. Guided lessons still work.",true);
    const button=$("ask-mentor");
    button.disabled=true;button.textContent="Thinking through your question…";
    mentorMessage("Requesting a real SERV explanation. It may take a moment.");
    try{
+     const headers={"Content-Type":"application/json"};
+     // Guest tutoring intentionally requires no demo token. Only the bounded
+     // request lab stays operator-gated.
+     if(!publicTutorEnabled&&code)headers["X-Learn-Access-Token"]=code;
      const result=await api("/api/mentor",{
        method:"POST",
-       headers:{"Content-Type":"application/json","X-Learn-Access-Token":code},
+       headers,
        body:JSON.stringify({lesson_id:current??lessons[0]?.id,question})
      });
      const host=$("mentor-response");clear(host);
@@ -239,7 +243,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
      item(host,"small","Model: "+result.model+" · Completion: "+(result.completion_id??"not supplied")+
        " · Latency: "+(result.latency_ms??"unavailable")+" ms"+
        " · Tokens: "+((result.usage?.input_tokens??"–")+" input / "+(result.usage?.output_tokens??"–")+" output")+
-       " · Not independently fact-checked");
+       (result.guest_trial?" · Free guest trial":"")+" · Not independently fact-checked");
      host.hidden=false;host.className="mentor-response";
    }catch(error){mentorMessage(error.message,true);}
    finally{button.disabled=false;button.textContent="Ask SERV tutor ↗";}
@@ -263,13 +267,16 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    try{
      const data=await api("/api/lessons");
      lessons=data.lessons;tutorEnabled=Boolean(data.tutor_enabled);
+     publicTutorEnabled=Boolean(data.public_tutor_enabled);
      updateProgress();
      if(window.location.pathname==="/try")openLesson("build");
-     $("mentor-gate").textContent=tutorEnabled
-       ?"SERV tutoring is in private testing. Use the demo access code (not your SERV API key) to authorize a live call."
-       :"Guided lessons work now. The live SERV tutor will be enabled when its secure server credentials are configured.";
-     $("mentor-access").hidden=!tutorEnabled;
-     $("mentor-access-label").hidden=!tutorEnabled;
+     $("mentor-gate").textContent=publicTutorEnabled
+       ?"Free SERV tutor available: up to "+data.guest_daily_limit+" questions per visitor each day, while the shared trial budget lasts. No account or code required."
+       :tutorEnabled
+         ?"Private SERV testing is enabled. The free public trial is not yet available."
+         :"Guided lessons work now. The live SERV tutor will be enabled when its secure server credentials are configured.";
+     $("mentor-access").hidden=publicTutorEnabled||!tutorEnabled;
+     $("mentor-access-label").hidden=publicTutorEnabled||!tutorEnabled;
      $("ask-mentor").disabled=!tutorEnabled;
    }catch(error){
      $("mentor-gate").textContent="Learning content is temporarily unavailable: "+error.message;
