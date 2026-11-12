@@ -209,3 +209,18 @@ select,textarea,input{font-size:13px;line-height:1.6}
  .lesson-journey-track span{transition:none}
  .primary,.secondary{transition:none}
 }
+
+
+/* Bounded, educational comparison: never describes the sample as an automated decision. */
+.reasoning-clinic{margin-top:24px;padding:27px 30px;border:1.8px solid #38304c;border-radius:19px;background:#eee6ff;box-shadow:5px 6px 0 #24243b19}
+.clinic-label{color:#6243b9;font-size:10px;letter-spacing:1.4px;font-weight:900}
+.reasoning-clinic h2{color:#28223e;font-size:clamp(21px,2.5vw,28px);line-height:1.25;letter-spacing:-.75px;margin:14px 0 10px}
+.reasoning-clinic>p{color:#545067;font-size:13px;line-height:1.8;margin:10px 0 20px}
+.clinic-comparison{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:19px 0}
+.clinic-comparison span{display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid #cfc2e3;border-radius:12px;padding:15px}
+.clinic-comparison strong{font-size:12px;color:#3c2c75}
+.clinic-comparison small{font-size:11px;line-height:1.5;color:#6c6580}
+.clinic-action{display:inline-flex;align-items:center;justify-content:center;padding:13px 16px;border-radius:10px;background:#6c4ac7;border:1.5px solid #3c2a70;color:#fff;font-size:12px;font-weight:800;box-shadow:2px 3px 0 #28213e}
+.clinic-action:hover{background:#5738a8}
+.reasoning-clinic .clinic-disclaimer{font-size:10px;color:#6c6580;line-height:1.6;margin:14px 0 0}
+@media(max-width:420px){.reasoning-clinic{padding:20px 17px}.clinic-comparison{grid-template-columns:1fr}.clinic-action{width:100%}}
