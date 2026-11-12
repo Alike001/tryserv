@@ -183,7 +183,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    $("mentor-question").value=question;
    $("tutor-panel").scrollIntoView({behavior:"smooth",block:"nearest"});
    $("mentor-question").focus({preventScroll:true});
-   mentorMessage("Your question is ready. Live SERV tutoring uses the private demo access code during testing; no request has been sent yet.");
+   mentorMessage("Your lesson-specific question is ready. No SERV request has been sent; click Ask SERV tutor when you want an explanation.");
  }
  async function runLiveRequest(){
    const code=$("try-access").value;

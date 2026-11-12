@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Practice fixing real SERV API request mistakes, with instant feedback and official documentation.">
+<title>Fix a SERV Request · TrySERV</title>
+<link rel="stylesheet" href="/debug.css">
+<script type="module" src="/debug.js"></script>
+</head>
+<body>
+<header class="site-header"><a class="brand" href="/">t<span>.</span> <strong>tryserv</strong></a><nav aria-label="Navigation"><a href="/">Home</a><a href="/learn">Learning studio</a><a href="/try">Build a request</a></nav></header>
+<main class="page">
+ <section class="intro">
+   <div class="eyebrow">PRACTICAL DEVELOPER LAB · NO SIGNUP</div>
+   <h1>Fix a broken<br><em>SERV request.</em></h1>
+   <p>Real integrations fail for specific reasons. Repair three small request blueprints, check each change against official OpenServ rules, and leave with a valid request structure.</p>
+   <div class="qualifiers"><span>✓ No keys or accounts</span><span>✓ No SERV credits spent</span><span>✓ Checkable corrections</span></div>
+ </section>
+ <div class="workbench">
+  <aside class="sidebar">
+    <div class="sidebar-title">DEBUGGING MISSIONS</div>
+    <div class="progress"><span id="progress">0 / 3 repaired</span><div class="track"><div id="fill"></div></div><small>Progress is saved on this browser only.</small></div>
+    <nav id="cases" aria-label="Troubleshooting cases"></nav>
+    <a class="back-link" href="/learn">← Return to learning</a>
+  </aside>
+  <section class="main">
+    <div class="case-label"><span id="category">CASE</span><span id="count">1 OF 3</span></div>
+    <h2 id="title">Preparing the lab…</h2>
+    <p class="symptom" id="symptom"></p>
+    <p class="task" id="task"></p>
+    <div class="editor-title"><strong>REQUEST BLUEPRINT</strong><span>EDITABLE JSON · NOT EXECUTED</span></div>
+    <label for="editor" class="editor-label">Find the issue and edit the configuration</label>
+    <textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" rows="15" aria-describedby="privacy-note"></textarea>
+    <p id="privacy-note" class="privacy">This is a learning blueprint, not a direct API request body. Never paste API keys, passwords, or personal information here. The checker makes no request to OpenServ.</p>
+    <div class="buttons">
+      <button type="button" id="check" class="primary">Validate my fix →</button>
+      <button type="button" id="reset" class="secondary">Reset example</button>
+    </div>
+    <div id="result" role="status" aria-live="polite" hidden></div>
+    <div id="solution" hidden>
+      <div class="solution-head"><strong>Validated HTTP request blueprint</strong><span>PREVIEW ONLY</span></div>
+      <pre id="solution-code"></pre>
+      <div class="buttons"><button type="button" class="secondary" id="copy">Copy validated blueprint</button><button type="button" class="primary" id="next">Next mission →</button></div>
+    </div>
+    <div class="source">
+      <strong>Check the official source</strong>
+      <p id="notes"></p>
+      <a id="source" href="https://docs.openserv.ai/serv-reasoning/api/chat-completions" target="_blank" rel="noopener noreferrer">OpenServ API reference ↗</a>
+    </div>
+  </section>
+ </div>
+</main>
+<footer>This is an independent OpenServ learning companion. It does not execute or charge for requests entered on this page. <a href="https://docs.openserv.ai/" target="_blank" rel="noopener noreferrer">Official OpenServ docs ↗</a></footer>
+</body>
+</html>
