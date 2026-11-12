@@ -254,3 +254,61 @@ test("keyboard users can skip homepage navigation and reach main content",async(
  await expect(page).toHaveURL(/#main-content$/);
  await expect(page.locator("main#main-content")).toBeVisible();
 });
+
+
+test("learning studio presents a focused journey with a safe contextual SERV coach",async({page})=>{
+ let paidRequests=0;
+ await page.route("**/api/mentor",route=>{
+   paidRequests++;
+   return route.fulfill({status:503,json:{error:"No paid calls are expected from question preparation."}});
+ });
+ await page.goto("/learn");
+ await page.getByRole("link",{name:"Skip to lesson content"}).focus();
+ await expect(page.getByRole("link",{name:"Skip to lesson content"})).toBeVisible();
+ await page.getByRole("button",{name:/I'm new — start learning/}).click();
+ await expect(page.locator("#lesson-count")).toHaveText("LESSON 01 OF 04");
+ await expect(page.locator(".lesson-stages .stage.active")).toContainText("Understand");
+ await page.locator("#answers .choice").nth(1).click();
+ await expect(page.locator(".lesson-stages .stage.active")).toContainText("Practice");
+ await page.locator("#check").click();
+ await expect(page.locator("#feedback")).toContainText("Hint:");
+ await page.getByRole("button",{name:"Show an example"}).click();
+ await expect(page.locator("#mentor-question")).toHaveValue(/realistic developer example/);
+ await expect(page.locator("#mentor-response")).toContainText("No inference sent");
+ expect(paidRequests).toBe(0);
+ await page.locator("#answers .choice").nth(0).click();
+ await page.locator("#check").click();
+ await expect(page.locator(".lesson-stages .stage.active")).toContainText("Apply");
+ await expect(page.locator("#xp-count")).toHaveText("20 XP");
+});
+
+test("refreshed studio stays readable at 320, 375, 768, 1024 and 1440 pixels",async({page})=>{
+ for(const width of [320,375,768,1024,1440]){
+   await page.setViewportSize({width,height:850});
+   await page.goto("/learn");
+   await page.locator("#start-fresh").click();
+   await expect(page.locator("#lesson-title")).toBeVisible();
+   await expect(page.locator("#progress-count")).toBeVisible();
+   await expect(page.locator("#mentor-question")).toBeAttached();
+   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+   expect(overflow, "horizontal overflow at "+width+"px").toBeLessThanOrEqual(2);
+ }
+});
+
+test("reasoning clinic uses SERV only after explicit approval, never on question preparation",async({page})=>{
+ let paid=0;
+ await page.route("**/api/mentor",route=>{
+   paid++;
+   return route.fulfill({status:503,json:{error:"No spending expected from preparation."}});
+ });
+ await page.goto("/learn");
+ await page.locator("#start-fresh").click();
+ await page.locator("#lesson-nav .nav-lesson").nth(2).click();
+ await expect(page.locator("#reasoning-clinic")).toBeVisible();
+ await page.locator("#clinic-ask").click();
+ await expect(page.locator("#mentor-question")).toHaveValue(/hypothetical refund case/);
+ await expect(page.locator("#mentor-response")).toContainText("no SERV request");
+ expect(paid).toBe(0);
+ await page.locator("#lesson-nav .nav-lesson").nth(0).click();
+ await expect(page.locator("#reasoning-clinic")).toBeHidden();
+});
