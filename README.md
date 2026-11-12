@@ -91,3 +91,18 @@ When the guest allowance is exhausted, the free lessons, exercises, XP and JSON/
 The **advanced live request-builder** still requires the private demo access code, since it accepts custom system/user prompts; the code is not required for ordinary lesson tutoring. Neither the SERV API key nor the database password is exposed to the browser.
 
 Operators: the standalone Neon project is named `tryserv-public-tutor-budget`. The Render secrets `DATABASE_URL`, `SERV_API_KEY`, and `LEARN_ACCESS_TOKEN` are server-side. `PUBLIC_TUTOR_ENABLED=true` opts in to free guest access; omitting it disables guest requests safely. All guest reservations are durable; do not reset quotas without reviewing credit consumption. Live inference should be verified with a single browser request before claiming it works end to end.
+
+
+## New: Fix a SERV request — hands-on developer lab
+
+Visit [the TrySERV troubleshooting lab](https://tryserv.onrender.com/debug).
+
+Three editable API request blueprints demonstrate real, documented integration mistakes: a missing system/developer instruction, an incorrect Chat Completions endpoint, and a model not supported by the current learning lab. Edit the JSON, choose **Validate my fix**, inspect precise feedback and correct it. Each scenario links to the official SERV docs.
+
+This lab makes **zero SERV inference calls**, requires **no account or API key**, and records only the three scenario completion markers on your device. On success it generates a validated HTTP request blueprint labeled **PREVIEW ONLY**; it does **not** claim the request was executed.
+
+It complements the existing \`/try\` request builder and separate limited public SERV tutor. The advanced **Run with SERV** action in \`/try\` remains private, as it allows custom prompts and consumes credits.
+
+Current test gate: 42 tests pass on commit \`23050ab\`; Render reports the /debug release live. Browser-based visual/keyboard verification remains to be performed.
+
+See [interactive learning research](docs/INTERACTIVE-LEARNING-RESEARCH.md) for comparisons with Codecademy, Scrimba, freeCodeCamp, Postman LiftOff and MDN.
