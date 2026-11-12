@@ -1,0 +1,143 @@
+import {test,expect} from "@playwright/test";
+
+const validBlueprint={
+  endpoint:"https://inference-api.openserv.ai/v1/chat/completions",
+  model:"gpt-5.4-mini",
+  messages:[
+    {role:"system",content:"You explain technical tasks precisely and admit uncertainty."},
+    {role:"user",content:"Explain when SERV Reasoning helps decide between options."}
+  ]
+};
+
+test("landing sends newcomers and developers to real working routes",async({page})=>{
+  await page.goto("/");
+  await expect(page.getByRole("heading",{level:1})).toContainText("Stop reading");
+  await expect(page.locator("a[href='/learn']").first()).toBeVisible();
+  await page.getByRole("link",{name:/I'm new — start here/i}).click();
+  await expect(page).toHaveURL(/\/learn$/);
+  await expect(page.locator("#lesson-nav .nav-lesson")).toHaveCount(4);
+  await page.goto("/");
+  await page.getByRole("link",{name:/I can code — let's build/i}).click();
+  await expect(page).toHaveURL(/\/try$/);
+  await expect(page.locator("#builder")).toBeVisible();
+});
+
+test("wrong answer gives a useful hint and no XP until the correction is checked",async({page})=>{
+  await page.goto("/learn");
+  await page.locator("#start-fresh").click();
+  await page.locator("#answers .choice").nth(1).click();
+  await page.locator("#check").click();
+  await expect(page.locator("#feedback")).toContainText("Hint:");
+  await expect(page.locator("#xp-count")).toHaveText("0 XP");
+  await page.locator("#answers .choice").nth(0).click();
+  await page.locator("#check").click();
+  await expect(page.locator("#feedback")).toContainText("+20 XP");
+  await expect(page.locator("#xp-count")).toHaveText("20 XP");
+});
+
+test("four lessons build a valid request, save exactly 80 XP and show a completion path",async({page})=>{
+  await page.goto("/learn");
+  await page.locator("#start-fresh").click();
+  for(const answerIndex of [0,1,1]){
+    await page.locator("#answers .choice").nth(answerIndex).click();
+    await page.locator("#check").click();
+    await expect(page.locator("#feedback")).toContainText("Correct.");
+    await page.locator("#next").click();
+  }
+  await expect(page.locator("#builder")).toBeVisible();
+  await page.locator("#check").click();
+  await expect(page.locator("#feedback")).toContainText("+20 XP");
+  await expect(page.locator("#json-preview")).toContainText('"model": "gpt-5.4-mini"');
+  await expect(page.locator("#request-preview")).toBeVisible();
+  await expect(page.locator("#live-try-panel")).toBeHidden();
+  await page.locator("#next").click();
+  await expect(page.locator("#completion-panel")).toBeVisible();
+  await expect(page.locator("#xp-count")).toHaveText("80 XP");
+  await expect(page.locator("#completion-panel")).toContainText("on-device XP");
+  await expect(page.locator("#completion-panel a[href='/debug']")).toBeVisible();
+  await page.reload();
+  await expect(page.locator("#completion-panel")).toBeVisible();
+  await expect(page.locator("#xp-count")).toHaveText("80 XP");
+  await page.locator("#lesson-nav .nav-lesson").first().click();
+  await page.locator("#answers .choice").first().click();
+  await page.locator("#check").click();
+  await expect(page.locator("#xp-count")).toHaveText("80 XP");
+  await expect(page.locator("#feedback")).toContainText("already earned XP");
+});
+
+test("developer repairs all three real-contract examples without spending SERV credits",async({page})=>{
+  await page.goto("/debug");
+  const response=await page.request.get("/api/debug/scenarios");
+  expect(response.ok()).toBeTruthy();
+  const {scenarios,api_execution}=await response.json();
+  expect(api_execution).toBe(false);
+  expect(scenarios).toHaveLength(3);
+  for(let i=0;i<scenarios.length;i++){
+    await expect(page.locator("#editor")).toBeVisible();
+    await page.locator("#editor").fill(JSON.stringify(validBlueprint,null,2));
+    await page.locator("#check").click();
+    await expect(page.locator("#result")).toContainText("Correct");
+    await expect(page.locator("#solution")).toBeVisible();
+    await expect(page.locator("#solution")).toContainText("PREVIEW ONLY");
+    await expect(page.locator("#progress")).toHaveText(String(i+1)+" / 3 repaired");
+    await page.locator("#next").click();
+  }
+  await expect(page).toHaveURL(/\/learn$/);
+  await page.goto("/debug");
+  await expect(page.locator("#progress")).toHaveText("3 / 3 repaired");
+  await expect(page.locator("#debug-complete")).toBeVisible();
+});
+
+test("keyboard can start a lesson, select and submit an answer",async({page})=>{
+  await page.goto("/learn");
+  await page.locator("#start-fresh").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#learning")).toBeVisible();
+  const choice=page.locator("#answers .choice").first();
+  await choice.focus();
+  await page.keyboard.press("Space");
+  await expect(choice).toHaveAttribute("aria-pressed","true");
+  await page.locator("#check").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#feedback")).toContainText("Correct.");
+});
+
+test("public tutor quota can be read without a paid call and errors stay nonfinancial",async({page})=>{
+  let submits=0;
+  await page.route("**/api/lessons",async route=>{
+    const data=await (await route.fetch()).json();
+    await route.fulfill({json:{...data,tutor_enabled:true,public_tutor_enabled:true,guest_daily_limit:2}});
+  });
+  await page.route("**/api/tutor/allowance",route=>route.fulfill({
+    json:{enabled:true,available:true,remaining_today:1,remaining_total:23,daily_limit:2,status:"available"}
+  }));
+  await page.route("**/api/mentor",route=>{
+    submits++;
+    return route.fulfill({json:{
+      mode:"live-serv-tutor",explanation:"A workflow sequences steps, while reasoning helps decide between ambiguous alternatives.",
+      next_action:"Try comparing a known lookup with a disputed refund decision.",
+      reference:{title:"Official source",url:"https://docs.openserv.ai/serv-reasoning/introduction"},
+      model:"TEST-ONLY",completion_id:"PLAYWRIGHT-MOCK",latency_ms:5,
+      usage:{input_tokens:2,output_tokens:7},guest_trial:true,guest_remaining:22
+    }});
+  });
+  await page.goto("/learn");
+  await expect(page.locator("#mentor-allowance")).toContainText("1 of 2 free questions");
+  expect(submits).toBe(0);
+  await page.locator("#mentor-question").fill("Why is SERV Reasoning different from a workflow?");
+  await page.locator("#ask-mentor").click();
+  await expect(page.locator("#mentor-response")).toContainText("PLAYWRIGHT-MOCK");
+  expect(submits).toBe(1);
+});
+
+test("responsive layout has no unexpected page-wide horizontal scrolling",async({page})=>{
+  for(const width of [320,375,768,1024,1440]){
+    await page.setViewportSize({width,height:850});
+    for(const path of ["/","/learn","/debug","/try"]){
+      await page.goto(path);
+      await expect(page.locator("body")).toBeVisible();
+      const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+      expect(overflow,path+" at "+width+"px must not overflow by "+overflow+"px").toBeLessThanOrEqual(2);
+    }
+  }
+});

@@ -94,7 +94,7 @@
    $("solution").hidden=false;
    lastCorrect=data.request;
    $("solution-code").textContent=JSON.stringify(lastCorrect,null,2);
-   $("next").textContent=scenarios.every(s=>completed.has(s.id))?"See your learning summary →":"Next unfinished mission →";
+   $("next").textContent=scenarios.every(s=>completed.has(s.id))?"Return to learning studio →":"Next unfinished mission →";
   }catch(e){showError(e.message);}
   finally{button.disabled=false;button.textContent="Validate my fix →";}
  }
