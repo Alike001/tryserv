@@ -1,3 +1,5 @@
+import {loadProgress,award,pointsFor} from "./progress.mjs";
+
 (() => {
  "use strict";
  const $=(id)=>document.getElementById(id);
@@ -9,12 +11,10 @@
    node.textContent=String(text??"");
    parent.appendChild(node);return node;
  };
- const storageKey="servsteps-progress-v1";
+ const storageKey="tryserv-progress-v1";
  let done=new Set();
- try{
-   const saved=JSON.parse(localStorage.getItem(storageKey)??"[]");
-   if(Array.isArray(saved))done=new Set(saved.filter(x=>typeof x==="string"));
- }catch{done=new Set();}
+ try{done=new Set(loadProgress(localStorage.getItem(storageKey)));}
+ catch{done=new Set();}
  async function api(url,options){
    const response=await fetch(url,options);
    let payload;
@@ -27,6 +27,11 @@
    $("progress-count").textContent=count+" of "+lessons.length;
    $("progress-fill").style.width=lessons.length?(count*100/lessons.length)+"%":"0%";
    $("progress-track").setAttribute("aria-valuenow",String(count));
+   $("xp-count").textContent=pointsFor([...done])+" XP";
+   const hasProgress=count>0;
+   $("resume").hidden=!hasProgress;
+   $("resume-hint").hidden=!hasProgress;
+   $("start-fresh").textContent=hasProgress?"Review from the beginning →":"I'm new — start learning →";
    const host=$("lesson-nav");clear(host);
    for(const lesson of lessons){
      const button=item(host,"button","","nav-lesson"+(current===lesson.id?" active":"")+(done.has(lesson.id)?" complete":""));
@@ -92,8 +97,9 @@
    window.scrollTo({top:0,behavior:"smooth"});
  }
  function complete(){
-   done.add(current);
-   try{localStorage.setItem(storageKey,JSON.stringify([...done]));}catch{}
+   const result=award([...done],current);
+   done=new Set(result.completed);
+   try{localStorage.setItem(storageKey,JSON.stringify(result.completed));}catch{}
    updateProgress();
    $("next").hidden=false;
    const ix=lessons.findIndex(l=>l.id===current);
@@ -118,11 +124,12 @@
        method:"POST",headers:{"Content-Type":"application/json"},
        body:JSON.stringify({lesson_id:current,answer:selected})
      });
-     notify((data.passed?"Correct. ":"") +data.feedback,Boolean(data.passed));
      if(data.passed){
+       const alreadyEarned=done.has(current);
+       notify("Correct. "+data.feedback+(alreadyEarned?" · You've already earned XP for this lesson.":" · +20 XP earned!"),true);
        complete();
        if(data.request)showRequest(data);
-     }
+     }else notify(data.feedback,false);
    }catch(error){notify(error.message);}
    finally{$("check").disabled=false;}
  }
@@ -130,6 +137,16 @@
    const index=lessons.findIndex(l=>l.id===current);
    if(index<lessons.length-1)openLesson(lessons[index+1].id);
    else overview();
+ }
+ function resumeLearning(){
+   const remaining=lessons.find(l=>!done.has(l.id));
+   openLesson((remaining??lessons[lessons.length-1])?.id??"ecosystem");
+ }
+ function resetProgress(){
+   if(!window.confirm("Reset completed lessons and XP saved on this browser?"))return;
+   done=new Set();
+   try{localStorage.removeItem(storageKey);}catch{}
+   overview();
  }
  function overview(){
    current=null;$("intro").hidden=false;$("learning").hidden=true;
@@ -177,6 +194,8 @@
  }
  async function init(){
    $("start-fresh").addEventListener("click",()=>openLesson("ecosystem"));
+   $("resume").addEventListener("click",resumeLearning);
+   $("reset-progress").addEventListener("click",resetProgress);
    $("jump-build").addEventListener("click",()=>openLesson("build"));
    $("check").addEventListener("click",check);
    $("next").addEventListener("click",next);
@@ -187,6 +206,7 @@
      const data=await api("/api/lessons");
      lessons=data.lessons;tutorEnabled=Boolean(data.tutor_enabled);
      updateProgress();
+     if(window.location.pathname==="/try")openLesson("build");
      $("mentor-gate").textContent=tutorEnabled
        ?"Live SERV tutor available with instructor access. Never paste API keys into a lesson."
        :"Guided lessons work now. The live SERV tutor will be enabled when its secure server credentials are configured.";
