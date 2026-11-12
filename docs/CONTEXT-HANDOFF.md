@@ -175,3 +175,27 @@ Work in feat/docs-and-learning-navigation:
 - Neon read-only check on Nov 12 reported `used=1` of 24 shared guest lifetime reservations at that moment. Do NOT silently change budget, assume it means one successful inference, or claim the count is static.
 - Research record: `docs/LEARNING-UX-RESEARCH.md`; original NimQuest images/code/brand were not copied. Official OpenServ Chat Completions docs confirm the endpoint and `gpt-5.4-mini` examples; official Edition 02 hackathon rules still apply.
 - **After this docs commit:** verify latest Render `main` deployment and GitHub CI. Human novice/developer walkthrough and actual phone/screen-reader review, live question observation, final screenshots, X post/video and Typeform submission remain **NOT DONE**. Keep Opsra untouched and preserve testable truth claims.
+
+
+## November 13 continuation — unified design + SERV-as-core debugging release
+
+**Verified release:** PR #10 https://github.com/Alike001/tryserv/pull/10 **MERGED** as `0cde1376f30c70e70005c25f0e23153f325cb075`. GitHub Node CI, GitGuardian and browser tests all succeeded. **48 of 48 Chromium tests passed** on the final PR head. Visual QA archive: https://github.com/Alike001/tryserv/actions/runs/43328806026/artifacts/13993498764 (10 real no-secret desktop/mobile screenshot previews). Render deployment `dep-dbr4mru7bikc73ehk9sg` reported **LIVE** for merge `0cde1376` on November 12 23:28 UTC. Documentation-only follow-up commits after that may have a newer deployment; always re-check before claiming final main is live.
+
+**Design:** Source of truth is the landing site's existing navy `#132b42`, cobalt `#4269e9`, mint `#38d4ad`, blue/mint/peach accents, white/light-slate backgrounds and readable DM Sans/Space Grotesk. `public/brand.css` is a unified final override included on /, /learn, /try, /debug, /docs. Every route has clear Home/Learn/Build/Debug/Docs mobile navigation. Desktop paths remain accessible. Docs and learning hero sections are cleaner; debug hero contains a new *illustrative* three-step preview (detect, opt in to SERV, recheck), NOT fabricated successful inference. Four lessons show as 2×2 grid on phone. Learning stage progress now tracks Understand/Practice/Apply, not lesson ordinal (jumping to lesson 4 does not show 100% progress immediately). Debug top logo matches landing and docs. All links have tests.
+
+**SERV's meaningful role:** On /debug, deterministic `/api/debug/check` identifies a problem for free. After validation, a distinct section offers *explicit* `Ask SERV to explain this issue`. Only known pre-authored scenario details + server-returned validation field names are sent to existing `POST /api/mentor`, never the user's editable raw JSON. The read-only `GET /api/tutor/allowance` ensures availability before enabling and rechecks before sending. The existing Neon durable budget (2 calls/approximate visitor/day; 24 lifetime shared guest calls) remains unchanged and fails closed on exhausted/unavailable status. A successful live response shows model/completion ID/latency/usage/source/action. The user must repair/revalidate their own request. Browser tests simulate the upstream; this newly integrated hosted debug flow **has not been independently exercised with paid live SERV after merge**. Earlier live lesson tutor was verified in user screenshots. Do not confuse the two.
+
+**Visual QA:** Cloud Chromium captured five desktop and five phone screenshots, inspected in this chat. Main landing, docs, learning, mobile nav and new desktop debug hero are visually coherent. This is visual screenshot review of local test server, not human usability evaluation of the deployed site. Do not claim screen-reader audit.
+
+**Current product scope:** Four source-backed server-graded lessons, 80 maximum *local* XP, one deterministic request builder, three request repair missions, optional real SERV tutor and post-validation error reasoning, in-app docs and one Render URL. No wallet receipt, official training credential, login, demo fake transactions or fabricated usage.
+
+**Now do (before submission):**
+1. Verify final Render deployment/CI for latest main after documentation updates.
+2. Have one unassisted beginner and one developer do real public-browser journeys; record blockers and resolve them.
+3. Use at most a justified budgeted call to verify **new /debug → SERV** live completion: choose broken instruction scenario, click Check, confirm quota, explicitly ask SERV, record actual model/ID/latency, then fix and revalidate. Never paste SERV API keys in browser. Do not reset guest budget.
+4. Capture production screenshots, record a truthful 3–4 minute demo including a genuine SERV output only if verified.
+5. Upload demo, publish X post with @openservai, submit official OpenServ Edition 02 Typeform by **November 15, 2026 at 23:59 UTC** (Nov 16 00:59 WAT). See `docs/HACKATHON-SUBMISSION.md`.
+
+**Revenue potential** is an unvalidated B2B onboarding/SDK integration training hypothesis; no users or revenue claimed. Keep Opsra `Alike001/opsra` entirely untouched. Do not add unnecessary feature sprawl before the deadline.
+
+**New chat resume:** Continue TrySERV from `Alike001/tryserv` main. Read `docs/CONTEXT-HANDOFF.md`, `docs/PRODUCT-PLAN.md`, `docs/HACKATHON-SUBMISSION.md`. Check PR #10 and Render `srv-dbqvo68ae00c73bepbj0`. Next is real-user acceptance and true live SERV diagnostic verification; final video/X/Typeform are not yet done. Do not modify Opsra.
