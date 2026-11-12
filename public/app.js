@@ -50,7 +50,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    host.textContent=message;
  }
  function resetExercise(){
-   chosen=null;notify("");$("help-action").hidden=true;$("next").hidden=true;$("request-preview").hidden=true;
+   chosen=null;notify("");$("help-action").hidden=true;$("next").hidden=true;$("request-preview").hidden=true;$("live-try-panel").hidden=true;$("try-result").hidden=true;
    $("check").disabled=false;$("check").textContent="Check my answer →";
  }
  function showChoices(lesson){
@@ -111,6 +111,8 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    $("json-preview").textContent=requestJson;
    $("curl-preview").textContent=curl;
    $("request-preview").hidden=false;
+   $("live-try-panel").hidden=!tutorEnabled;
+   $("try-result").hidden=true;
  }
  async function check(){
    if(!current)return;
@@ -183,6 +185,36 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    $("mentor-question").focus({preventScroll:true});
    mentorMessage("Your question is ready. Live SERV tutoring uses the private demo access code during testing; no request has been sent yet.");
  }
+ async function runLiveRequest(){
+   const code=$("try-access").value;
+   if(!code){$("try-result").hidden=false;$("try-result").className="live-result error";$("try-result").textContent="Enter your private demo access code. Do not enter your SERV API key.";return;}
+   if(!requestJson)return;
+   const request=JSON.parse(requestJson);
+   const input={
+     model:request.model,
+     system:request.messages[0].content,
+     user:request.messages[1].content
+   };
+   const button=$("run-serv"),host=$("try-result");
+   button.disabled=true;
+   button.textContent="Requesting SERV…";
+   host.hidden=false;host.className="live-result";host.textContent="Sending a real request to OpenServ…";
+   try{
+     const data=await api("/api/try-serv",{
+       method:"POST",
+       headers:{"Content-Type":"application/json","X-Learn-Access-Token":code},
+       body:JSON.stringify({request:input})
+     });
+     clear(host);
+     item(host,"strong","LIVE SERV RESPONSE · "+data.status.toUpperCase());
+     item(host,"p",data.response);
+     item(host,"small","Model: "+data.model+" · Completion: "+(data.completion_id??"not supplied")+
+       " · Latency: "+(data.latency_ms??"unavailable")+" ms"+
+       " · Tokens: "+((data.usage?.input_tokens??"–")+" input / "+(data.usage?.output_tokens??"–")+" output"));
+     host.className="live-result success";
+   }catch(error){host.className="live-result error";host.textContent=error.message;}
+   finally{button.disabled=false;button.textContent="Run this request with SERV ↗";}
+ }
  async function askTutor(){
    const question=$("mentor-question").value.trim();
    if(question.length<8)return mentorMessage("Enter a specific question of at least eight characters.",true);
@@ -224,6 +256,7 @@ import {loadProgress,award,pointsFor} from "./progress.mjs";
    $("check").addEventListener("click",check);
    $("next").addEventListener("click",next);
    $("ask-mentor").addEventListener("click",askTutor);
+   $("run-serv").addEventListener("click",runLiveRequest);
    $("ask-about-answer").addEventListener("click",prepareTutorQuestion);
    $("copy-json").addEventListener("click",()=>copy(requestJson,$("copy-json")));
    $("copy-curl").addEventListener("click",()=>copy(curl,$("copy-curl")));
