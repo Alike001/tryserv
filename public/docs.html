@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8fafc">
+  <meta name="description" content="TrySERV documentation: understand the learning paths, real SERV integration, practice labs, quotas, architecture, and privacy limitations.">
+  <title>Documentation — TrySERV</title>
+  <link rel="stylesheet" href="/docs.css">
+</head>
+<body>
+<a class="skip" href="#content">Skip to documentation</a>
+<div class="notice"><span>LEARN → PRACTICE → BUILD</span><a href="/learn">Start a guided lesson <span aria-hidden="true">→</span></a></div>
+<header class="site-header">
+  <a href="/" class="brand" aria-label="TrySERV homepage"><span class="mark">t<span>.</span></span><strong>TrySERV</strong></a>
+  <nav aria-label="Main navigation">
+    <a href="/">Home</a><a href="/learn">Lessons</a><a href="/debug">Debug lab</a><a href="/try">Request builder</a>
+    <a href="/docs" aria-current="page">Docs</a>
+  </nav>
+  <a class="nav-cta" href="/learn">Start learning <span aria-hidden="true">→</span></a>
+</header>
+<div class="docs-shell">
+  <aside class="docs-sidebar" aria-label="Documentation sections">
+    <p class="sidebar-label">DOCUMENTATION</p>
+    <nav aria-label="On this page">
+      <a href="#overview">Overview</a>
+      <a href="#paths">Choose your path</a>
+      <a href="#learning">Learning and progress</a>
+      <a href="#serv">SERV integration</a>
+      <a href="#api">Request example</a>
+      <a href="#debugging">Debugging lab</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#security">Security and privacy</a>
+      <a href="#faq">Common questions</a>
+    </nav>
+    <div class="sidebar-card">
+      <span class="card-eyebrow">OFFICIAL SOURCE</span>
+      <strong>Check the OpenServ documentation</strong>
+      <p>TrySERV is independent. Product claims and technical API details should be checked with OpenServ.</p>
+      <a href="https://docs.openserv.ai/" target="_blank" rel="noopener noreferrer">Official docs <span aria-hidden="true">↗</span></a>
+    </div>
+  </aside>
+  <main id="content" tabindex="-1">
+    <section class="docs-intro" id="overview">
+      <span class="eyebrow">TRYSERV / GUIDES / OVERVIEW</span>
+      <h1>Understand it.<br><span>Then actually use it.</span></h1>
+      <p>TrySERV is an independent, hands-on learning companion for OpenServ. It connects short explanations, checkable exercises, practical request repairs, and optional real SERV-powered tutoring in one beginner-to-builder journey.</p>
+      <div class="intro-actions">
+        <a class="action primary" href="/learn">Explore the lessons <span aria-hidden="true">→</span></a>
+        <a class="action outline" href="/debug">Fix a broken request <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="facts" aria-label="What is available">
+        <span><strong>04</strong> beginner lessons</span><span><strong>03</strong> debugging cases</span><span><strong>80</strong> maximum local XP</span>
+      </div>
+    </section>
+    <section class="doc-section" id="paths">
+      <div class="section-heading"><span class="index">01</span><div><span class="eyebrow">START HERE</span><h2>Choose your path</h2><p>There is no mandatory account or setup. Pick the flow that matches what you came to do.</p></div></div>
+      <div class="path-grid">
+        <a href="/learn" class="path-card mint">
+          <span class="tag">NEW TO OPENSERV · ABOUT 16 MIN</span><span class="card-arrow" aria-hidden="true">↗</span>
+          <h3>Understand OpenServ</h3><p>Discover agents, workflows, SERV Reasoning, and when it makes sense to use them. Answer real questions and build a valid example.</p>
+          <span class="link-label">Begin the four lessons <span aria-hidden="true">→</span></span>
+        </a>
+        <a href="/try" class="path-card blue">
+          <span class="tag">ALREADY A BUILDER</span><span class="card-arrow" aria-hidden="true">↗</span>
+          <h3>Build an API request</h3><p>Create a supported Chat Completions request, get deterministic validation, and copy JSON or curl into your own environment.</p>
+          <span class="link-label">Open request builder <span aria-hidden="true">→</span></span>
+        </a>
+        <a href="/debug" class="path-card peach">
+          <span class="tag">INTEGRATION TROUBLESHOOTING</span><span class="card-arrow" aria-hidden="true">↗</span>
+          <h3>Find what went wrong</h3><p>Repair missing instructions, an incorrect endpoint, and a model selection error. Get feedback without spending API credits.</p>
+          <span class="link-label">Try three repairs <span aria-hidden="true">→</span></span>
+        </a>
+      </div>
+    </section>
+    <section class="doc-section" id="learning">
+      <div class="section-heading"><span class="index">02</span><div><span class="eyebrow">HOW THE LEARNING WORKS</span><h2>Learn. Check. Correct. Continue.</h2></div></div>
+      <div class="process">
+        <div><span class="process-number">1</span><h3>Read</h3><p>Short, source-linked explanations teach one practical concept at a time.</p></div>
+        <div><span class="process-number">2</span><h3>Answer</h3><p>Choose the best action. Our deterministic backend checks your response rather than asking an AI to decide correctness.</p></div>
+        <div><span class="process-number">3</span><h3>Improve</h3><p>Incorrect choices receive a focused hint and a chance to retry. SERV tutoring may be available for more explanation.</p></div>
+        <div><span class="process-number">4</span><h3>Apply</h3><p>Finish the request builder and, separately, repair API examples in the debugging lab.</p></div>
+      </div>
+      <div class="note"><strong>About XP and progress</strong><p>Each of four lessons awards 20 XP once, up to 80 XP, stored only in this browser. The three debugging repairs have a separate completion count. You can reset or lose that local progress by clearing browser storage. TrySERV does not issue a certificate or a verified credential.</p></div>
+    </section>
+    <section class="doc-section" id="serv">
+      <div class="section-heading"><span class="index">03</span><div><span class="eyebrow">REAL SERV REASONING</span><h2>Where OpenServ powers the product</h2></div></div>
+      <p>Our lesson companion uses <strong>SERV Reasoning</strong> through its OpenAI-compatible Chat Completions API. The lesson context and a visitor's question are sent by TrySERV's server; a successful response shows its model, completion identifier, usage, and latency. It is live inference, not a prerecorded chatbot reply.</p>
+      <div class="diagram" aria-label="How an authorized tutor request flows">
+        <span>Visitor asks a lesson question</span><b aria-hidden="true">↓</b>
+        <span>Server checks the limited guest budget</span><b aria-hidden="true">↓</b>
+        <span>SERV Chat Completions processes the question</span><b aria-hidden="true">↓</b>
+        <span>Response + source link + actual model metadata</span>
+      </div>
+      <p>The AI explanation may still be mistaken. TrySERV supplies an official source for human checking. Answers to quizzes and request-structure validation are deterministic, <em>not</em> graded by the model.</p>
+      <div class="note"><strong>Free public tutoring has limits</strong><p>At this stage, guest tutoring allows up to two requests per approximate visitor identity per UTC day and a shared lifetime pilot budget of 24 guest calls. Remaining requests are shown in the learning studio when the budget service is available. The quota is stored in a database; when it is exhausted or unavailable, paid guest calls stop but free lessons still work. These limits can change after measured cost and abuse review.</p></div>
+      <p><a class="inline-link" href="https://docs.openserv.ai/serv-reasoning/introduction" target="_blank" rel="noopener noreferrer">Read the official SERV introduction ↗</a></p>
+    </section>
+    <section class="doc-section" id="api">
+      <div class="section-heading"><span class="index">04</span><div><span class="eyebrow">DEVELOPER QUICKSTART</span><h2>Your first request shape</h2><p>TrySERV can validate this structure before you send any paid API call.</p></div></div>
+      <div class="code-title"><strong>Chat Completions request</strong><span>REFERENCE EXAMPLE · NOT EXECUTED</span></div>
+      <pre class="code"><code>POST https://inference-api.openserv.ai/v1/chat/completions
+Authorization: Bearer $SERV_API_KEY
+Content-Type: application/json
+
+{
+  "model": "gpt-5.4-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You explain API concepts accurately."
+    },
+    {
+      "role": "user",
+      "content": "When should I use SERV Reasoning?"
+    }
+  ]
+}</code></pre>
+      <p>Keep your SERV API key in your own private environment. Do not paste it into the TrySERV website or commit it to GitHub. The <a class="inline-link" href="/try">request builder</a> checks the lesson's supported model and fields and offers copyable JSON/curl. Previewing or copying does <strong>not</strong> send a request. There is a separate operator-only live test that explicitly requires private authorization and can consume credits.</p>
+      <p><a class="inline-link" href="https://docs.openserv.ai/serv-reasoning/api/chat-completions" target="_blank" rel="noopener noreferrer">Official Chat Completions API reference ↗</a></p>
+    </section>
+    <section class="doc-section" id="debugging">
+      <div class="section-heading"><span class="index">05</span><div><span class="eyebrow">TROUBLESHOOTING</span><h2>Know why a request fails</h2></div></div>
+      <div class="issue-grid">
+        <div><span class="issue-number">01</span><h3>Missing instruction</h3><p>Learn why a meaningful system or developer role belongs in a SERV request.</p></div>
+        <div><span class="issue-number">02</span><h3>Incorrect endpoint</h3><p>Repair the host and path used for Chat Completions.</p></div>
+        <div><span class="issue-number">03</span><h3>Unsupported model in the lesson</h3><p>Recognize a model name outside the small set supported by this practice lab. This is not a complete SERV model catalog.</p></div>
+      </div>
+      <p>All three challenges run on TrySERV's deterministic validator. No SERV key is necessary and no inference request is made.</p>
+      <p><a class="inline-link" href="/debug">Open the debugging lab ↗</a></p>
+    </section>
+    <section class="doc-section" id="architecture">
+      <div class="section-heading"><span class="index">06</span><div><span class="eyebrow">SYSTEM DESIGN</span><h2>Small architecture, explicit boundaries</h2></div></div>
+      <div class="architecture">
+        <div><strong>Browser</strong><p>Lessons, forms, local XP, debugging completion, user-visible feedback.</p></div>
+        <div><strong>TrySERV Node server</strong><p>Serves the pages, grades exercises, validates request shapes, verifies guest allowance.</p></div>
+        <div><strong>Neon PostgreSQL</strong><p>Stores bounded public tutor request counts—not learner XP or personal accounts.</p></div>
+        <div><strong>OpenServ SERV API</strong><p>Processes authorized tutoring questions. The API key stays on the server.</p></div>
+      </div>
+      <p>The hosted app runs on Render. There is no wallet proof, token reward, blockchain settlement, or autonomous agent deployment in this product. The demo request builder is a learning tool, not a guarantee that a user's own integration works in production.</p>
+    </section>
+    <section class="doc-section" id="security">
+      <div class="section-heading"><span class="index">07</span><div><span class="eyebrow">SAFETY & TRANSPARENCY</span><h2>What TrySERV stores—and doesn't</h2></div></div>
+      <ul class="plain-list">
+        <li><strong>On your device:</strong> completed lesson IDs, earned local XP, and completed debugging mission IDs.</li>
+        <li><strong>On the server:</strong> bounded tutor usage counters, using a pseudonymous keyed visitor identifier rather than storing raw browser identity in the quota table.</li>
+        <li><strong>Sent for live tutoring:</strong> the question you type and the selected lesson context; don't enter passwords, private keys, confidential code, or sensitive personal information.</li>
+        <li><strong>Not stored as a learner account:</strong> no registration, persistent login profile, official OpenServ certification, or verified identity.</li>
+        <li><strong>Unaudited learning pilot:</strong> the code has automated tests, but this isn't a guarantee of security or commercial uptime.</li>
+      </ul>
+      <p><a class="inline-link" href="https://github.com/Alike001/tryserv" target="_blank" rel="noopener noreferrer">Inspect the public source code ↗</a></p>
+    </section>
+    <section class="doc-section faq-section" id="faq">
+      <div class="section-heading"><span class="index">08</span><div><span class="eyebrow">COMMON QUESTIONS</span><h2>Before you begin</h2></div></div>
+      <details><summary>Is TrySERV made or endorsed by OpenServ?</summary><p>No. TrySERV is an independent learning companion. It links to OpenServ's official sources, but is not affiliated with or endorsed by OpenServ.</p></details>
+      <details><summary>Do I need a SERV API key to complete the lessons?</summary><p>No. All four lessons, exercise grading, XP and the request-debugging lab work without an API key. Public SERV tutoring is available only within a finite shared trial allowance.</p></details>
+      <details><summary>Does a validated request mean the API call succeeded?</summary><p>No. Validation checks the supported structure locally through TrySERV's server. It is a preview unless an explicitly authorized live request is made and a genuine completion is returned.</p></details>
+      <details><summary>Why can the AI tutor stop answering?</summary><p>Because the pilot uses paid SERV inference, public tutoring has a durable budget. When exhausted, the no-cost learning and debugging paths remain accessible.</p></details>
+      <details><summary>Will my XP follow me to another device?</summary><p>No. Lesson XP and completed debugging scenarios are stored in the current browser only. They are neither account-based nor wallet-verified.</p></details>
+    </section>
+    <section class="closing">
+      <span class="eyebrow">READY WHEN YOU ARE</span>
+      <h2>One useful step at a time.</h2>
+      <p>Start with the fundamentals or jump directly to repairing a broken SERV request.</p>
+      <div class="intro-actions"><a href="/learn" class="action primary">Start learning <span aria-hidden="true">→</span></a><a href="/debug" class="action outline">Debug a request <span aria-hidden="true">↗</span></a></div>
+    </section>
+  </main>
+</div>
+<footer class="footer"><strong>TrySERV</strong><span>Independent learning companion · Practice progress stays in your browser</span><nav aria-label="Footer"><a href="/learn">Learn</a><a href="/debug">Debug</a><a href="/try">Build</a><a href="/docs">Docs</a><a href="https://github.com/Alike001/tryserv" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav></footer>
+</body>
+</html>
