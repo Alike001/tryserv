@@ -43,3 +43,14 @@ OpenServ Edition 02, proposed Open Track, deadline 15 November 2026 23:59 UTC. P
 
 ## Cross-chat resume instruction
 Continue TrySERV from https://github.com/Alike001/tryserv. Read docs/CONTEXT-HANDOFF.md and docs/PRODUCT-PLAN.md, verify GitHub CI and Render srv-dbqvo68ae00c73bepbj0, then focus on real SERV tutor and learner experience. Do not modify Opsra main.
+
+
+## November 12 follow-up — access-code rationale and latest engineering work
+
+The user uploaded screenshots showing the NEW TrySERV website and studio loading, and Render confirmed the environment-variable deployment succeeded. User has added SERV_API_KEY and LEARN_ACCESS_TOKEN to the NEW Render service and wants to focus on functionality before visual redesign.
+
+The instructor access code is NOT a teacher account: LEARN_ACCESS_TOKEN is a separate operator-chosen testing secret protecting paid SERV credits. Free lessons do not require it. UI now labels it private demo access code. Never expose the access code or SERV_API_KEY.
+
+Latest feature commits on https://github.com/Alike001/tryserv (main): non-spoiler, per-choice wrong-answer hints; a button to prefill a focused SERV tutoring question; measured tutor latency/usage; optional actual paid SERV request execution in lesson 4, distinct from request preview; shared per-process paid-call quota (3 per 10 minutes per connection peer, maximum 35 per process lifetime); integration tests with simulated SERV replies.
+
+Next: verify latest GitHub CI and Render (srv-dbqvo68ae00c73bepbj0) live. Operator tests ONE real SERV call at https://tryserv.onrender.com/learn or /try using only their private demo access code. Collect completion ID, model and latency; do not claim actual completion before verifying. Fix any real API error, then assess learner task success and mobile/browser UX. Previous unrelated Opsra repo must stay untouched.
