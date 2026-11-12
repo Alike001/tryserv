@@ -65,3 +65,27 @@ test("docs describe live inference separately from deterministic previews and qu
   assert.doesNotMatch(html,/Nimiq Pay|wallet[- ]signed|verified on[- ]chain/i);
  });
 });
+
+
+test("one shared brand stylesheet and working first-party navigation across the app",async()=>{
+ await withApp(async (url,calls)=>{
+  const style=await fetch(url+"/brand.css");
+  assert.equal(style.status,200);
+  assert.match(style.headers.get("content-type"),/text\/css/);
+  const css=await style.text();
+  assert.match(css,/--ts-blue:#4269e9/);
+  assert.match(css,/--ts-navy:#132b42/);
+  for(const route of ["/","/learn","/try","/debug","/docs"]){
+   const html=await (await fetch(url+route)).text();
+   assert.match(html,/href="\/brand\.css"/,route+" must use the same brand");
+   assert.match(html,/class="brand-route-nav"/,route+" must have mobile page navigation");
+   for(const link of ["/","/learn","/try","/debug","/docs"]){
+    assert.ok(html.includes('href="'+link+'"'),route+" links to "+link);
+   }
+  }
+  const html=await (await fetch(url+"/debug")).text();
+  assert.match(html,/id="serv-diagnostic"/);
+  assert.match(html,/only this exercise's known scenario/);
+  assert.equal(calls(),0,"reading public pages cannot make paid SERV requests");
+ });
+});
