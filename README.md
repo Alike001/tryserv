@@ -17,6 +17,12 @@ Unlike a generic documentation chatbot:
 - **Three editable debugging missions** teach how to repair missing instructions, a wrong endpoint, and an invalid model choice. All three are free and deterministic.
 - **SERV Reasoning is genuinely integrated** as an optional lesson-aware tutor. A successful provider response exposes the returned model, completion ID, measured latency, and usage rather than substituting a scripted answer.
 
+## Refreshed learning and reasoning experience
+
+The learning studio now uses a focused **Understand → Practice → Apply** progression, larger readable lesson cards and a distinct SERV coach section. Three question suggestions prepare a beginner explanation, a developer example or a reasoning-versus-code comparison **without sending a paid request**. Lesson three contains a hypothetical policy-exception case showing where exact code stops and careful SERV-assisted review may begin. It never makes a real refund decision.
+
+The standalone debugging lab shares the same original TrySERV visual language, with explicit Read → Edit → Verify steps. These improvements were merged in [PR #8](https://github.com/Alike001/tryserv/pull/8) and [PR #9](https://github.com/Alike001/tryserv/pull/9). Research: [Learning UX and SERV Coach](docs/LEARNING-UX-RESEARCH.md).
+
 ## Try it as a judge or first-time visitor
 
 | Visit | What to do | What proves it works |
