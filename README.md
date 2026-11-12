@@ -10,11 +10,11 @@ Unlike a general AI chat interface, every lesson has a concrete outcome and link
 
 ## How to test
 
-1. Open the deployed TrySERV learning app (URL to be confirmed after the new Render deployment). Select **I'm new**.
+1. Open https://tryserv.onrender.com/. Use **I'm new** for the four lessons, or **I can code** for the builder.
 2. Complete "Find your way around OpenServ" (Agents, Workflows, Connect), then "What is SERV?" and observe why a wrong choice is wrong.
 3. Complete "When reasoning helps" with an ambiguous decision scenario. No SERV inference is used for exact grading.
 4. Complete "Build your first request". Copy the JSON and curl command; nothing is executed on this screen.
-5. Verify local progress updates; navigate lessons and reload.
+5. Earn 20 XP per passed lesson (maximum 80 XP). Repeating a lesson does not add XP. Refresh and verify resume, or use the reset option. Progress/XP are on this browser only.
 6. **Optional live SERV tutor:** configure `SERV_API_KEY` and a separate `LEARN_ACCESS_TOKEN` as Render secrets. Enter only the instructor access code in the browser, then ask a lesson-related question. The real model, completion ID and source appear.
 7. With no secrets configured, the tutor is visibly unavailable and all free lessons remain functional.
 
@@ -28,11 +28,13 @@ node --test test/*.test.mjs
 node index.mjs
 ```
 
-Visit http://localhost:3000.
+Visit http://localhost:3000 (landing), /learn (studio), or /try (builder).
 
 ## Server endpoints
 
-- `GET /`: learning interface
+- `GET /`: public landing page
+- `GET /learn`: learning studio
+- `GET /try`: direct request-building lesson
 - `GET /api/lessons`: four source-linked lessons, correct answers excluded
 - `POST /api/check`: deterministic assessment / validated API request preview
 - `GET /healthz`: health and tutor-enabled status
@@ -51,7 +53,8 @@ Request previews do **not** make paid calls. No one is asked to paste an OpenSer
 
 ## Current phase / not yet done
 
-- [x] Free interactive lessons, client-side progress and request builder
+- [x] Polished standalone landing page with functional beginner/builder entry routes
+- [x] Four sourced interactive lessons, browser-only XP and resume, and a request-builder preview
 - [x] API backend with deterministic checks
 - [x] SERV tutor implementation with HTTP stub tests
 - [ ] Cloud live SERV call with operator-provisioned secret
