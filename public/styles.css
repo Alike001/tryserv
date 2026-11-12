@@ -224,3 +224,11 @@ select,textarea,input{font-size:13px;line-height:1.6}
 .clinic-action:hover{background:#5738a8}
 .reasoning-clinic .clinic-disclaimer{font-size:10px;color:#6c6580;line-height:1.6;margin:14px 0 0}
 @media(max-width:420px){.reasoning-clinic{padding:20px 17px}.clinic-comparison{grid-template-columns:1fr}.clinic-action{width:100%}}
+
+
+/* The narrow-screen lesson header must retain actual progress, not hide it. */
+@media(max-width:760px){
+ .sidebar .progressbox{display:block}
+ .sidebar .progressrow{margin-bottom:8px}
+ .sidebar .xp-line{display:flex}
+}
