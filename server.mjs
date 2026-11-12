@@ -6,7 +6,7 @@ import {readFile} from "node:fs/promises";
 import {publicLessons,checkExercise,findLesson} from "./curriculum.mjs";
 import {answerWithServ} from "./mentor.mjs";
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
-const files={"/":["index.html","text/html; charset=utf-8"],"/styles.css":["styles.css","text/css; charset=utf-8"],"/app.js":["app.js","text/javascript; charset=utf-8"]};
+const files={"/":["landing.html","text/html; charset=utf-8"],"/learn":["index.html","text/html; charset=utf-8"],"/try":["index.html","text/html; charset=utf-8"],"/landing.css":["landing.css","text/css; charset=utf-8"],"/styles.css":["styles.css","text/css; charset=utf-8"],"/app.js":["app.js","text/javascript; charset=utf-8"],"/progress.mjs":["progress.mjs","text/javascript; charset=utf-8"]};
 function json(res,status,payload){res.writeHead(status,{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"});res.end(JSON.stringify(payload));}
 function tokenEquals(value,expected){
  if(typeof value!=="string"||!expected)return false;
@@ -34,7 +34,7 @@ export function createApp({env=process.env,fetchImpl=fetch}={}){
   const url=new URL(req.url??"/","http://localhost");
   const pathname=url.pathname;
   if(req.method==="GET"&&pathname==="/healthz")
-   return json(res,200,{status:"ok",service:"serv-learning-companion",tutor_enabled:enabled,mode:"independent learning pilot"});
+   return json(res,200,{status:"ok",service:"tryserv",tutor_enabled:enabled,mode:"independent learning pilot"});
   if(req.method==="GET"&&pathname==="/api/lessons")
    return json(res,200,{lessons:publicLessons(),tutor_enabled:enabled,progress_storage:"on-device only"});
   if(req.method==="POST"&&pathname==="/api/check"){
