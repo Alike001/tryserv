@@ -587,3 +587,42 @@ test("developer docs search is local, helps find sections and works on mobile",a
  expect(overflow).toBeLessThanOrEqual(2);
  expect(paid).toBe(0);
 });
+
+
+test("illustrated OpenServ hero displays original art and changes stages without inference",async({page})=>{
+ let paid=0;
+ page.on("request",request=>{
+   if(["/api/mentor","/api/try-serv"].includes(new URL(request.url()).pathname))paid++;
+ });
+ for(const width of [320,375,768,1440]){
+   await page.setViewportSize({width,height:900});
+   await page.goto("/",{waitUntil:"load"});
+   const art=page.locator(".hero-original-illustration");
+   await expect(art).toBeVisible();
+   expect(await art.evaluate(img=>img.complete&&img.naturalWidth>0),"original SVG loads at "+width).toBe(true);
+   const story=page.locator("[data-hero-explorer]");
+   const buttons=story.locator("[data-hero-stage]");
+   await expect(buttons).toHaveCount(3);
+   await expect(buttons.nth(0)).toHaveAttribute("aria-pressed","true");
+   await buttons.nth(1).click();
+   await expect(buttons.nth(1)).toHaveAttribute("aria-pressed","true");
+   await expect(story.locator("[data-hero-description]")).toContainText("SERV Reasoning");
+   await expect(story.locator("[data-hero-link]")).toHaveAttribute("href","/debug");
+   await buttons.nth(2).click();
+   await expect(story.locator("[data-hero-description]")).toContainText("deterministic");
+   await expect(story.locator("[data-hero-link]")).toHaveAttribute("href","/try");
+   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+   expect(overflow,"homepage visual has no overflow at "+width).toBeLessThanOrEqual(2);
+ }
+ expect(paid).toBe(0);
+});
+
+test("hero offers reduced-motion artwork and illustration is not presented as live inference",async({page})=>{
+ await page.emulateMedia({reducedMotion:"reduce"});
+ await page.goto("/");
+ await expect(page.locator(".hero-steps-top")).toContainText("NO LIVE API CALL");
+ await expect(page.locator(".hero-original-illustration")).toHaveAttribute("alt",/conceptual SERV API workflow/);
+ await expect(page.locator("[data-hero-explorer]")).toHaveAttribute("data-hero-current","0");
+ const animation=await page.locator(".hero-art-chip-one").evaluate(el=>getComputedStyle(el).animationName);
+ expect(animation).toBe("none");
+});
