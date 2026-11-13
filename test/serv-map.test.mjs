@@ -53,7 +53,7 @@ test("walkthrough stages update independently, with accessible pressed state and
     querySelectorAll(key){assert.equal(key,"[data-serv-step]"); return buttons;},
     querySelector(key){assert.ok(fields[key],key);return fields[key];},
   };
-  const document = {querySelectorAll(key){assert.equal(key,"[data-serv-map]");return [root];}};
+  const document = {querySelectorAll(key){assert.equal(key,"[data-serv-map]");return [root];},querySelector(key){assert.equal(key,"[data-hero-explorer]");return null;}};
   runInNewContext(source, {document});
   assert.match(markup, /aria-label="Choose a walkthrough stage"/);
   assert.match(markup, /aria-live="polite"/);
