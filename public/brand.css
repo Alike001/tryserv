@@ -456,3 +456,61 @@ body[data-page="learn"] .lesson-concept-summary{font-size:11px;line-height:1.7;c
  body[data-page="learn"] .concept-node small{font-size:11px}
  body[data-page="learn"] .concept-link{font-size:17px;transform:rotate(90deg);height:15px}
 }
+
+
+/* Live debugging progress: responds to server validation, not fake/demo statuses. */
+body[data-page="debug"] .repair-state-flow{
+ display:grid;grid-template-columns:minmax(0,1fr) 17px minmax(0,1fr) 17px minmax(0,1fr);
+ gap:9px;align-items:stretch;margin:26px 0 8px;
+}
+body[data-page="debug"] .repair-state-step{
+ min-width:0;display:flex;flex-direction:column;gap:7px;justify-content:center;
+ padding:15px 12px;border:1px solid #d7e2ef;border-radius:14px;background:#f7f9fd;
+ transition:border-color .16s ease,background-color .16s ease,box-shadow .16s ease;
+}
+body[data-page="debug"] .repair-state-step.is-current{
+ border-color:#a4b8ef;background:#edf3ff;box-shadow:0 0 0 2px #4269e911;
+}
+body[data-page="debug"] .repair-state-step.is-complete{
+ border-color:#9fe3cd;background:#ebfaf4;
+}
+body[data-page="debug"] .repair-state-icon{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#e6ebf3;color:#637a92;font-size:11px;font-weight:900}
+body[data-page="debug"] .repair-state-step.is-current .repair-state-icon{background:var(--ts-blue);color:#fff}
+body[data-page="debug"] .repair-state-step.is-complete .repair-state-icon{background:#157e60;color:#fff}
+body[data-page="debug"] .repair-state-step strong{font-size:13px;color:var(--ts-navy);line-height:1.3}
+body[data-page="debug"] .repair-state-step small{font-size:10px;color:#5e7187;line-height:1.5}
+body[data-page="debug"] .repair-flow-arrow{display:grid;place-items:center;font-size:19px;font-weight:800;color:#94abc3}
+body[data-page="debug"] .repair-state-hint{margin:0 0 21px;color:#516f85;line-height:1.65;font-size:12px}
+@media(max-width:580px){
+ body[data-page="debug"] .repair-state-flow{grid-template-columns:1fr;gap:5px;margin-top:21px}
+ body[data-page="debug"] .repair-state-step{padding:10px 13px;display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:auto auto;gap:0 10px;align-items:center}
+ body[data-page="debug"] .repair-state-icon{grid-row:1 / span 2}
+ body[data-page="debug"] .repair-state-step strong{font-size:12px}
+ body[data-page="debug"] .repair-state-step small{font-size:10px}
+ body[data-page="debug"] .repair-flow-arrow{height:13px;font-size:16px;transform:rotate(90deg)}
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-page="debug"] .repair-state-step{transition:none}
+}
+
+
+/* In-page developer docs finder, local only. */
+body[data-page="docs"] .docs-find{
+ display:grid;gap:8px;padding:12px;margin:0 0 13px;
+ background:#f0f5ff;border:1px solid #d4e1f4;border-radius:12px;
+}
+body[data-page="docs"] .docs-find label{
+ color:var(--ts-navy);font-weight:800;font-size:12px;
+}
+body[data-page="docs"] .docs-find input{
+ box-sizing:border-box;width:100%;min-width:0;
+ border:1px solid #b6cbe4;color:var(--ts-navy);background:#fff;
+ padding:12px 11px;border-radius:8px;font:inherit;font-size:12px;
+}
+body[data-page="docs"] .docs-find input::placeholder{color:#697f94}
+body[data-page="docs"] .docs-find p{color:#56708b;font-size:10px;line-height:1.5;margin:0}
+body[data-page="docs"] #docs-sections a[hidden]{display:none!important}
+@media(max-width:750px){
+ body[data-page="docs"] .docs-find{max-width:410px;margin-bottom:12px}
+ body[data-page="docs"] #docs-sections{margin-bottom:12px}
+}

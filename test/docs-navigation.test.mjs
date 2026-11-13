@@ -89,3 +89,20 @@ test("one shared brand stylesheet and working first-party navigation across the 
   assert.equal(calls(),0,"reading public pages cannot make paid SERV requests");
  });
 });
+
+
+test("docs finder script is allowlisted, self-contained and never triggers inference",async()=>{
+ await withApp(async(url,calls)=>{
+  const html=await (await fetch(url+"/docs")).text();
+  assert.match(html,/id="docs-search"/);
+  assert.match(html,/src="\/docs\.js"/);
+  assert.match(html,/id="docs-search-status"/);
+  const result=await fetch(url+"/docs.js");
+  assert.equal(result.status,200);
+  assert.match(result.headers.get("content-type"),/javascript/);
+  const script=await result.text();
+  assert.match(script,/filterGuides/);
+  assert.doesNotMatch(script,/fetch\s*\(|XMLHttpRequest|localStorage|\/api\/mentor/);
+  assert.equal(calls(),0);
+ });
+});

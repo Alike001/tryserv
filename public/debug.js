@@ -3,6 +3,7 @@
  const $=id=>document.getElementById(id);
  const storageKey="tryserv-debug-progress-v1";
  let scenarios=[],current=null,completed=new Set(),lastCorrect=null,validated=null,servAllowed=false;
+ let editorRevision=0,validatedRevision=-1;
  try{
   const data=JSON.parse(localStorage.getItem(storageKey)??"[]");
   if(Array.isArray(data))completed=new Set(data.filter(x=>typeof x==="string"));
@@ -20,6 +21,38 @@
   const data=await response.json().catch(()=>({error:"The server returned an unreadable response."}));
   if(!response.ok)throw new Error(data.error??"Request failed.");
   return data;
+ }
+ function repairFlow(mode="idle"){
+  const stageNames=["inspect","reason","verify"];
+  const modes={
+   idle:["Ready for your first check","SERV help is optional","No valid repair yet","Edit the blueprint and validate. This preview never executes a SERV request."],
+   checking:["Checking request shape…","Available after checking","Waiting for validation","The deterministic server checker is inspecting your edited request."],
+   invalid:["Issues detected","SERV can explain the issue","Not yet verified","Repair the highlighted fields and validate again. Live SERV help is optional."],
+   valid:["No structural errors","SERV explanation is optional","Validated · preview only","Your corrected request passed deterministic checks. No SERV inference was executed."],
+   reasoning:["Validation finished","Live SERV explanation requested","Use the checker to verify","A real SERV call was explicitly requested. Inspect the source and verify any changes in code."],
+   explained:["Validation finished","SERV response received","Verify any subsequent edits","The explanation is advisory. Only deterministic revalidation confirms the request structure."],
+   unavailable:["Validation finished","SERV unavailable or failed","You can still revalidate","You can repair and validate the request for free even when SERV is unavailable."]
+  };
+  const [inspect,reason,verify,message]=modes[mode]??modes.idle;
+  $("repair-inspect-label").textContent=inspect;
+  $("repair-reason-label").textContent=reason;
+  $("repair-verify-label").textContent=verify;
+  $("repair-state-hint").textContent=message;
+  // Never suggest an optional SERV explanation occurred just because a request passed.
+  const currentStage=mode==="valid"?"verify":mode==="reasoning"||mode==="explained"||mode==="unavailable"?"reason":"inspect";
+  stageNames.forEach(name=>{
+   const el=document.querySelector('[data-repair-state="'+name+'"]');
+   el.classList.toggle("is-current",name===currentStage);
+   el.classList.toggle("is-complete",(name==="inspect"&&!["idle","checking"].includes(mode))||
+     (name==="reason"&&mode==="explained"));
+  });
+ }
+ function invalidateEditor(){
+  editorRevision++;validated=null;validatedRevision=-1;lastCorrect=null;
+  $("serv-explain").disabled=true;
+  $("serv-diagnostic").hidden=true;$("serv-ai-response").hidden=true;
+  $("result").hidden=true;$("solution").hidden=true;
+  repairFlow("idle");
  }
  function repaint(){
   const valid=scenarios.filter(s=>completed.has(s.id)).length;
@@ -58,11 +91,10 @@
  function reset(){
   if(!current)return;
   $("editor").value=JSON.stringify(current.starter,null,2);
-  $("result").hidden=true;$("solution").hidden=true;lastCorrect=null;validated=null;
-  $("serv-diagnostic").hidden=true;$("serv-ai-response").hidden=true;
+  invalidateEditor();
  }
  function diagnosticReady(data){
-  validated=data;
+  validated=data;validatedRevision=editorRevision;
   $("serv-diagnostic").hidden=false;
   $("serv-ai-response").hidden=true;
   $("serv-diagnostic-title").textContent=data.passed
@@ -96,7 +128,7 @@
   }catch{
    info.textContent="SERV trial capacity could not be checked. No paid call will be made.";
   }finally{
-   $("serv-explain").disabled=!servAllowed||!validated;
+   $("serv-explain").disabled=!servAllowed||!validated||validatedRevision!==editorRevision;
   }
  }
  function curatedDiagnosticQuestion(){
@@ -109,22 +141,24 @@
   return (prefix+"Example: "+current.title+". "+current.notes+" "+instructions).slice(0,400);
  }
  async function askServAboutIssue(){
-  if(!current||!validated||!servAllowed)return;
-  const caseId=current.id;
+  if(!current||!validated||!servAllowed||validatedRevision!==editorRevision)return;
+  const caseId=current.id,requestRevision=editorRevision;
   const question=curatedDiagnosticQuestion();
   // Refresh the read-only allowance immediately before a possible paid call.
   await refreshServAllowance();
-  if(!servAllowed||current?.id!==caseId)return;
+  if(!servAllowed||current?.id!==caseId||editorRevision!==requestRevision||validatedRevision!==requestRevision)return;
   const button=$("serv-explain"),output=$("serv-ai-response");
   button.disabled=true;button.textContent="SERV is explaining…";
   output.hidden=false;output.className="serv-ai-response";
   output.textContent="Sending one optional, source-grounded request to SERV…";
+  repairFlow("reasoning");
   try{
    const data=await api("/api/mentor",{
     method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({lesson_id:"build",question})
    });
-   if(current?.id!==caseId)return;
+   if(current?.id!==caseId||editorRevision!==requestRevision)return;
+   repairFlow("explained");
    clean(output);
    el(output,"strong","SERV EXPLANATION · LIVE RESPONSE");
    el(output,"p",data.explanation);
@@ -140,7 +174,7 @@
      (data.usage?.input_tokens??"–")+" input / "+(data.usage?.output_tokens??"–")+" output"+
      " · AI explanations can be mistaken");
   }catch(error){
-   if(current?.id===caseId){output.className="serv-ai-response error";output.textContent=
+   if(current?.id===caseId&&editorRevision===requestRevision){repairFlow("unavailable");output.className="serv-ai-response error";output.textContent=
      "SERV could not provide an explanation: "+error.message+" Free request validation remains available.";}
   }finally{
    button.textContent="Ask SERV to explain this issue →";
@@ -158,23 +192,28 @@
  }
  async function check(){
   if(!current)return;
+  const requestRevision=editorRevision,caseId=current.id;
   let parsed;
   try{parsed=JSON.parse($("editor").value);}
-  catch(e){showError("This isn't valid JSON. Check brackets, commas and quotation marks before validating.");return;}
+  catch(e){showError("This isn't valid JSON. Check brackets, commas and quotation marks before validating.");repairFlow("invalid");return;}
   const button=$("check");button.disabled=true;button.textContent="Checking…";
+  repairFlow("checking");
   try{
    const data=await api("/api/debug/check",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({id:current.id,config:parsed})
    });
+   if(current?.id!==caseId||editorRevision!==requestRevision)return;
    diagnosticReady(data);
    if(!data.passed){
+    repairFlow("invalid");
     lastCorrect=null;
     showError("The request still has "+data.problems.length+" issue"+(data.problems.length===1?"":"s")+".",data.problems);
     $("solution").hidden=true;
     return;
    }
+   repairFlow("valid");
    const panel=$("result");clean(panel);panel.hidden=false;panel.className="success";
    el(panel,"strong","Correct — this request blueprint passed validation.");
    el(panel,"p","The checker inspected its endpoint, model and required role messages. No SERV API call was made.");
@@ -185,7 +224,7 @@
    lastCorrect=data.request;
    $("solution-code").textContent=JSON.stringify(lastCorrect,null,2);
    $("next").textContent=scenarios.every(s=>completed.has(s.id))?"Return to learning studio →":"Next unfinished mission →";
-  }catch(e){showError(e.message);}
+  }catch(e){if(current?.id===caseId&&editorRevision===requestRevision){showError(e.message);repairFlow("unavailable");}}
   finally{button.disabled=false;button.textContent="Validate my fix →";}
  }
  async function copy(){
@@ -202,6 +241,7 @@
  }
  async function start(){
   $("check").addEventListener("click",check);
+  $("editor").addEventListener("input",invalidateEditor);
   $("reset").addEventListener("click",reset);
   $("copy").addEventListener("click",copy);
   $("next").addEventListener("click",next);

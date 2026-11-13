@@ -43,6 +43,14 @@
     <h2 id="title">Preparing the lab…</h2>
     <p class="symptom" id="symptom"></p>
     <p class="task" id="task"></p>
+    <section class="repair-state-flow" aria-label="Live repair progress">
+      <div class="repair-state-step is-current" data-repair-state="inspect"><span class="repair-state-icon" aria-hidden="true">01</span><strong>Inspect</strong><small id="repair-inspect-label">Ready for your first check</small></div>
+      <div class="repair-flow-arrow" aria-hidden="true">→</div>
+      <div class="repair-state-step" data-repair-state="reason"><span class="repair-state-icon" aria-hidden="true">02</span><strong>Understand</strong><small id="repair-reason-label">SERV help is optional</small></div>
+      <div class="repair-flow-arrow" aria-hidden="true">→</div>
+      <div class="repair-state-step" data-repair-state="verify"><span class="repair-state-icon" aria-hidden="true">03</span><strong>Verify</strong><small id="repair-verify-label">No valid repair yet</small></div>
+    </section>
+    <p class="repair-state-hint" id="repair-state-hint" role="status" aria-live="polite">Make a correction, then validate. Only the server can mark a repair as checked.</p>
     <div class="editor-title"><strong>REQUEST BLUEPRINT</strong><span>EDITABLE JSON · NEVER EXECUTED HERE</span></div>
     <label for="editor" class="editor-label">Find the issue and edit the configuration</label>
     <textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" rows="15" aria-describedby="privacy-note"></textarea>
