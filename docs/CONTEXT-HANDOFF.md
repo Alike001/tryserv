@@ -199,3 +199,13 @@ Work in feat/docs-and-learning-navigation:
 **Revenue potential** is an unvalidated B2B onboarding/SDK integration training hypothesis; no users or revenue claimed. Keep Opsra `Alike001/opsra` entirely untouched. Do not add unnecessary feature sprawl before the deadline.
 
 **New chat resume:** Continue TrySERV from `Alike001/tryserv` main. Read `docs/CONTEXT-HANDOFF.md`, `docs/PRODUCT-PLAN.md`, `docs/HACKATHON-SUBMISSION.md`. Check PR #10 and Render `srv-dbqvo68ae00c73bepbj0`. Next is real-user acceptance and true live SERV diagnostic verification; final video/X/Typeform are not yet done. Do not modify Opsra.
+
+
+## November 13 — hosted TrySERV readiness reached
+
+- PR #11 (QA harness) merged a6481572 and PR #12 (workflow YAML fix) merged 61e95a1. First gated hosted acceptance failed before spending guest credits: responsive measurement before fonts settled and imprecise default missing-instructions error.
+- PR #13 merged 7cf28f4850184b0b56b5edf6e69a165d4d11c8f0; Render confirmed LIVE. The default checker now returns messages.instructions with a concrete fix; mobile tests wait for fonts and dynamic content. Pre-merge Node/security/Chromium green.
+- **Second hosted acceptance SUCCESS**: https://github.com/Alike001/tryserv/actions/runs/43382281020, 2/2 real production Chromium tests passed, public site checked at widths 320/375/768/1024/1440; 80 XP on-device, all 3 debug repairs, zero paid calls during free journey.
+- **Live production /debug SERV diagnostic independently verified**, not mocked. One explicit click after quota preflight returned model gpt-5.4-mini-2026-03-17, completion chatcmpl-EjfWfyCJ7aPECLZXpsPWzmdxeadBK, latency 7866ms, usage 833 input / 133 output tokens, and an official OpenServ reference. Applied system-message repair and revalidated successfully. Evidence https://github.com/Alike001/tryserv/actions/runs/43382281020/artifacts/14016669211 includes genuine screenshots, video, JSON.
+- Neon global guest reservation count increased from 1 to **2 used of 24**, 22 remained when checked. Do NOT reset/replay paid test. Human beginner/developer independent observations remain pending; neutral test kit docs/REAL-USER-ACCEPTANCE.md.
+- Remaining: genuinely narrated demo MP4 from real screen capture; YouTube upload; X launch post with real screenshot; official Typeform https://openserv.typeform.com/submissions02 by Nov 15 23:59 UTC. Do not claim submission. Demo storyboard docs/DEMO-SCRIPT.md and listing docs/HACKATHON-SUBMISSION.md prepared. Keep Opsra untouched.
