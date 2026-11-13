@@ -70,3 +70,12 @@ Before recording a demo:
 6. Review official OpenServ hackathon requirements and deadline at https://www.openserv.ai/hackathon-2 before final submission.
 
 **Next product decision:** Once we have actual tester feedback, prioritize fixing the highest-impact task blockers over inventing more modules or features. UI redesign should follow stable end-to-end behavior.
+
+
+## 13 November 2026 — genuine hosted automation results
+
+**Automated hosted production PASS (not human signoff):** [Run 43382281020](https://github.com/Alike001/tryserv/actions/runs/43382281020), **2/2 real Chromium hosted tests passed** on `https://tryserv.onrender.com` after PR #13 fixing the actionable missing-instruction error and post-font width checks. This verifies routing/overflow at 320/375/768/1024/1440, beginner lessons to 80 local XP, the developer's 3/3 repairs, and free-journey zero paid inference.
+
+The second test separately used one intentional UI-initiated live SERV diagnostic after a read-only quota check. Model `gpt-5.4-mini-2026-03-17`; completion `chatcmpl-EjfWfyCJ7aPECLZXpsPWzmdxeadBK`; 7866ms; token usage 833 input /133 output; real browser screenshot + video, and successful corrective revalidation. [Downloadable evidence artifact](https://github.com/Alike001/tryserv/actions/runs/43382281020/artifacts/14016669211).
+
+**Do not claim this is an unassisted user test.** The two real human tester sessions in [REAL-USER-ACCEPTANCE.md](REAL-USER-ACCEPTANCE.md), actual mobile physical-device check, screen reader audit, final published demo/X post and official Typeform confirmation are still pending. The app never claims an official credential or executes request previews. No more guest credits should be consumed for repeatability unless justified and approved.
