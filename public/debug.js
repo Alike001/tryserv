@@ -38,11 +38,13 @@
   $("repair-reason-label").textContent=reason;
   $("repair-verify-label").textContent=verify;
   $("repair-state-hint").textContent=message;
-  const active=mode==="valid"?2:mode==="reasoning"||mode==="explained"||mode==="invalid"||mode==="unavailable"?1:0;
-  stageNames.forEach((name,index)=>{
+  // Never suggest an optional SERV explanation occurred just because a request passed.
+  const currentStage=mode==="valid"?"verify":mode==="reasoning"||mode==="explained"||mode==="unavailable"?"reason":"inspect";
+  stageNames.forEach(name=>{
    const el=document.querySelector('[data-repair-state="'+name+'"]');
-   el.classList.toggle("is-current",index===active);
-   el.classList.toggle("is-complete",index<active || (mode==="explained"&&index===1));
+   el.classList.toggle("is-current",name===currentStage);
+   el.classList.toggle("is-complete",(name==="inspect"&&!["idle","checking"].includes(mode))||
+     (name==="reason"&&mode==="explained"));
   });
  }
  function invalidateEditor(){
