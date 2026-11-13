@@ -422,3 +422,37 @@ body[data-page="learn"] .serv-map-footer a{display:inline-block;margin-top:10px}
  .serv-map-window-bottom{padding:12px}
 }
 @media(prefers-reduced-motion:reduce){.serv-map-step{transition:none}.serv-map-step:hover{transform:none}}
+
+
+/* Active lesson visual breakdown: compact, original, source-linked example.
+   Educational diagram only; never substitutes for server grading or live SERV. */
+body[data-page="learn"] .lesson-concept-map{
+ margin:24px 0 20px;padding:19px;border:1px solid #d5e3f0;border-radius:16px;
+ background:linear-gradient(145deg,#f2f7ff 0%,#f8fcff 63%,#edf9f5 100%);
+}
+body[data-page="learn"] .lesson-concept-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:14px}
+body[data-page="learn"] .lesson-concept-eyebrow{font-size:9px;font-weight:900;letter-spacing:1.2px;color:var(--ts-blue-dark)}
+body[data-page="learn"] .lesson-concept-head h3{font-family:'Space Grotesk',sans-serif;font-size:17px;letter-spacing:-.4px;line-height:1.3;margin:6px 0 0}
+body[data-page="learn"] .lesson-concept-head>small{font-size:9px;font-weight:800;letter-spacing:.5px;color:#417769;white-space:nowrap;background:#dcf6eb;padding:7px 9px;border-radius:20px}
+body[data-page="learn"] .lesson-concept-flow{display:grid;grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr) 16px minmax(0,1fr);align-items:stretch;gap:8px}
+body[data-page="learn"] .concept-node{min-width:0;background:#fff;border:1px solid #d1dfea;border-radius:13px;padding:15px 12px;box-shadow:3px 4px 0 #1d384b08}
+body[data-page="learn"] .concept-node:nth-of-type(2){border-color:#a4c3ee;background:#f6f9ff}
+body[data-page="learn"] .concept-node:nth-of-type(3){border-color:#a5e1cb;background:#f5fffa}
+body[data-page="learn"] .concept-node-num{display:inline-grid;place-items:center;background:#e9efff;border-radius:8px;width:31px;height:27px;color:var(--ts-blue-dark);font-size:10px;font-weight:900}
+body[data-page="learn"] .concept-node:nth-of-type(2) .concept-node-num{background:#e8efff}
+body[data-page="learn"] .concept-node:nth-of-type(3) .concept-node-num{background:#dcf8ea;color:#247b5d}
+body[data-page="learn"] .concept-node strong{display:block;color:var(--ts-navy);font-family:'Space Grotesk',sans-serif;font-size:15px;line-height:1.3;margin:13px 0 6px;overflow-wrap:anywhere}
+body[data-page="learn"] .concept-node small{display:block;color:#61758b;font-size:11px;line-height:1.5}
+body[data-page="learn"] .concept-link{display:grid;place-items:center;color:var(--ts-blue);font-size:21px;font-weight:900}
+body[data-page="learn"] .lesson-concept-summary{font-size:11px;line-height:1.7;color:#526f83;margin:15px 0 0;border-top:1px solid #d7e5f1;padding-top:11px}
+@media(max-width:640px){
+ body[data-page="learn"] .lesson-concept-map{padding:14px;margin:19px 0}
+ body[data-page="learn"] .lesson-concept-head{display:block}
+ body[data-page="learn"] .lesson-concept-head>small{display:inline-block;margin-top:9px}
+ body[data-page="learn"] .lesson-concept-flow{display:flex;flex-direction:column;gap:5px}
+ body[data-page="learn"] .concept-node{padding:11px 13px;display:grid;grid-template-columns:36px 1fr;gap:1px 9px;align-items:center}
+ body[data-page="learn"] .concept-node-num{grid-row:span 2}
+ body[data-page="learn"] .concept-node strong{font-size:14px;margin:0}
+ body[data-page="learn"] .concept-node small{font-size:11px}
+ body[data-page="learn"] .concept-link{font-size:17px;transform:rotate(90deg);height:15px}
+}
