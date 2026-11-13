@@ -1,6 +1,6 @@
 # TrySERV — OpenServ Edition 02 submission pack
 
-**Status:** Draft, not submitted. Last reviewed November 13, 2026 (Africa/Lagos).
+**Status:** Technical production acceptance PASSED; human usability, public video/X and Typeform submission PENDING. Last reviewed November 13, 2026 (Africa/Lagos).
 
 **Track:** Open Track (must use SERV Reasoning)
 
@@ -57,6 +57,14 @@ A developer-onboarding product that could eventually be commissioned by SDK, API
 
 Keep personal browser secrets, private access codes, network addresses and private logs outside screenshots. For an unavailable SERV trial, show the truthful capped/unavailable UI and use an explicitly labeled earlier **genuine recorded** live inference clip if one exists.
 
+## Genuine production evidence — 13 November 2026
+
+- Public Render production journey: [GitHub Actions run 43382281020](https://github.com/Alike001/tryserv/actions/runs/43382281020) — **2/2 hosted Playwright tests passed**.
+- Five routes tested at 320, 375, 768, 1024, 1440px. Four lessons completed to 80 local XP and three separate debug scenarios repaired. Zero paid requests in the free phase.
+- The live diagnostic made **exactly one** OpenServ `POST /api/mentor` through the actual browser after the quota preflight. The genuine model, ID, 7.866s latency, usage and official source are captured in the artifact. Global lifetime reservation count increased from 1 to 2, with 22 remaining at test completion.
+- Earlier failed hosted run and recovered test harness: first run caught premature font measurement and the vague first-case validation message; PR #13 fixed validation and stabilized post-font checks; a later full hosted run passed. Do not misrepresent the first attempt as clean.
+- This is **not** independent novice/developer human feedback or a screen reader audit. Those remain outstanding.
+
 ## X launch post draft
 
 I built TrySERV for the @openservai SERV Hackathon — Open Track.
@@ -87,7 +95,7 @@ Code: https://github.com/Alike001/tryserv
 - [ ] Verify Render LIVE at the final documentation-only commit as well as the merged code.
 - [ ] Run two genuine user journeys (one beginner, one developer) without coaching; record actual blockers using [the tester kit](REAL-USER-ACCEPTANCE.md).
 - [ ] Inspect actual mobile/desktop focus and screen-reader experience; don't equate responsive tests with human review.
-- [ ] Capture genuine final screenshots and optionally one budgeted live SERV tutoring response.
+- [x] Real hosted browser produced a genuine **SERV diagnostic** on 13 Nov: `gpt-5.4-mini-2026-03-17`, completion `chatcmpl-EjfWfyCJ7aPECLZXpsPWzmdxeadBK`, 7866ms, 833 input / 133 output tokens. The developer then repaired and revalidated. [Production evidence and recordings](https://github.com/Alike001/tryserv/actions/runs/43382281020/artifacts/14016669211). The free path passed 80 XP/3 repairs with zero inference calls. Global shared reservations now 2 of 24 used, so no automatic retries.
 - [ ] Record and publish a truthful demo video, post on X, submit the Typeform and save the confirmation.
 
 Do not spend more guest credits just to create marketing media if the cap is nearly exhausted. Never reset the global budget without investigating provider costs and abuse conditions.
