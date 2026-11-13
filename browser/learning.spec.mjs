@@ -502,3 +502,31 @@ test("SERV visual walkthrough is accessible, clickable and no-spend at 320px",as
  }
  expect(inferenceCalls).toBe(0);
 });
+
+
+test("every active lesson has a distinct OpenServ visual, without inference or extra XP",async({page})=>{
+ let paid=0;
+ page.on("request",request=>{
+   if(["/api/mentor","/api/try-serv","/api/debug/explain"].includes(new URL(request.url()).pathname))paid++;
+ });
+ await page.setViewportSize({width:320,height:850});
+ await page.goto("/learn");
+ const expected=[
+  ["Task","Workflow","Agent","not a live workflow trace"],
+  ["Application","SERV API","Your code","Chat Completions API"],
+  ["Facts","Exact code","SERV","arithmetic and hard limits"],
+  ["System","User","Preview","NOT an executed API request"]
+ ];
+ for(let i=0;i<expected.length;i++){
+   await page.locator("#lesson-nav .nav-lesson").nth(i).click();
+   await expect(page.locator("#lesson-concept-title")).toHaveText("See the concept in action");
+   await expect(page.locator("#concept-a-title")).toHaveText(expected[i][0]);
+   await expect(page.locator("#concept-b-title")).toHaveText(expected[i][1]);
+   await expect(page.locator("#concept-c-title")).toHaveText(expected[i][2]);
+   await expect(page.locator("#lesson-concept-summary")).toContainText(expected[i][3]);
+   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+   expect(overflow,"concept illustration overflow in lesson "+(i+1)).toBeLessThanOrEqual(2);
+ }
+ expect(paid).toBe(0);
+ await expect(page.locator("#xp-count")).toHaveText("0 XP");
+});
