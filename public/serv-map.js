@@ -114,3 +114,45 @@ document.querySelectorAll("[data-serv-map]").forEach((root, index) => {
   buttons.forEach((button, step) => button.addEventListener("click", () => show(step)));
   show(0);
 });
+
+
+// Homepage illustration controls update only explanatory copy and destinations.
+// They neither call APIs nor grade exercises or consume SERV credits.
+const hero = document.querySelector("[data-hero-explorer]");
+if (hero) {
+  const scenes = [
+    {
+      copy: "A short, source-linked lesson helps a new builder understand OpenServ before a server-graded exercise.",
+      href: "/learn",
+      label: "Open a real lesson"
+    },
+    {
+      copy: "After a free request check, learners may explicitly ask genuine SERV Reasoning to explain a known problem. Preparing this example never calls a model.",
+      href: "/debug",
+      label: "Explore optional SERV guidance"
+    },
+    {
+      copy: "The learner repairs the request and rechecks its shape with deterministic code. A validated preview is not executed inference.",
+      href: "/try",
+      label: "Build a validated request"
+    }
+  ];
+  const buttons = [...hero.querySelectorAll("[data-hero-stage]")];
+  const description = hero.querySelector("[data-hero-description]");
+  const link = hero.querySelector("[data-hero-link]");
+  const select = (index) => {
+    const scene = scenes[index];
+    if (!scene) return;
+    buttons.forEach((button, i) => {
+      const active = i === index;
+      button.setAttribute("aria-pressed", String(active));
+      button.classList.toggle("is-active", active);
+    });
+    description.textContent = scene.copy;
+    link.href = scene.href;
+    link.firstChild.textContent = scene.label + " ";
+    hero.dataset.heroCurrent = String(index);
+  };
+  buttons.forEach((button, index) => button.addEventListener("click", () => select(index)));
+  select(0);
+}
