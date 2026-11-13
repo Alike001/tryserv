@@ -530,3 +530,57 @@ test("every active lesson has a distinct OpenServ visual, without inference or e
  expect(paid).toBe(0);
  await expect(page.locator("#xp-count")).toHaveText("0 XP");
 });
+
+
+test("editing a debug blueprint invalidates previous validation and SERV explanation",async({page})=>{
+ let paid=0;
+ page.on("request",request=>{
+   if(["/api/mentor","/api/try-serv"].includes(new URL(request.url()).pathname))paid++;
+ });
+ await page.setViewportSize({width:320,height:850});
+ await page.goto("/debug");
+ await expect(page.locator('[data-repair-state="inspect"]')).toHaveClass(/is-current/);
+ await expect(page.locator("#repair-verify-label")).toContainText("No valid repair");
+ await page.locator("#check").click();
+ await expect(page.locator("#result")).toBeVisible();
+ await expect(page.locator("#repair-inspect-label")).toContainText("Issues detected");
+ await expect(page.locator("#serv-diagnostic")).toBeVisible();
+ await page.locator("#editor").fill(JSON.stringify(validBlueprint,null,2));
+ await expect(page.locator("#result")).toBeHidden();
+ await expect(page.locator("#serv-diagnostic")).toBeHidden();
+ await expect(page.locator("#serv-explain")).toBeDisabled();
+ await page.locator("#check").click();
+ await expect(page.locator("#solution")).toBeVisible();
+ await expect(page.locator("#repair-verify-label")).toContainText("Validated");
+ await expect(page.locator("#solution")).toContainText("PREVIEW ONLY");
+ await page.locator("#editor").fill('{"endpoint":"invalid"}');
+ await expect(page.locator("#solution")).toBeHidden();
+ await expect(page.locator("#result")).toBeHidden();
+ await expect(page.locator("#serv-diagnostic")).toBeHidden();
+ await expect(page.locator("#repair-verify-label")).toContainText("No valid repair");
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+ expect(overflow).toBeLessThanOrEqual(2);
+ expect(paid).toBe(0);
+});
+
+test("developer docs search is local, helps find sections and works on mobile",async({page})=>{
+ let paid=0;
+ page.on("request",request=>{
+   if(["/api/mentor","/api/try-serv"].includes(new URL(request.url()).pathname))paid++;
+ });
+ await page.setViewportSize({width:320,height:850});
+ await page.goto("/docs");
+ const search=page.locator("#docs-search");
+ await expect(search).toBeVisible();
+ await search.fill("architecture");
+ await expect(page.locator('#docs-sections a[href="#architecture"]')).toBeVisible();
+ await expect(page.locator("#docs-search-status")).toContainText("matching guide");
+ await search.fill("zzzz-not-a-guide-phrase");
+ await expect(page.locator("#docs-search-status")).toContainText("No matching guides");
+ await expect(page.locator('#docs-sections a:visible')).toHaveCount(0);
+ await search.fill("");
+ await expect(page.locator('#docs-sections a:visible')).toHaveCount(9);
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+ expect(overflow).toBeLessThanOrEqual(2);
+ expect(paid).toBe(0);
+});
