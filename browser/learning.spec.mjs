@@ -552,6 +552,9 @@ test("editing a debug blueprint invalidates previous validation and SERV explana
  await page.locator("#check").click();
  await expect(page.locator("#solution")).toBeVisible();
  await expect(page.locator("#repair-verify-label")).toContainText("Validated");
+ // A valid checker result must NOT imply that optional SERV inference occurred.
+ await expect(page.locator('[data-repair-state="reason"]')).not.toHaveClass(/is-complete/);
+ await expect(page.locator('[data-repair-state="verify"]')).toHaveClass(/is-current/);
  await expect(page.locator("#solution")).toContainText("PREVIEW ONLY");
  await page.locator("#editor").fill('{"endpoint":"invalid"}');
  await expect(page.locator("#solution")).toBeHidden();
