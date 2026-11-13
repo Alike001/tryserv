@@ -34,6 +34,13 @@ test("every mission can be repaired using the published SERV HTTP contract",()=>
   assert.equal(result.request.body.messages[0].role,"system");
  }
 });
+test("missing-instructions starter receives a precise field-level correction",()=>{
+ const result=validateDebugBlueprint("missing-instructions",all[0].starter);
+ assert.equal(result.passed,false);
+ assert.deepEqual(result.problems.map(p=>p.field),["messages.instructions"]);
+ assert.match(result.problems[0].hint,/Add a clear system or developer message/);
+ assert.equal(result.executed,false);
+});
 test("developer prompt is an allowed alternative to system",()=>{
  const config=structuredClone(baseline);
  config.messages[0].role="developer";
@@ -46,7 +53,7 @@ test("wrong path, unsupported model, missing instruction and invalid roles fail"
  const wrongModel=validateDebugBlueprint("unknown-model",{...baseline,model:"fantasy-model"});
  assert.ok(wrongModel.problems.some(x=>x.field==="model"));
  const missing=validateDebugBlueprint("missing-instructions",{...baseline,messages:baseline.messages.slice(1)});
- assert.ok(missing.problems.some(x=>x.field==="messages"));
+ assert.ok(missing.problems.some(x=>x.field==="messages.instructions"&&/missing a system or developer instruction/i.test(x.message)));
  const unknownRole=structuredClone(baseline);unknownRole.messages[0].role="admin";
  assert.ok(validateDebugBlueprint("missing-instructions",unknownRole).problems.some(x=>x.field.includes("role")||x.field.includes("instructions")));
 });
