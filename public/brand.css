@@ -318,3 +318,107 @@ body[data-page="debug"] .debug-hero-link{display:inline-flex;margin-top:19px;
  body[data-page="debug"] .intro{display:block;max-width:800px}
  body[data-page="debug"] .debug-hero-preview{display:none}
 }
+
+
+/* Original visual explainer for the OpenServ onboarding journey.
+   Reused on the landing page and in the learning studio; never triggers inference. */
+.serv-map-wrap{max-width:1190px;margin:0 auto;padding:70px 24px}
+body[data-page="learn"] .serv-map-wrap{padding:34px 0 10px}
+.serv-map{--map-ink:var(--ts-navy);border:1px solid #d5e1ef;background:linear-gradient(135deg,#fff 0%,#f7faff 100%);border-radius:25px;padding:31px;overflow:hidden;box-shadow:0 20px 50px #19395410}
+.serv-map-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:25px;margin-bottom:28px}
+.serv-map-heading>div{max-width:675px}
+.serv-map-kicker{color:var(--ts-blue-dark);font-size:11px;font-weight:800;letter-spacing:1.3px}
+.serv-map-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--ts-mint);box-shadow:0 0 0 3px #def8ef}
+.serv-map-heading h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(27px,3.3vw,42px);line-height:1.14;letter-spacing:-1.4px;margin:15px 0 12px}
+.serv-map-heading h2 em{font-style:normal;color:var(--ts-blue)}
+.serv-map-heading p{color:var(--ts-muted);font-size:14px;line-height:1.75;margin:0;max-width:620px}
+.serv-map-label{align-self:flex-start;background:#e9f9f3;border:1px solid #a9e6d2;color:#246d56;font-weight:800;font-size:10px;letter-spacing:.65px;white-space:nowrap;border-radius:30px;padding:11px 14px}
+.serv-map-body{display:grid;grid-template-columns:minmax(194px,.72fr) minmax(0,1.28fr);gap:20px}
+.serv-map-steps{display:grid;gap:11px;align-content:start}
+.serv-map-step{display:flex;width:100%;gap:13px;align-items:center;text-align:left;min-width:0;padding:14px 13px;border:1px solid #d9e4f0;border-radius:14px;background:#fff;color:var(--map-ink);font:inherit;transition:background .15s,border-color .15s,transform .15s;cursor:pointer}
+.serv-map-step:hover{transform:translateY(-2px);border-color:#a9c0ea}
+.serv-map-step.is-active{background:#eef3ff;border-color:#8ba9ed;box-shadow:inset 3px 0 var(--ts-blue)}
+.serv-step-symbol{width:45px;height:45px;flex:0 0 45px;display:grid;place-items:center;border-radius:12px;background:#eaf0fb;color:var(--ts-blue)}
+.serv-map-step:nth-child(2) .serv-step-symbol{background:#fdf0e7;color:#be6c31}
+.serv-map-step:nth-child(3) .serv-step-symbol{background:#e4f9f1;color:#137e60}
+.serv-map-step:nth-child(4) .serv-step-symbol{background:#ecf2ff;color:#385fd6}
+.serv-step-copy{min-width:0;display:block;flex:1}
+.serv-step-copy small{display:block;font-size:9px;font-weight:800;letter-spacing:1px;color:#647d98}
+.serv-step-copy strong{display:block;margin-top:3px;font-family:'Space Grotesk',sans-serif;font-size:18px;letter-spacing:-.3px}
+.serv-step-copy>span{display:block;font-size:11px;color:#667b8f;margin-top:4px;line-height:1.4}
+.serv-step-chevron{color:#7891a6;font-size:18px}
+.serv-map-step.is-active .serv-step-chevron{color:var(--ts-blue)}
+.serv-map-art{min-width:0;position:relative;background:radial-gradient(circle at 84% 15%,#d8f6ea,transparent 33%),radial-gradient(circle at 15% 85%,#dfeaff,transparent 50%),#f3f7fe;border-radius:20px;border:1px solid #d6e3f2;padding:27px 27px 23px;isolation:isolate;display:flex}
+.serv-map-orbit{position:absolute;border:2px solid #4269e921;border-radius:50%;z-index:-1;pointer-events:none}
+.serv-orbit-one{width:250px;height:250px;right:-80px;top:-95px}
+.serv-orbit-two{width:200px;height:200px;left:-95px;bottom:-100px;border-color:#38d4ad4a}
+.serv-map-window{width:100%;min-width:0;align-self:stretch;border:1px solid #cad9ea;background:#fff;border-radius:15px;box-shadow:8px 9px 0 #1738530e,0 18px 45px #1d355b19;display:flex;flex-direction:column;overflow:hidden}
+.serv-map-window-top{background:var(--ts-navy);color:#fff;padding:13px 15px;display:flex;gap:12px;align-items:center;font-size:11px}
+.serv-window-dots{color:#9db3c9;letter-spacing:2px;font-size:10px}
+.serv-map-window-top strong{font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:.1px}
+.serv-window-tag{margin-left:auto;color:#b2e8d9;background:#285065;padding:5px 7px;border-radius:6px;font-size:9px;font-weight:700;white-space:nowrap}
+.serv-map-window-main{padding:23px 23px 15px;flex:1}
+.serv-scene-index{display:inline-block;font-size:10px;font-weight:900;letter-spacing:1.3px;color:var(--ts-blue-dark)}
+.serv-map-window-main h3{font-family:'Space Grotesk',sans-serif;font-size:clamp(20px,2.5vw,29px);line-height:1.22;letter-spacing:-.8px;margin:10px 0}
+.serv-map-window-main p{font-size:13px;line-height:1.7;color:var(--ts-muted);margin:0 0 16px}
+.serv-code-label{display:flex;justify-content:space-between;gap:8px;font-size:9px;font-weight:900;color:#7b8fa5;letter-spacing:.5px;margin-bottom:6px}
+.serv-map-code{white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;margin:0;padding:14px 16px;background:#132b42;border:1px solid #26415e;border-radius:10px;color:#dcfaec;font:12px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;min-height:92px}
+.serv-map-window-bottom{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:auto;padding:14px 22px;border-top:1px solid #e4ebf4}
+.serv-map-window-bottom a{font-size:12px;color:var(--ts-blue-dark);font-weight:800;text-decoration:none}
+.serv-map-window-bottom a:hover{text-decoration:underline}
+.serv-map-window-bottom>span{font-size:11px;font-weight:800;color:#7b8ea3;white-space:nowrap}
+.serv-map-footer{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:22px}
+.serv-map-footer p{font-size:11px;line-height:1.65;color:var(--ts-muted);margin:0;max-width:740px}
+.serv-map-footer strong{color:var(--ts-navy)}
+.serv-map-footer a{font-size:11px;font-weight:800;color:var(--ts-blue-dark);white-space:nowrap;text-decoration:none}
+.serv-map-footer a:hover{text-decoration:underline}
+body[data-page="learn"] .serv-map{padding:20px;border-radius:17px}
+body[data-page="learn"] .serv-map-heading{display:block;margin-bottom:17px}
+body[data-page="learn"] .serv-map-heading h2{font-size:27px;letter-spacing:-.8px}
+body[data-page="learn"] .serv-map-heading p{font-size:12px}
+body[data-page="learn"] .serv-map-label{display:inline-block;margin-top:12px;padding:8px 11px}
+body[data-page="learn"] .serv-map-body{grid-template-columns:1fr;gap:13px}
+body[data-page="learn"] .serv-map-steps{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+body[data-page="learn"] .serv-map-step{padding:10px 6px;display:grid;justify-items:center;gap:5px;text-align:center}
+body[data-page="learn"] .serv-step-symbol{width:34px;height:34px;flex-basis:34px;border-radius:10px}
+body[data-page="learn"] .serv-step-copy strong{font-size:12px}
+body[data-page="learn"] .serv-step-copy small{font-size:8px}
+body[data-page="learn"] .serv-step-copy>span,body[data-page="learn"] .serv-step-chevron{display:none}
+body[data-page="learn"] .serv-map-art{padding:17px}
+body[data-page="learn"] .serv-map-window-main{padding:17px}
+body[data-page="learn"] .serv-map-window-main h3{font-size:22px}
+body[data-page="learn"] .serv-map-footer{display:block}
+body[data-page="learn"] .serv-map-footer a{display:inline-block;margin-top:10px}
+@media(max-width:800px){
+ .serv-map-wrap{padding:45px 18px}
+ .serv-map{padding:19px}
+ .serv-map-heading{display:block}
+ .serv-map-label{display:inline-block;margin-top:14px}
+ .serv-map-body{grid-template-columns:1fr}
+ .serv-map-steps{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+ .serv-map-step{display:grid;justify-items:center;text-align:center;gap:7px;padding:11px 5px}
+ .serv-step-copy strong{font-size:13px}
+ .serv-step-copy small{font-size:9px}
+ .serv-step-copy>span,.serv-step-chevron{display:none}
+ .serv-step-symbol{width:37px;height:37px;flex-basis:37px}
+ .serv-map-art{padding:16px}
+ .serv-map-footer{display:block}
+ .serv-map-footer a{display:inline-block;margin-top:11px}
+}
+@media(max-width:390px){
+ .serv-map-wrap{padding-left:12px;padding-right:12px}
+ .serv-map{padding:13px;border-radius:16px}
+ .serv-map-heading h2{font-size:25px}
+ .serv-map-heading p{font-size:12px}
+ .serv-map-step{padding:9px 2px}
+ .serv-step-copy strong{font-size:11px}
+ .serv-map-art{padding:11px}
+ .serv-map-window-top{gap:7px;padding:10px}
+ .serv-map-window-top strong{font-size:10px}
+ .serv-window-tag{font-size:7px;padding:4px}
+ .serv-map-window-main{padding:15px 12px}
+ .serv-map-window-main h3{font-size:21px}
+ .serv-map-code{font-size:10px;padding:10px}
+ .serv-map-window-bottom{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){.serv-map-step{transition:none}.serv-map-step:hover{transform:none}}
