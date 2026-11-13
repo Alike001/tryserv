@@ -99,3 +99,15 @@ Code: https://github.com/Alike001/tryserv
 - [ ] Record and publish a truthful demo video, post on X, submit the Typeform and save the confirmation.
 
 Do not spend more guest credits just to create marketing media if the cap is nearly exhausted. Never reset the global budget without investigating provider costs and abuse conditions.
+
+
+## November 13 readiness update — final implementation
+
+- Merged and deployed PRs [#14](https://github.com/Alike001/tryserv/pull/14), [#15](https://github.com/Alike001/tryserv/pull/15), and [#17](https://github.com/Alike001/tryserv/pull/17): interactive SERV learning walkthrough, lesson-specific visual diagrams, verified-state debug lab and in-page docs search.
+- Current functional production baseline is main commit `c42d30da3122b57748a8e286c1e99eb64e96f6b0` (Render reported LIVE). No inference quotas were increased or reset for UI work.
+- Judges should examine one **realistic request issue**, optional real SERV help with its model/completion metadata, and the learner's **own deterministic revalidation**. Visual diagrams alone do not prove real inference.
+- **Video blocker:** HeyGen render `63ef34b8568ac2362576644e7b01c867` failed with `MOVIO_PAYMENT_INSUFFICIENT_CREDIT`. No playable TrySERV video was found in that connected library. A new real-screen recording and synchronized natural narration still must be finished and reviewed; do not submit a simulated AI answer.
+- **Human test blocker:** independent beginner and developer acceptance is still unobserved; use the script in `docs/REAL-USER-ACCEPTANCE.md` and record genuine feedback.
+- Revenue story for the judges: potential paid onboarding/learning environments for API providers and developer ecosystems. This is a commercialization *hypothesis*, not confirmed customers or revenue.
+
+A complete UI demonstration does not require more SERV spending: use the previously captured genuine production completion evidence, and label any reused recording clearly. Before posting, ensure narration accurately matches real displayed footage.
