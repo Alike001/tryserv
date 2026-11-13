@@ -68,11 +68,17 @@ export function validateDebugBlueprint(id,config){
   problems.push({field:"endpoint",message:"This is not the documented SERV Chat Completions endpoint.",hint:"Check the official HTTP example and its exact host and path."});
  if(typeof config.model!=="string"||!AVAILABLE.has(config.model))
   problems.push({field:"model",message:"The selected model is not supported in this learning lab.",hint:"Use a model from the current lesson: gpt-5.4-mini or gpt-5.4-nano."});
- if(!Array.isArray(config.messages)||config.messages.length<2||config.messages.length>8){
-  problems.push({field:"messages",message:"Supply an array of at least two role/content messages.",hint:"Look at the system and user messages in the official API example."});
+ if(!Array.isArray(config.messages)||config.messages.length===0||config.messages.length>8){
+  problems.push({field:"messages",message:"Supply an array of one to eight role/content messages.",hint:"Look at the system and user messages in the official API example."});
  }else{
   const messages=config.messages;
-  if(messages.some(m=>!m||typeof m!=="object"||typeof m.role!=="string"||typeof m.content!=="string"||m.content.trim().length<3||m.content.length>500)){
+  if(messages.length<2){
+    const hasUser=messages.some(m=>m?.role==="user"&&typeof m?.content==="string"&&m.content.trim().length>=8);
+    const hasInstructions=messages.some(m=>["system","developer"].includes(m?.role)&&typeof m?.content==="string"&&m.content.trim().length>=8);
+    problems.push(hasUser&&!hasInstructions
+      ?{field:"messages.instructions",message:"This blueprint is missing a system or developer instruction.",hint:"Add a clear system or developer message to explain the assistant's job; keep the existing user task."}
+      :{field:"messages",message:"This practice request needs a system/developer instruction and a separate user task.",hint:"Include both role/content messages, then validate again."});
+  }else if(messages.some(m=>!m||typeof m!=="object"||typeof m.role!=="string"||typeof m.content!=="string"||m.content.trim().length<3||m.content.length>500)){
    problems.push({field:"messages",message:"Each message needs a supported role and meaningful text.",hint:"Every message should have a role and nonempty content."});
   }else{
    const known=new Set(["system","developer","user","assistant"]);
