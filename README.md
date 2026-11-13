@@ -23,6 +23,8 @@ The learning studio now uses a focused **Understand → Practice → Apply** pro
 
 The standalone debugging lab shares the same original TrySERV visual language, with explicit Read → Edit → Verify steps. These improvements were merged in [PR #8](https://github.com/Alike001/tryserv/pull/8) and [PR #9](https://github.com/Alike001/tryserv/pull/9). Research: [Learning UX and SERV Coach](docs/LEARNING-UX-RESEARCH.md).
 
+**Final visual and validation polish (November 13):** TrySERV now includes an original interactive Learn → Validate → Reason → Verify illustration, lesson-specific OpenServ concept diagrams, a state-driven debugging flow, and a searchable in-page documentation guide. The diagnostic stage responds to real checker output; editing a request clears older validation evidence rather than presenting it as current. Passing validation never implies that an optional paid SERV inference happened. See [PR #14](https://github.com/Alike001/tryserv/pull/14), [PR #15](https://github.com/Alike001/tryserv/pull/15), and [PR #17](https://github.com/Alike001/tryserv/pull/17).
+
 ## Try it as a judge or first-time visitor
 
 | Visit | What to do | What proves it works |
