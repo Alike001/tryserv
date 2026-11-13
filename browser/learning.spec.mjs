@@ -463,3 +463,18 @@ test("debug hero teaches SERV's specific role without claiming an executed call"
  await expect(page.locator(".debug-hero-preview")).toBeHidden();
  await expect(page.locator("#editor")).toBeVisible();
 });
+
+
+test("diagnostic: pinpoint 320px homepage overflow before release",async({page})=>{
+ await page.setViewportSize({width:320,height:850});
+ await page.goto("/");
+ const found=await page.evaluate(()=>{
+  const width=window.innerWidth;
+  return [...document.querySelectorAll("body *")]
+   .map(el=>({tag:el.tagName.toLowerCase(),cls:typeof el.className==="string"?el.className:"",text:(el.textContent??"").trim().slice(0,48),
+     right:Math.round(el.getBoundingClientRect().right),left:Math.round(el.getBoundingClientRect().left)}))
+   .filter(x=>x.right>width+3||x.left< -3).slice(0,25);
+ });
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+ console.log("HOME_320_OVERFLOW_DIAGNOSTIC",JSON.stringify({overflow,found}));
+});
