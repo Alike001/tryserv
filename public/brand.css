@@ -514,3 +514,97 @@ body[data-page="docs"] #docs-sections a[hidden]{display:none!important}
  body[data-page="docs"] .docs-find{max-width:410px;margin-bottom:12px}
  body[data-page="docs"] #docs-sections{margin-bottom:12px}
 }
+
+
+/* Original SERV learning scene: illustrated, gently animated, never a fake live response. */
+body[data-page="home"] .hero-visual-story{padding:9px 0 0;min-width:0;isolation:isolate}
+body[data-page="home"] .hero-art-frame{position:relative;max-width:100%;padding:0 3px}
+body[data-page="home"] .hero-original-illustration{
+ display:block;width:100%;height:auto;max-width:620px;
+ filter:drop-shadow(0 24px 38px #163b6210);
+}
+body[data-page="home"] .hero-art-chip{
+ position:absolute;z-index:2;padding:11px 15px;border-radius:11px;
+ font-size:9px;font-weight:900;letter-spacing:.8px;white-space:nowrap;
+ box-shadow:0 12px 28px #173d6023;animation:ts-hero-float 5s ease-in-out infinite;
+}
+body[data-page="home"] .hero-art-chip-one{
+ top:12%;right:0;background:var(--ts-blue);color:#fff;
+}
+body[data-page="home"] .hero-art-chip-two{
+ bottom:17%;left:0;background:var(--ts-navy);color:#dbfaed;
+ animation-delay:-2.2s;
+}
+body[data-page="home"] .hero-steps-card{
+ position:relative;z-index:3;width:min(94%,540px);margin:-21px auto 0;
+ border:1px solid #cbdbea;border-radius:19px;background:#fff;
+ padding:19px 22px 17px;
+ box-shadow:0 19px 45px #173b621b;
+}
+body[data-page="home"] .hero-steps-top{
+ display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
+ padding-bottom:13px;border-bottom:1px solid #e8eef6;
+}
+body[data-page="home"] .hero-steps-top strong{
+ max-width:210px;color:var(--ts-navy);font:700 15px/1.3 'Space Grotesk',sans-serif;
+}
+body[data-page="home"] .hero-steps-top small{
+ max-width:135px;color:#6a8396;font-size:9px;font-weight:800;
+ letter-spacing:.5px;text-align:right;line-height:1.5;
+}
+body[data-page="home"] .hero-steps-tabs{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:14px 0 11px;
+}
+body[data-page="home"] .hero-steps-tabs button{
+ cursor:pointer;min-width:0;border:1px solid #d7e2ee;background:#f6f9fe;
+ border-radius:9px;padding:11px 5px;color:#516a82;
+ font:800 11px/1.35 'DM Sans',sans-serif;
+ transition:background .18s,border-color .18s,transform .18s;
+}
+body[data-page="home"] .hero-steps-tabs button:hover{
+ border-color:#afc0e6;transform:translateY(-2px);
+}
+body[data-page="home"] .hero-steps-tabs button.is-active{
+ color:#183d8d;border-color:#9ab5ed;background:#e9f1ff;
+ box-shadow:inset 0 -3px var(--ts-blue);
+}
+body[data-page="home"] [data-hero-current="1"] .hero-steps-tabs button.is-active{
+ color:#11664f;border-color:#9ae3cc;background:#e7f9f1;
+ box-shadow:inset 0 -3px #38d4ad;
+}
+body[data-page="home"] [data-hero-current="2"] .hero-steps-tabs button.is-active{
+ color:#80512c;border-color:#f3cda8;background:#fff2e4;
+ box-shadow:inset 0 -3px #eca86c;
+}
+body[data-page="home"] .hero-steps-card p{
+ min-height:49px;margin:4px 0 10px;color:#536c82;font:500 12px/1.65 'DM Sans',sans-serif;
+}
+body[data-page="home"] .hero-steps-card a{
+ display:inline-block;padding:4px 0;color:var(--ts-blue-dark);
+ font-size:12px;font-weight:800;text-decoration:none;
+}
+body[data-page="home"] .hero-steps-card a:hover{text-decoration:underline}
+@keyframes ts-hero-float{
+ 0%,100%{transform:translate3d(0,0,0)}
+ 50%{transform:translate3d(0,-7px,0)}
+}
+@media(max-width:1100px){
+ body[data-page="home"] .hero-art-chip{font-size:8px;padding:9px 10px}
+ body[data-page="home"] .hero-steps-card{padding:16px}
+ body[data-page="home"] .hero-steps-top strong{font-size:13px}
+}
+@media(max-width:420px){
+ body[data-page="home"] .hero-art-chip{font-size:7px;letter-spacing:.4px;padding:8px}
+ body[data-page="home"] .hero-art-chip-one{top:7%}
+ body[data-page="home"] .hero-art-chip-two{bottom:15%}
+ body[data-page="home"] .hero-steps-card{width:98%;margin-top:-13px;padding:13px 14px}
+ body[data-page="home"] .hero-steps-tabs button{font-size:10px;padding:9px 4px}
+ body[data-page="home"] .hero-steps-top strong{font-size:13px}
+ body[data-page="home"] .hero-steps-top small{font-size:8px}
+ body[data-page="home"] .hero-steps-card p{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-page="home"] .hero-art-chip{animation:none}
+ body[data-page="home"] .hero-steps-tabs button{transition:none}
+ body[data-page="home"] .hero-steps-tabs button:hover{transform:none}
+}

@@ -106,3 +106,21 @@ test("docs finder script is allowlisted, self-contained and never triggers infer
   assert.equal(calls(),0);
  });
 });
+
+
+test("original OpenServ hero illustration is publicly served as an image with safe static markup",async()=>{
+ await withApp(async(url,calls)=>{
+   const page=await (await fetch(url+"/")).text();
+   assert.match(page,/src="\/serv-hero-illustration\.svg"/);
+   assert.match(page,/data-hero-explorer/);
+   assert.match(page,/ILLUSTRATION · NO LIVE API CALL/);
+   const response=await fetch(url+"/serv-hero-illustration.svg");
+   assert.equal(response.status,200);
+   assert.match(response.headers.get("content-type"),/image\/svg\+xml/);
+   const svg=await response.text();
+   assert.match(svg,/<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
+   assert.match(svg,/<desc/);
+   assert.doesNotMatch(svg,/<script|onload=|<foreignObject|xlink:href=/i);
+   assert.equal(calls(),0);
+ });
+});
