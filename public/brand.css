@@ -492,3 +492,25 @@ body[data-page="debug"] .repair-state-hint{margin:0 0 21px;color:#516f85;line-he
 @media(prefers-reduced-motion:reduce){
  body[data-page="debug"] .repair-state-step{transition:none}
 }
+
+
+/* In-page developer docs finder, local only. */
+body[data-page="docs"] .docs-find{
+ display:grid;gap:8px;padding:12px;margin:0 0 13px;
+ background:#f0f5ff;border:1px solid #d4e1f4;border-radius:12px;
+}
+body[data-page="docs"] .docs-find label{
+ color:var(--ts-navy);font-weight:800;font-size:12px;
+}
+body[data-page="docs"] .docs-find input{
+ box-sizing:border-box;width:100%;min-width:0;
+ border:1px solid #b6cbe4;color:var(--ts-navy);background:#fff;
+ padding:12px 11px;border-radius:8px;font:inherit;font-size:12px;
+}
+body[data-page="docs"] .docs-find input::placeholder{color:#697f94}
+body[data-page="docs"] .docs-find p{color:#56708b;font-size:10px;line-height:1.5;margin:0}
+body[data-page="docs"] #docs-sections a[hidden]{display:none!important}
+@media(max-width:750px){
+ body[data-page="docs"] .docs-find{max-width:410px;margin-bottom:12px}
+ body[data-page="docs"] #docs-sections{margin-bottom:12px}
+}
