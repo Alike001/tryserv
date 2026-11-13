@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 515" role="img" aria-labelledby="svgtitle svgdesc">
+<title id="svgtitle">A developer learning OpenServ and checking a SERV API request</title>
+<desc id="svgdesc">Original illustration of a learner at a laptop, a request-flow panel, and a SERV reasoning node. This is a conceptual scene, not a live API result.</desc>
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e9f1ff"/><stop offset=".6" stop-color="#f6faff"/><stop offset="1" stop-color="#e3f8f1"/></linearGradient>
+ <linearGradient id="desk" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#315271"/><stop offset="1" stop-color="#18324a"/></linearGradient>
+ <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#294b70"/><stop offset="1" stop-color="#0f2a40"/></linearGradient>
+ <linearGradient id="mint" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8cf5d0"/><stop offset="1" stop-color="#38d4ad"/></linearGradient>
+ <filter id="soft" x="-30%" y="-30%" width="170%" height="170%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#204d79" flood-opacity=".16"/></filter>
+ <filter id="sm" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#173e62" flood-opacity=".13"/></filter>
+ <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.5" fill="#9ebce1" opacity=".38"/></pattern>
+ <clipPath id="boardclip"><rect x="15" y="15" width="590" height="485" rx="32"/></clipPath>
+</defs>
+<g clip-path="url(#boardclip)">
+ <rect x="15" y="15" width="590" height="485" rx="32" fill="url(#sky)"/>
+ <rect x="15" y="15" width="590" height="485" rx="32" fill="url(#dots)"/>
+ <circle cx="524" cy="87" r="113" fill="#c9ddff" opacity=".5"/>
+ <circle cx="101" cy="401" r="130" fill="#c5f5e6" opacity=".7"/>
+ <path d="M17 373C141 327 229 401 355 371s198-19 250-53v182H17z" fill="#dceafd" opacity=".75"/>
+ <path d="M17 420c147-45 213 16 346-9 118-22 172 24 242-25v114H17z" fill="#d0f1e9" opacity=".58"/>
+ <!-- floating workspace screen -->
+ <g filter="url(#soft)" transform="rotate(2 400 210)">
+   <rect x="236" y="90" width="340" height="250" rx="19" fill="#fff" stroke="#c7d9e9" stroke-width="2"/>
+   <rect x="236" y="90" width="340" height="40" rx="19" fill="#18344f"/>
+   <path d="M236 113v18h340v-18" fill="#18344f"/>
+   <circle cx="259" cy="110" r="4" fill="#f5aea7"/><circle cx="273" cy="110" r="4" fill="#ffe6a8"/><circle cx="287" cy="110" r="4" fill="#87dcb6"/>
+   <text x="405" y="115" fill="#c7e1fb" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle">TRYSERV / REQUEST FLOW</text>
+   <text x="260" y="153" fill="#4767a9" font-family="Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.3">UNDERSTAND  →  VERIFY</text>
+   <rect x="260" y="174" width="100" height="73" rx="10" fill="#ecf2ff" stroke="#c1d6fb"/>
+   <rect x="377" y="174" width="86" height="73" rx="10" fill="#e7f9f2" stroke="#b0e9d2"/>
+   <rect x="480" y="174" width="72" height="73" rx="10" fill="#fff1e7" stroke="#f0d2b9"/>
+   <path d="M362 211h11m-3-5 5 5-5 5M466 211h10m-4-5 5 5-5 5" fill="none" stroke="#6689c5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+   <circle cx="310" cy="197" r="9" fill="#4269e9"/><path d="m306 197 3 3 6-6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+   <circle cx="421" cy="196" r="9" fill="#24af8d"/><path d="m421 189 2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#fff"/>
+   <circle cx="516" cy="197" r="9" fill="#df9359"/><path d="m512 197 3 3 6-6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+   <text x="310" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="11" fill="#223c62">LEARN</text>
+   <text x="421" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="11" fill="#155d4b">SERV</text>
+   <text x="516" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="11" fill="#81512f">CHECK</text>
+   <rect x="260" y="268" width="292" height="49" rx="9" fill="#142f49"/>
+   <circle cx="277" cy="285" r="3" fill="#38d4ad"/><rect x="287" y="282" width="132" height="5" rx="2.5" fill="#c4e7f5"/>
+   <rect x="278" y="297" width="171" height="5" rx="2.5" fill="#7dadd9"/>
+   <rect x="459" y="295" width="76" height="11" rx="5" fill="#3b947d"/>
+   <text x="497" y="303.2" text-anchor="middle" font-family="Arial, sans-serif" font-size="7.5" font-weight="700" fill="#fff">PREVIEW</text>
+ </g>
+ <!-- learner at laptop -->
+ <g filter="url(#sm)">
+   <path d="M38 472c7-65 27-107 74-127 37-14 105 9 125 46 10 19 15 53 14 81z" fill="#486cdd"/>
+   <path d="M110 365c-3 23 0 47 20 68 15 16 40 15 58 2l-22-65z" fill="#375bd1"/>
+   <path d="M110 270c-10-31 5-75 49-83 48-10 79 16 82 63 0 30-12 55-25 70l-91 2z" fill="#1e3047"/>
+   <path d="M116 267c-19-8-29-25-23-42 5-14 20-18 27-10 9 12 9 26 6 38" fill="#1e3047"/>
+   <path d="M147 306c-5 24-8 36-29 45 16 24 48 36 68 18l6-50z" fill="#eaa880"/>
+   <ellipse cx="172" cy="275" rx="58" ry="65" fill="#f3ba97"/>
+   <path d="M117 273c-10-48 20-75 59-76 23-1 51 15 57 37-29-14-58-14-88 3-5 16-14 26-28 36" fill="#1e3047"/>
+   <path d="M193 234c9 15 23 27 44 27l-5-29z" fill="#1e3047"/>
+   <ellipse cx="218" cy="289" rx="8" ry="12" fill="#f3ba97"/>
+   <path d="M157 280h13m22 0h10" stroke="#20384e" stroke-width="3" stroke-linecap="round"/>
+   <circle cx="163" cy="282" r="2.2" fill="#20384e"/><circle cx="196" cy="282" r="2.2" fill="#20384e"/>
+   <path d="M178 299q8 9 18-1" stroke="#a45e52" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+   <path d="M130 361c23 19 52 21 78-1 27 10 36 28 55 69l-53 43H74c-1-56 18-92 56-111" fill="#4d75e6"/>
+   <path d="M178 379l14 31 19-32-11-15q-10 8-22 16" fill="#f8fcff" opacity=".83"/>
+   <path d="M228 415c25 4 40 22 47 44h-55z" fill="#3859bd"/>
+   <path d="M84 464c2-24 21-46 38-54" stroke="#7b97f8" stroke-width="5" fill="none" stroke-linecap="round"/>
+ </g>
+ <!-- desk surface + laptop -->
+ <ellipse cx="234" cy="470" rx="212" ry="17" fill="#183a55" opacity=".12"/>
+ <path d="M25 451h393c13 0 21 11 18 21H16c-1-9 0-21 9-21z" fill="url(#desk)"/>
+ <g filter="url(#sm)">
+   <path d="M197 347h209a11 11 0 0 1 11 13l-25 100H171z" fill="url(#screen)" stroke="#9ab1d5" stroke-width="2"/>
+   <path d="M165 456h246c7 0 10 6 8 12H157c-3-8 0-12 8-12z" fill="#51738e"/>
+   <circle cx="294" cy="401" r="20" fill="#34567a" stroke="#6989a8" stroke-width="1.5"/>
+   <path d="m288 400 6-9 6 9-6 9z" fill="#80e4c4"/>
+ </g>
+ <!-- conceptual provenance / progress -->
+ <g filter="url(#sm)">
+   <rect x="30" y="96" width="180" height="56" rx="15" fill="#fff" stroke="#c5d8ea"/>
+   <rect x="45" y="109" width="31" height="31" rx="9" fill="#e3f9f0"/>
+   <path d="m53 124 6 6 10-13" stroke="#1ca883" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+   <text x="87" y="119" font-family="Arial, sans-serif" font-weight="700" font-size="10" fill="#19374e">LEARNING CHECK</text>
+   <text x="87" y="136" font-family="Arial, sans-serif" font-size="10" fill="#62788c">Practice, then verify</text>
+ </g>
+ <g filter="url(#sm)">
+  <rect x="426" y="373" width="160" height="62" rx="16" fill="#fff" stroke="#c7e1d9"/>
+  <circle cx="449" cy="394" r="11" fill="#ddf8ed"/>
+  <path d="m444 394 4 4 7-7" stroke="#149b77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="467" y="391" font-family="Arial, sans-serif" font-weight="700" font-size="10" fill="#1c4d43">RE-CHECKED</text>
+  <text x="467" y="407" font-family="Arial, sans-serif" font-size="10" fill="#63788d">By deterministic code</text>
+  <path d="M442 420h120" stroke="#d9e8ee" stroke-width="3" stroke-linecap="round"/>
+ </g>
+</g>
+<rect x="15" y="15" width="590" height="485" rx="32" fill="none" stroke="#bfd5e8" stroke-width="2"/>
+</svg>
