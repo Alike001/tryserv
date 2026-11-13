@@ -55,3 +55,22 @@ The previously referenced HeyGen video **`63ef34b8568ac2362576644e7b01c867`** is
 - **2:40:** architecture and safeguards: capped guest usage, no API keys in browser, no automatic spending, independent project; invite users to try.
 
 No demo timing or finished footage is represented as observed or approved here.
+
+
+## November 13 continued — PR #17 final debug/docs polishing
+
+- [PR #17](https://github.com/Alike001/tryserv/pull/17) merged as commit `c42d30da3122b57748a8e286c1e99eb64e96f6b0`, deployed LIVE on Render as `dep-dbrdem1srm7s73dskqig`.
+- The debugging lab now has a responsive state-driven **Inspect → Understand (optional SERV) → Verify** diagram based on actual validator results, not a fake animation.
+- Editing, resetting, or switching the JSON blueprint now invalidates earlier checker results, optional SERV diagnostic context and the old validated request preview. Late responses for an outdated edit/case cannot overwrite the new state.
+- The illustrated pipeline never marks SERV as completed merely because deterministic validation passed.
+- Developer docs now have a local, accessible guide finder searching the existing nine sections without inference, new APIs or extra infrastructure.
+- Node and Chromium browser gates passed on the feature branch before merge (includes 320px search and stale-evidence tests). Real-human usability is still **unverified**.
+- The previously referenced HeyGen video remains FAILED (insufficient credits), and no other completed TrySERV video was found in the HeyGen library on November 13. Do not claim the submission video exists.
+
+### Scope freeze recommendation
+
+Do not add dozens of quiz questions, certificates, a leaderboard, accounts or expensive animations before the deadline. Four lessons, three repaired requests, visual explanations, and real bounded SERV-assisted troubleshooting are sufficient for a serious pilot. Prefer task-completion evidence to surface-level features.
+
+**Open Track position:** independent developer onboarding and troubleshooting powered by SERV Reasoning. Its differentiator is free deterministic inspection followed by optional source-grounded reasoning and manually applied/revalidated correction. Commercial potential is B2B developer education for API and AI infrastructure platforms, *not* validated revenue.
+
+**Still open:** unassisted beginner/developer tasks, final screen-reader/manual mobile spot-check, verified narrated real-demo video, YouTube URL, X post mentioning @openservai, and official Typeform confirmation. Deadline is November 15, 2026, 23:59 UTC (November 16, 00:59 WAT).
