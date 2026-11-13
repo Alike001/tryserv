@@ -124,3 +124,26 @@ test("original OpenServ hero illustration is publicly served as an image with sa
    assert.equal(calls(),0);
  });
 });
+
+
+test("human-centered OpenServ illustration animates without fabricating an API result",async()=>{
+ await withApp(async(url,calls)=>{
+   const response=await fetch(url+"/serv-hero-illustration.svg");
+   assert.equal(response.status,200);
+   const svg=await response.text();
+   assert.match(svg,/<title id="humanTitle">/);
+   assert.match(svg,/expressive eyes/);
+   assert.match(svg,/class="person"/);
+   assert.match(svg,/class="leftHand"/);
+   assert.match(svg,/class="rightHand"/);
+   assert.match(svg,/class="eyelids"/);
+   assert.match(svg,/@keyframes blink/);
+   assert.match(svg,/@keyframes typeRight/);
+   assert.match(svg,/@media\(prefers-reduced-motion:reduce\)/);
+   assert.match(svg,/PREVIEW ONLY/);
+   assert.match(svg,/No automatic inference/);
+   assert.doesNotMatch(svg,/tool_choice|missing required field|LIVE RESPONSE|Completion ID/);
+   assert.doesNotMatch(svg,/<script\b|onload=|onerror=|<foreignObject/i);
+   assert.equal(calls(),0);
+ });
+});
