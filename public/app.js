@@ -100,6 +100,34 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
      });
    }
  }
+ const lessonConcepts={
+   ecosystem:{
+     nodes:[["Task","A user requests work"],["Workflow","Coordinates tasks and agents"],["Agent","Performs an assigned task"]],
+     note:"Simplified example: a workflow may coordinate agent tasks. This is not a live workflow trace."
+   },
+   understand:{
+     nodes:[["Application","Prepares the request"],["SERV API","Provides a reasoning response"],["Your code","Reviews and uses the result"]],
+     note:"SERV Reasoning fits an application through the Chat Completions API. Your application still checks what comes back."
+   },
+   decide:{
+     nodes:[["Facts","Dates, numbers and evidence"],["Exact code","Enforces known rules"],["SERV","Explains ambiguous choices"]],
+     note:"Keep arithmetic and hard limits deterministic. Consider reasoning for ambiguous interpretation, then verify its output."
+   },
+   build:{
+     nodes:[["System","Set instructions and limits"],["User","State the task clearly"],["Preview","Check the request shape"]],
+     note:"A supported model, system instruction and user task form the blueprint. A valid preview is NOT an executed API request."
+   }
+ };
+ function showLessonConcept(id){
+   const scene=lessonConcepts[id];
+   if(!scene)return;
+   for(const [index,prefix] of ["a","b","c"].entries()){
+     $("concept-"+prefix+"-title").textContent=scene.nodes[index][0];
+     $("concept-"+prefix+"-detail").textContent=scene.nodes[index][1];
+   }
+   $("lesson-concept-summary").textContent=scene.note;
+ }
+ 
  function openLesson(id){
    const lesson=lessons.find(l=>l.id===id);
    if(!lesson)return;
@@ -119,6 +147,7 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    $("lesson-outcome").textContent="YOUR GOAL  ·  "+(outcomes[id]??lesson.summary);
    $("lesson-takeaway").textContent=lesson.takeaway;
    $("lesson-detail").textContent=lesson.detail;
+   showLessonConcept(id);
    $("lesson-source").textContent=lesson.source.title+" ↗";
    $("lesson-source").href=lesson.source.url;
    $("challenge").textContent=lesson.challenge;
