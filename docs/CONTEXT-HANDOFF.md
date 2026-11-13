@@ -217,3 +217,8 @@ Work in feat/docs-and-learning-navigation:
 - Created original navy/cobalt cover tryserv_submission_cover.jpg and SRT captions.
 - HeyGen natural Joanna narration generated at 146.285s and HeyGen Studio **narrated video submitted**, video ID `63ef34b8568ac2362576644e7b01c867`, title “TrySERV | Real SERV Reasoning Debugging Demo (Verified)”, 720p 16:9. Render **processing at creation**; video status was **not yet completed** when handoff saved. Use HeyGen get_video for status in a later user turn if asked; do not create a duplicate video.
 - For final submission, review completed narrated output for speech/visual alignment and truthful labels, then upload to YouTube; record public video URL in docs. X post, actual human participant feedback, Typeform response confirmation not done. Official form https://openserv.typeform.com/submissions02; deadline November 15 2026 23:59 UTC. No new SERV paid calls required.
+
+
+## November 13 — final visual release checkpoint
+
+The latest verified visual work, official Edition 02 judging rules, authentic HeyGen failure, revenue hypothesis, and remaining human/video/submission gates are documented in [`docs/FINAL-UX-CHECKPOINT-2026-11-13.md`](FINAL-UX-CHECKPOINT-2026-11-13.md). The source of truth is main after merged PRs #14 and #15; deployed commit `8c88c15330442719f1f810d5125613a1eb51868c` was reported LIVE on Render. Do not claim actual human usability testing has occurred. Do not treat the previously referenced HeyGen video `63ef34b8568ac2362576644e7b01c867` as completed; it failed for insufficient video credits.
