@@ -15,7 +15,7 @@
 - Documentation: https://tryserv.onrender.com/docs
 - Public video: **PENDING — add only after upload**
 - X launch post: **PENDING — add public post URL**
-- Submission form: https://openserv.typeform.com/ (use exact form linked by the official hackathon page)
+- Submission form: https://openserv.typeform.com/submissions02 (verified from official Hackathon 02 page)
 
 ## Suggested listing
 
@@ -85,7 +85,7 @@ Code: https://github.com/Alike001/tryserv
 - [x] Official rules, deadline and Open Track requirements checked Nov 12.
 - [x] Reproducible desktop/phone UI snapshots created in the GitHub browser workflow.
 - [ ] Verify Render LIVE at the final documentation-only commit as well as the merged code.
-- [ ] Run two genuine user journeys (one beginner, one developer) without coaching; record actual blockers.
+- [ ] Run two genuine user journeys (one beginner, one developer) without coaching; record actual blockers using [the tester kit](REAL-USER-ACCEPTANCE.md).
 - [ ] Inspect actual mobile/desktop focus and screen-reader experience; don't equate responsive tests with human review.
 - [ ] Capture genuine final screenshots and optionally one budgeted live SERV tutoring response.
 - [ ] Record and publish a truthful demo video, post on X, submit the Typeform and save the confirmation.
