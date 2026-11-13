@@ -31,6 +31,8 @@ test("public production: beginner and developer workflows, no paid inference",as
    expect(response.status(),route).toBe(200);
    // DOMContentLoaded is too early for an accurate hosted Google-font layout measurement.
    await page.evaluate(()=>document.fonts.ready);
+   if(route==="/learn"||route==="/try")await expect(page.locator("#lesson-nav .nav-lesson")).toHaveCount(4);
+   if(route==="/debug")await expect(page.locator("#cases .case-button")).toHaveCount(3);
    await expect(page.locator('link[href="/brand.css"]')).toHaveCount(1);
    if(width===375)await picture(page,"public-"+route.replace("/","home").replace("homelearn","learn").replace("hometry","builder").replace("homedebug","debug").replace("homedocs","docs")+"-phone");
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
