@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {runInNewContext} from "node:vm";
 import {execFileSync} from "node:child_process";
+import {createApp} from "../server.mjs";
 import {fileURLToPath} from "node:url";
 import path from "node:path";
 
@@ -73,4 +74,18 @@ test("walkthrough stages update independently, with accessible pressed state and
 test("visual walkthrough JavaScript parses under Node", () => {
   const node = process.execPath;
   assert.doesNotThrow(()=>execFileSync(node, ["--check", path.join(dir,"..","public","serv-map.js")]));
+});
+
+test("real HTTP server serves the visual walkthrough as JavaScript without an API key", async () => {
+  const server = createApp({env:{}});
+  await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));
+  try {
+    const url = "http://127.0.0.1:"+server.address().port;
+    const response = await fetch(url+"/serv-map.js");
+    assert.equal(response.status,200);
+    assert.match(response.headers.get("content-type"),/text\/javascript/);
+    assert.match(await response.text(),/INTERACTIVE OPENSERV WALKTHROUGH/);
+  } finally {
+    await new Promise(resolve=>server.close(resolve));
+  }
 });
