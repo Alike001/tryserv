@@ -1,0 +1,43 @@
+name: One-time TrySERV hosted release acceptance
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'qa/production.smoke.spec.mjs'
+      - '.github/workflows/production-smoke.yml'
+concurrency:
+  group: tryserv-one-time-hosted-release
+  cancel-in-progress: false
+jobs:
+  once:
+    # Exact merge-title guard: future doc updates and ordinary pushes cannot spend credits.
+    if: ${{ startsWith(github.event.head_commit.message, 'test: run one-time hosted TrySERV production acceptance') && github.run_attempt == 1 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      CI: 'true'
+      ALLOW_ONE_SERV_CALL: 'yes'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned Playwright runner
+        run: npm install --no-save --ignore-scripts --no-audit --no-fund @playwright/test@1.65.0
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run exact public production journeys and at most one SERV call
+        run: npx playwright test --config=qa/production.playwright.config.mjs
+      - name: Keep redacted public acceptance evidence and recordings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tryserv-hosted-acceptance-evidence
+          path: |
+            production-evidence/
+            test-results/
+            production-playwright-report/
+          if-no-files-found: warn
+          retention-days: 14
