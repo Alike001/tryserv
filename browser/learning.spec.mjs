@@ -474,3 +474,31 @@ test("all routes remain within 320px viewport after fonts settle",async({page})=
    expect(overflow,route+" overflow at 320px").toBeLessThanOrEqual(2);
  }
 });
+
+
+test("SERV visual walkthrough is accessible, clickable and no-spend at 320px",async({page})=>{
+ let inferenceCalls=0;
+ page.on("request",request=>{
+   if(["/api/mentor","/api/try-serv","/api/debug/explain"].includes(new URL(request.url()).pathname))inferenceCalls++;
+ });
+ await page.setViewportSize({width:320,height:850});
+ for(const route of ["/","/learn"]){
+   await page.goto(route,{waitUntil:"load"});
+   const map=page.locator("[data-serv-map] .serv-map");
+   await expect(map).toBeVisible();
+   const stages=map.locator("[data-serv-step]");
+   await expect(stages).toHaveCount(4);
+   await expect(stages.nth(0)).toHaveAttribute("aria-pressed","true");
+   await stages.nth(2).click();
+   await expect(stages.nth(2)).toHaveAttribute("aria-pressed","true");
+   await expect(map.locator("[data-serv-title]")).toHaveText("Ask SERV to explain the why.");
+   await expect(map.locator("[data-serv-link]")).toHaveAttribute("href","/debug");
+   await stages.nth(3).click();
+   await expect(map.locator("[data-serv-sample]")).toContainText("NOT EXECUTED");
+   await expect(map.locator("[data-serv-link]")).toHaveAttribute("href","/try");
+   await expect(map).toContainText("no API calls and earns no XP");
+   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+   expect(overflow,route+" visual overflow at 320px").toBeLessThanOrEqual(2);
+ }
+ expect(inferenceCalls).toBe(0);
+});
