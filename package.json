@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node index.mjs",
-    "check": "node --check server.mjs && node --check curriculum.mjs && node --check mentor.mjs && node --check guest-budget.mjs && node --check try-live.mjs && node --check public/app.js && node --check debug-lab.mjs && node --check public/debug.js",
+    "check": "node --check server.mjs && node --check curriculum.mjs && node --check mentor.mjs && node --check guest-budget.mjs && node --check try-live.mjs && node --check public/app.js && node --check debug-lab.mjs && node --check public/debug.js && node --check qa/production.playwright.config.mjs && node --check qa/production.smoke.spec.mjs",
     "test": "node --test test/*.test.mjs",
     "build": "npm install --ignore-scripts --no-audit --no-fund && npm run check && npm test"
   },
