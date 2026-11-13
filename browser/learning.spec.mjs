@@ -463,3 +463,14 @@ test("debug hero teaches SERV's specific role without claiming an executed call"
  await expect(page.locator(".debug-hero-preview")).toBeHidden();
  await expect(page.locator("#editor")).toBeVisible();
 });
+
+
+test("all routes remain within 320px viewport after fonts settle",async({page})=>{
+ await page.setViewportSize({width:320,height:850});
+ for(const route of ["/","/learn","/try","/debug","/docs"]){
+   await page.goto(route,{waitUntil:"load"});
+   await page.evaluate(()=>document.fonts.ready);
+   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+   expect(overflow,route+" overflow at 320px").toBeLessThanOrEqual(2);
+ }
+});

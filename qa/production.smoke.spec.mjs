@@ -27,11 +27,22 @@ test("public production: beginner and developer workflows, no paid inference",as
  for(const width of [320,375,768,1024,1440]){
   await page.setViewportSize({width,height:860});
   for(const route of ["/","/learn","/try","/debug","/docs"]){
-   const response=await page.goto(route,{waitUntil:"domcontentloaded"});
+   const response=await page.goto(route,{waitUntil:"load"});
    expect(response.status(),route).toBe(200);
+   // DOMContentLoaded is too early for an accurate hosted Google-font layout measurement.
+   await page.evaluate(()=>document.fonts.ready);
+   if(route==="/learn"||route==="/try")await expect(page.locator("#lesson-nav .nav-lesson")).toHaveCount(4);
+   if(route==="/debug")await expect(page.locator("#cases .case-button")).toHaveCount(3);
    await expect(page.locator('link[href="/brand.css"]')).toHaveCount(1);
    if(width===375)await picture(page,"public-"+route.replace("/","home").replace("homelearn","learn").replace("hometry","builder").replace("homedebug","debug").replace("homedocs","docs")+"-phone");
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+   if(overflow>2){
+     const offenders=await page.evaluate(()=>[...document.querySelectorAll("body *")]
+       .map(el=>({selector:el.tagName.toLowerCase()+"."+(typeof el.className==="string"?el.className:""),
+         right:Math.round(el.getBoundingClientRect().right)}))
+       .filter(el=>el.right>innerWidth+3).slice(0,12));
+     console.error("PRODUCTION_OVERFLOW",JSON.stringify({route,width,overflow,offenders}));
+   }
    expect(overflow,route+" horizontal overflow at "+width).toBeLessThanOrEqual(2);
    if(width===375)await expect(page.getByRole("navigation",{name:"TrySERV pages"})).toBeVisible();
   }
@@ -82,6 +93,9 @@ test("public production: beginner and developer workflows, no paid inference",as
 });
 
 test("single approved live SERV diagnosis in production, no automatic retry",async({page})=>{
+ // Only use a paid request after all free hosted readiness checks have passed.
+ test.skip(!fs.existsSync(path.join(reportDir,"public-journeys.json")),
+  "The free hosted acceptance journey failed; no paid SERV call is allowed.");
  // Guard prevents accidental usage from other environments or re-runs.
  test.skip(process.env.ALLOW_ONE_SERV_CALL!=="yes"||process.env.GITHUB_RUN_ATTEMPT!=="1",
   "Only the specially gated one-shot release workflow may spend a public guest reservation.");
