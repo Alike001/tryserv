@@ -69,6 +69,18 @@ test("does not treat an unsupported schedule as reconciled", () => {
   assert.ok(result.issues.some(issue => issue.type === "missing_column" && issue.field === "amount"));
 });
 
+test("multiple XLSX worksheets are not silently combined",()=>{
+ const workbook={
+  name:"monthly-expenses.xlsx",truncated:false,
+  segments:[
+   {locator:"Sheet July · Row 2",cells:{"Category":"Travel","Amount":"1000"}},
+   {locator:"Sheet August · Row 2",cells:{"Category":"Travel","Amount":"1500"}}
+  ]
+ };
+ const result=reconcileFinancialSchedules({expenseSchedule:workbook,currency:"NGN"});
+ assert.equal(result.status,"incomplete");
+ assert.ok(result.issues.some(issue=>issue.type==="multiple_worksheets"));
+});
 test("inconsistent worksheet column sets fail visibly",()=>{
  const workbook={
   name:"multi-sheet.xlsx",truncated:false,
