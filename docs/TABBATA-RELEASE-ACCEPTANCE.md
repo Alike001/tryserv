@@ -1,4 +1,4 @@
-# Tabbata — Release Acceptance Checklist
+# Tabbas — Release Acceptance Checklist
 
 This checklist is a gate, not a record of completed work. Check an item only after the named evidence exists.
 
@@ -9,11 +9,12 @@ This checklist is a gate, not a record of completed work. Check an item only aft
 - [ ] Playwright browser journeys pass.
 - [ ] No existing legacy test was weakened just to hide a regression.
 - [ ] No new secret, quota reset, paid API key or database service was added.
-- [ ] `git diff` / PR review contains only Tabbata pivot work and required route/test updates.
+- [ ] `git diff` / PR review contains only Tabbas pivot work and required route/test updates.
 
 ## B. Public interface
 
-- [ ] Root route displays Tabbata, not the old learning product.
+- [ ] Root route displays Tabbas, not the old learning product.
+- [ ] Budget and expense schedule uploads produce deterministic line-item reconciliation; totals, category variances, duplicate/missing receipt references and period exceptions have regression tests.
 - [ ] Main call to action reaches the review form.
 - [ ] Sample preview clearly says it is illustrative.
 - [ ] Loading the sample does not call SERV.
