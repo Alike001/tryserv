@@ -21,7 +21,7 @@ See [problem and competitor research](docs/TABBATA-RESEARCH.md) for the evidence
 3. **Add financial schedules.** Optionally upload an approved-budget CSV/XLSX and an actual-expenditure CSV/XLSX. Tabbas checks schedule totals, category variances, duplicate references, blank or unmatched receipt references and transaction dates when the reporting period is supplied.
 4. **Upload supporting evidence.** Add site records, attendance registers, receipts and other evidence in PDF, DOCX, XLSX, CSV, TXT or Markdown.
 5. **Create a private workspace.** Files are extracted with page, sheet, row or paragraph locators. Original binary uploads are not retained; structured spreadsheet cell values are retained for deterministic checks.
-6. **Choose Analyze with SERV.** Only this explicit action calls the OpenServ Chat Completions API. It uses one unit from the existing shared durable guest allowance.
+6. **Choose Analyze with SERV.** Only this explicit action calls the OpenServ Responses API. It uses one unit from the existing shared durable guest allowance.
 7. **Inspect findings.** Review supported-in-document, partial, missing, conflicting and human-review-required findings, with exact source quotations.
 8. **Record a reviewer action.** Mark findings reviewed or request clarification.
 9. **Print / Save PDF.** Use the browser print dialog to save the review report.
@@ -35,7 +35,7 @@ See [problem and competitor research](docs/TABBATA-RESEARCH.md) for the evidence
 - **Invalid citations are downgraded:** unsupported or mismatched quotations cannot appear as supported findings.
 - **Humans make decisions:** the product never automatically approves or rejects a project report.
 
-The SERV request uses a forced function tool named `submit_report_review`, `reasoning_effort: "medium"`, and a bounded output schema. Uploaded documents are treated as untrusted data, not instructions. See [architecture and safety](docs/TABBATA-ARCHITECTURE.md).
+The SERV Responses request uses a forced function tool named `submit_report_review`, `reasoning.effort: "medium"`, and a bounded output schema. Uploaded documents are treated as untrusted data, not instructions. See [architecture and safety](docs/TABBATA-ARCHITECTURE.md).
 
 ## Current MVP limits
 
