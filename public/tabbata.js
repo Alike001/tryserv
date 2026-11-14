@@ -1,5 +1,5 @@
 const $=id=>document.getElementById(id);
-const SESSION_KEY="tabbata.active-case.v1";
+const SESSION_KEY="tabbas.active-case.v1";
 const MAX_FILE=2*1024*1024,MAX_TOTAL=8*1024*1024,MAX_FILES=5;
 let sampleFiles=null,sampleBudgetFile=null,sampleExpenseFile=null,activeCase=null,activePayload=null,activeExpiresAt=null,servConfigured=false,storageConfigured=false;
 
