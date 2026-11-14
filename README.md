@@ -1,12 +1,12 @@
-# Tabbata
+# Tabbas
 
 **Check the report before it leaves.**
 
-Tabbata is a focused donor-report pack reviewer built on OpenServ SERV Reasoning. It helps a programme/M&E or finance officer review one prepared report bundle against funder requirements before submission.
+Tabbas is a focused donor-report pack reviewer built on OpenServ SERV Reasoning. It helps a programme/M&E or finance officer review one prepared report bundle against funder requirements before submission.
 
-Bring the narrative report, reporting requirements, approved budget, reported expenditure and supporting documents. Tabbata extracts source passages, asks SERV to reason across the claims and evidence, validates every cited quotation in deterministic code, and leaves the decision with a human reviewer.
+Bring the narrative report, reporting requirements, approved budget, reported expenditure and supporting documents. Tabbas extracts source passages, asks SERV to reason across the claims and evidence, validates every cited quotation in deterministic code, and leaves the decision with a human reviewer.
 
-> Tabbata reviews the submitted documents. It does not verify that an activity happened in the physical world, prove a receipt is authentic, detect fraud, or provide an audit opinion.
+> Tabbas reviews the submitted documents. It does not verify that an activity happened in the physical world, prove a receipt is authentic, detect fraud, or provide an audit opinion.
 
 ## Why this product
 
@@ -82,7 +82,7 @@ The app listens on `PORT` (default 3000).
 | `PUBLIC_TUTOR_ENABLED` | Must be `true` with database and key configured to enable bounded public SERV calls |
 | `PORT` | HTTP server port |
 
-Do not commit secrets or upload a real `.env` file. Tabbata does not provision a new database or Render service; it reuses the existing TrySERV deployment and Neon connection.
+Do not commit secrets or upload a real `.env` file. Tabbas does not provision a new database or Render service; it reuses the existing TrySERV deployment and Neon connection.
 
 ## Tests
 
@@ -101,7 +101,7 @@ The browser suite uses mocked provider responses. It does not spend live SERV cr
 
 ## Routes
 
-- `/` — Tabbata product and review workspace.
+- `/` — Tabbas product and review workspace.
 - `/api/tabbata/status` — readiness flags only.
 - `/api/tabbata/cases` — create a short-lived review case.
 - `/api/tabbata/cases/:id` — retrieve a case with its random case token.
