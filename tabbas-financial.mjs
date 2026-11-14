@@ -124,6 +124,7 @@ function parseSchedule(document, role, currency) {
       const amount_minor = parseAmountMinor(rawAmount, currency);
       if (amount_minor === null) continue;
       if (role === "budget" && !category) throw new Error("budget category is blank");
+      if (role === "expense" && columns.category.header && !category) throw new Error("expense category is blank");
       const date = columns.date.header ? parseIsoDate(cells[columns.date.header]) : null;
       rows.push({
         locator: String(segment.locator ?? "Unknown row"),
@@ -299,7 +300,8 @@ export function reconcileFinancialSchedules({
     (budgetSchedule && budget.status !== "parsed") || (expenseSchedule && expenses.status !== "parsed");
   const suppliedCount = Number(Boolean(budgetSchedule)) + Number(Boolean(expenseSchedule));
   const totalsMatched = (!budgetSchedule || budgetTotal.status === "matched") && (!expenseSchedule || expenseTotal.status === "matched");
-  const status = incomplete ? "incomplete" : attention ? "attention_required" : suppliedCount === 2 && totalsMatched ? "reconciled" : "partial";
+  const categoryComparable = !(budgetSchedule && expenseSchedule) || Boolean(expenses.has_category);
+  const status = incomplete ? "incomplete" : attention ? "attention_required" : suppliedCount === 2 && totalsMatched && categoryComparable ? "reconciled" : "partial";
   const issueCount = checks.filter(check => check.type !== "budget_schedule_total" && check.type !== "expense_schedule_total" || check.status === "variance").length;
   const summary = incomplete
     ? "The financial schedules could not be fully reconciled. Review the extraction or row-level issues before relying on these totals."
@@ -307,9 +309,11 @@ export function reconcileFinancialSchedules({
       ? "The supplied schedules contain differences or evidence gaps that need human review. An overall budget underspend does not cancel a category-level overspend."
       : status === "reconciled"
         ? "The supplied budget and expense schedules match the entered totals, with no detected category overruns or duplicate/unmatched receipt references."
-        : suppliedCount === 2
-          ? "Both line-item schedules were checked, but one or both entered control totals are missing or not comparable. Supply the approved budget and reported expenditure totals to complete the reconciliation."
-          : "A partial financial check was completed. Supply both the approved budget and expense schedules for category-level reconciliation.";
+        : suppliedCount === 2 && !categoryComparable
+          ? "Both schedule totals were checked, but category-level reconciliation was not possible because the expense schedule has no recognised category column."
+          : suppliedCount === 2
+            ? "Both line-item schedules were checked, but one or both entered control totals are missing or not comparable. Supply the approved budget and reported expenditure totals to complete the reconciliation."
+            : "A partial financial check was completed. Supply both the approved budget and expense schedules for category-level reconciliation.";
 
   return {
     status,
@@ -329,7 +333,8 @@ export function reconcileFinancialSchedules({
       "These checks are arithmetic and document-structure checks, not an audit or a determination of expense eligibility.",
       "A duplicate reference is a review flag, not proof that a payment or receipt is duplicated.",
       "A missing receipt reference means the schedule cell is blank; it does not prove that no receipt exists.",
-      "A receipt reference not found in submitted supporting documents is not proof that the receipt does not exist; it may be outside the bundle or unextractable."
+      "A receipt reference not found in submitted supporting documents is not proof that the receipt does not exist; it may be outside the bundle or unextractable.",
+      "Category-level reconciliation requires a recognised category column in both schedules; a total-only comparison is not a complete category reconciliation."
     ],
     issue_count: issueCount
   };
