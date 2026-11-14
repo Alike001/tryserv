@@ -27,7 +27,7 @@ test("extracts text and CSV with stable source locators and exact text",async()=
 });
 test("duplicate CSV headings are preserved instead of silently overwriting a column",async()=>{
  const docs=await extractTABBATADocuments([
-  {name:"duplicate-headings.csv",data_base64:base64("Amount,Amount\\n100,200")}
+  {name:"duplicate-headings.csv",data_base64:base64("Amount,Amount\n100,200")}
  ]);
  const cells=docs[0].segments[0].cells;
  assert.equal(cells.Amount,"100");
