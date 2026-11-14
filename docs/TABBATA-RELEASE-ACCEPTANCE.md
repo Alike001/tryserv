@@ -2,7 +2,7 @@
 
 This checklist is a gate, not a record of completed work. Check an item only after the named evidence exists.
 
-**Current hosted checkpoint (2026-11-14):** Production is deployed and the no-inference smoke check passed. CI passed 104 Node tests and 74 desktop/mobile browser journeys. Two authorised fictional live analyses reached SERV but did not complete: the earlier Chat Completions request returned HTTP 502; the Responses API request returned `incomplete` with `max_output_tokens` at the original 2,800-token cap. Both test cases were deleted; neither request was retried. The Responses integration now raises the output cap to 8,000 tokens and adds output-token diagnostics. This change still requires CI/deployment verification. A successful, source-validated live review, persisted reviewer action, PDF export and real-user validation remain outstanding. Do not mark live inference or production acceptance complete.
+**Current hosted checkpoint (2026-11-14):** Production is deployed and the no-inference smoke check passed. The Responses integration now uses an 8,000-token output budget; CI passed 104 Node tests and 74 desktop/mobile browser journeys, and the revised code is live. Two authorised fictional live analyses reached SERV but did not complete: the earlier Chat Completions request returned HTTP 502; the Responses API request returned `incomplete` with `max_output_tokens` at the original 2,800-token cap. Both test cases were deleted; neither request was retried. A complete, source-validated live review, persisted reviewer action, PDF export and real-user validation remain outstanding. The shared allowance has 18 credits remaining; another live request requires separate approval.
 
 ## A. Build and code quality
 
