@@ -10,7 +10,7 @@ const BASE64=/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 
 function safeName(value){
   if(typeof value!=="string")throw new Error("Every uploaded file needs a filename.");
-  const name=path.basename(value.replace(/\\\\/g,"/")).replace(/[\u0000-\u001f\u007f]/g,"").trim().slice(0,120);
+  const name=path.basename(value.split(String.fromCharCode(92)).join("/")).replace(/[\u0000-\u001f\u007f]/g,"").trim().slice(0,120);
   if(!name||name==="."||name==="..")throw new Error("A filename is invalid.");
   return name;
 }
@@ -105,7 +105,7 @@ function inspectOfficeZip(bytes,requiredEntry){
     if(end>bytes.length||compressed===0xffffffff||expanded===0xffffffff)
       throw new Error("ZIP64 or malformed Office archives are not supported.");
     const name=bytes.subarray(offset+46,offset+46+nameLength).toString("utf8");
-    if(name.startsWith("/")||name.includes("\\\\")||name.split("/").includes(".."))
+    if(name.startsWith("/")||name.includes(String.fromCharCode(92))||name.split("/").includes(".."))
       throw new Error("The Office archive contains an unsafe entry path.");
     if(expanded>10*1024*1024||(compressed===0&&expanded>0)||(compressed>0&&expanded/compressed>100))
       throw new Error("The Office archive contains an oversized or highly compressed entry.");
