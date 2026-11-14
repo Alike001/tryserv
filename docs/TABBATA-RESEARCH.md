@@ -25,6 +25,15 @@ Sources:
 
 These figures describe the sampled sector and should not be converted into claims that all organisations lack reporting systems. They support the need to validate a low-friction tool with smaller organisations.
 
+### 2025 Nigeria civil-society country report
+
+The EU SEE / HIVOS Nigeria Country Focus Report (June 2025) says donor requirements such as CAC registration and organisational policies can exclude some CSOs, and identifies limited capacity in proposal writing and financial management. It specifically says excessive reporting requirements and pressure to align with donor agendas reduce flexibility, with smaller organisations less able to negotiate terms.
+
+Source:
+- [EU SEE / HIVOS — Nigeria Country Focus Report, June 2025](https://eusee.hivos.org/assets/2025/12/Nigeria-NEW-CFR-TEMPLATE-v2.pdf)
+
+This strengthens the problem context, but does not show that report-pack checking is the highest-priority pain or that organisations will pay for this product.
+
 ### Interpretation
 
 The evidence supports a plausible pain: reporting requirements and formats can vary across funders, and smaller organisations may have limited data/administrative capacity. It does **not** establish demand for AI review specifically. The product hypothesis must be validated through interviews with at least one NGO programme/M&E officer and one finance/report reviewer.
@@ -81,12 +90,18 @@ Eri describes itself as a field-intelligence company gathering evidence directly
 - Budget vs actuals.
 
 **Potentially differentiated when implemented well:**
-- A focused pre-submission review of one donor report pack, not an ongoing grant-management suite.
-- Cross-reading narrative claims, financial schedule and supporting evidence together.
-- Deterministic budget arithmetic combined with SERV reasoning for ambiguous semantic relationships.
+- A focused pre-submission QA pass over an already prepared donor report pack, rather than an ongoing evidence-capture and grant-management workspace.
+- Cross-reading the narrative, financial schedule and supporting attachments to surface mismatched figures, unsupported claims and contradictory records.
+- Deterministic row-level financial reconciliation (planned next; the current MVP only compares the two totals entered by the reviewer) combined with SERV reasoning for ambiguous semantic relationships.
 - Exact quotations tied to page/sheet/row source locators, validated by code.
-- Clear distinction between "not found in this bundle" and "false in the real world".
+- A clear distinction between "not found in this bundle" and "false in the real world".
 - A low-friction workflow designed for smaller Nigerian implementing organisations and varied donor templates.
+
+**Important competitor correction:** Outcome Proof already offers ongoing evidence capture, outcome tracking, grantmaker deadlines, team collaboration, report generation and optional AI drafting from selected evidence. It also says its AI draft identifies the evidence used and reports when evidence is insufficient. Therefore Tabbata must not claim that evidence-linked AI reporting is new. Its proposed wedge is the one-off review of a pre-existing report bundle for cross-document inconsistencies and omissions, with deterministic financial reconciliation. This wedge still needs to be proven in user tests.
+
+Sources:
+- [Outcome Proof feature set](https://www.outcomeproof.com/features/)
+- [Outcome Proof FAQ and AI/reporting details](https://www.outcomeproof.com/faq/)
 
 This is a product hypothesis, not a defensible moat yet.
 
