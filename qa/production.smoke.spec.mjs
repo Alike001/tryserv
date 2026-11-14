@@ -54,10 +54,11 @@ test("public production: beginner and developer workflows, no paid inference",as
  await page.locator("#answers .choice").nth(1).click();
  await page.locator("#check").click();
  await expect(page.locator("#feedback")).toContainText("Hint:");
- await expect(page.locator("#xp-count")).toHaveText("0 XP");
+ await expect(page.locator("#progress-count")).toHaveText("0 of 4");
+ await expect(page.locator("#xp-count")).toHaveCount(0);
  await page.locator("#answers .choice").nth(0).click();
  await page.locator("#check").click();
- await expect(page.locator("#xp-count")).toHaveText("20 XP");
+ await expect(page.locator("#progress-count")).toHaveText("1 of 4");
  await page.locator("#next").click();
  for(const index of [1,1]){
   await page.locator("#answers .choice").nth(index).click();
@@ -68,9 +69,11 @@ test("public production: beginner and developer workflows, no paid inference",as
  await expect(page.locator("#builder")).toBeVisible();
  await page.locator("#check").click();
  await expect(page.locator("#json-preview")).toContainText('gpt-5.4-mini');
- await expect(page.locator("#xp-count")).toHaveText("80 XP");
+ await expect(page.locator("#progress-count")).toHaveText("4 of 4");
  await page.locator("#next").click();
  await expect(page.locator("#completion-panel")).toBeVisible();
+ await expect(page.locator("#completion-panel")).toContainText("all four lessons");
+ await expect(page.locator("body")).not.toContainText(/XP/i);
  await picture(page,"beginner-real-completion");
  await page.reload();
  await expect(page.locator("#xp-count")).toHaveText("80 XP");
