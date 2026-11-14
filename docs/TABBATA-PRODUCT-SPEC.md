@@ -97,7 +97,7 @@ Use the documented OpenServ Chat Completions endpoint from the server, never the
 - The model must cite only supplied source segment IDs and exact quotations.
 - Model output is advisory; backend validation and a human reviewer remain authoritative.
 
-Do not claim a native OpenServ Shadow Agent or Prompt Guard integration unless separately verified in official docs and implemented. Tabbas's deterministic source validator is our own application code, not an OpenServ feature.
+The current [OpenServ Chat Completions API reference](https://docs.openserv.ai/serv-reasoning/api/chat-completions) documents standard request fields such as `model`, `messages`, `reasoning_effort`, `tools` and `tool_choice`; it does not document request flags for enabling Prompt Guard or Shadow Agent. Do not invent those parameters or claim native integration. The current MVP instead treats uploaded text as untrusted evidence and applies application-level schema, source-ID and exact-quotation validation. Tabbas's deterministic source validator is our own application code, not an OpenServ feature.
 
 ## 7. Deterministic responsibilities
 
