@@ -124,6 +124,7 @@ test("SERV review uses one forced structured function call and returns provenanc
  assert.equal(calls,1);
  assert.equal(request.url,"https://inference-api.openserv.ai/v1/responses");
  assert.equal(request.body.reasoning.effort,"medium");
+ assert.equal(request.body.max_output_tokens,8000);
  assert.equal(request.body.tool_choice.name,"submit_report_review");
  assert.equal(request.body.tools[0].name,"submit_report_review");
  assert.equal(request.body.tools[0].type,"function");
@@ -161,8 +162,8 @@ test("uploaded prompt-injection text is passed as untrusted evidence, not system
  assert.match(request.body.input,/IGNORE ALL PREVIOUS INSTRUCTIONS/i);
 });
 test("incomplete Responses output fails closed instead of fabricating a review",async()=>{
- const fetchImpl=async()=>({ok:true,status:200,json:async()=>({status:"incomplete",incomplete_details:{reason:"max_output_tokens"},output:[{type:"message"}]})});
- await assert.rejects(()=>reviewWithServ({casePayload,apiKey:"test-secret-openserv-api-key",fetchImpl}),/did not complete/);
+ const fetchImpl=async()=>({ok:true,status:200,json:async()=>({status:"incomplete",incomplete_details:{reason:"max_output_tokens"},usage:{output_tokens:8000},output:[{type:"message"}]})});
+ await assert.rejects(()=>reviewWithServ({casePayload,apiKey:"test-secret-openserv-api-key",fetchImpl}),error=>error.message.includes("did not complete")&&error.message.includes("max_output_tokens")&&error.message.includes("output_tokens=8000"));
 });
 test("provider errors expose bounded diagnostics without leaking the API key",async()=>{
  const fetchImpl=async()=>({ok:false,status:400,json:async()=>({error:{code:"unsupported_parameter",message:"The request parameter is not supported."}})});
