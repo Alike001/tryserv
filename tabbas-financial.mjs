@@ -72,6 +72,13 @@ function normaliseReference(value) {
   return String(value ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
+function referenceAppearsInText(reference, text) {
+  const parts = String(reference ?? "").toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean);
+  if (!parts.length) return false;
+  const pattern = parts.join("[^A-Z0-9]*");
+  return new RegExp("(?:^|[^A-Z0-9])" + pattern + "(?=$|[^A-Z0-9])", "i").test(String(text ?? ""));
+}
+
 function parseSchedule(document, role, currency) {
   if (!document) return { status: "not_provided", rows: [], total_minor: null, issues: [] };
   const tableSegments = (document.segments ?? []).filter(segment => segment.cells && typeof segment.cells === "object" && !Array.isArray(segment.cells));
@@ -180,7 +187,8 @@ export function reconcileFinancialSchedules({
   reportedSpendMinor = null,
   currency = "NGN",
   periodStart = null,
-  periodEnd = null
+  periodEnd = null,
+  supportingDocuments = []
 } = {}) {
   if (!budgetSchedule && !expenseSchedule) {
     return {
@@ -249,6 +257,23 @@ export function reconcileFinancialSchedules({
     ? expenses.rows.filter(row => !row.receipt_reference).map(row => ({ type: "missing_receipt_reference", locator: row.locator, description: row.description, amount_minor: row.amount_minor }))
     : [];
   checks.push(...missingReceiptReferences);
+  const receiptReferenceChecks = [];
+  if (expenses.has_receipt && supportingDocuments.length) {
+    for (const row of expenses.rows) {
+      if (!row.receipt_reference) continue;
+      const matchingDocuments = supportingDocuments.filter(document => {
+        const text = (document.segments ?? []).map(segment => segment.text ?? "").join("\n");
+        return referenceAppearsInText(row.receipt_reference, text);
+      }).map(document => document.name);
+      receiptReferenceChecks.push({
+        type: matchingDocuments.length ? "receipt_reference_found" : "receipt_reference_not_found",
+        reference: row.receipt_reference,
+        locator: row.locator,
+        supporting_documents: matchingDocuments
+      });
+    }
+  }
+  checks.push(...receiptReferenceChecks);
 
   const outsidePeriod = [];
   const unparsedDates = [];
@@ -269,7 +294,7 @@ export function reconcileFinancialSchedules({
   if (periodStart && periodEnd && expenseSchedule && !expenses.has_date) {
     issues.push({ type: "missing_date_column", document: expenseSchedule.name, message: "No recognised transaction-date column was found, so reporting-period checks could not be completed." });
   }
-  const attention = checks.some(check => ["variance", "category_over_budget", "unbudgeted_category", "duplicate_reference", "missing_receipt_reference", "outside_reporting_period"].includes(check.type) || check.status === "variance");
+  const attention = checks.some(check => ["variance", "category_over_budget", "unbudgeted_category", "duplicate_reference", "missing_receipt_reference", "receipt_reference_not_found", "outside_reporting_period"].includes(check.type) || check.status === "variance");
   const incomplete = issues.length > 0 || budget.status === "unsupported" || expenses.status === "unsupported" ||
     (budgetSchedule && budget.status !== "parsed") || (expenseSchedule && expenses.status !== "parsed");
   const suppliedCount = Number(Boolean(budgetSchedule)) + Number(Boolean(expenseSchedule));
@@ -300,7 +325,8 @@ export function reconcileFinancialSchedules({
     notes: [
       "These checks are arithmetic and document-structure checks, not an audit or a determination of expense eligibility.",
       "A duplicate reference is a review flag, not proof that a payment or receipt is duplicated.",
-      "A missing receipt reference means the schedule cell is blank; it does not prove that no receipt exists."
+      "A missing receipt reference means the schedule cell is blank; it does not prove that no receipt exists.",
+      "A receipt reference not found in submitted supporting documents is not proof that the receipt does not exist; it may be outside the bundle or unextractable."
     ],
     issue_count: issueCount
   };
