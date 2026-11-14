@@ -254,8 +254,9 @@ async function loadStatus(){
   const response=await fetch("/api/tabbata/status");const status=await response.json();
   storageConfigured=status.storage_configured===true;
   servConfigured=status.serv_configured===true;
+  $("create-case").disabled=!storageConfigured;
   if(!storageConfigured)formStatus("Secure review storage is not configured. Case creation is disabled until the existing database connection is available.","error");
- }catch{storageConfigured=false;servConfigured=false;formStatus("Could not check workspace availability. Try again in a moment.","error");}
+ }catch{storageConfigured=false;servConfigured=false;$("create-case").disabled=true;formStatus("Could not check workspace availability. Try again in a moment.","error");}
 }
 document.addEventListener("DOMContentLoaded",async()=>{
  document.querySelectorAll("[data-preview]").forEach(button=>button.addEventListener("click",()=>preview(Number(button.dataset.preview))));
