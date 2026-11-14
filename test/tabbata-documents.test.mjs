@@ -20,6 +20,8 @@ test("extracts text and CSV with stable source locators and exact text",async()=
  assert.equal(docs[0].segments[0].text,"Site C is still undergoing water quality testing.");
  assert.equal(docs[1].segments[0].locator,"Row 2");
  assert.match(docs[1].segments[0].text,/Community: A \| Households: 150/);
+ assert.equal(docs[1].segments[0].cells.Community,"A");
+ assert.equal(docs[1].segments[0].cells.Households,"150");
  assert.equal(docs[0].id,"doc-1");
  assert.equal(docs[1].id,"doc-2");
 });
@@ -73,6 +75,8 @@ test("XLSX rows retain sheet and row locators and formulas are not executed",asy
  const docs=await extractTABBATADocuments([{name:"expenses.xlsx",data_base64:buffer.toString("base64")}]);
  assert.equal(docs[0].segments[0].locator,"Sheet Expenses · Row 2");
  assert.match(docs[0].segments[0].text,/Amount: 1500000/);
+ assert.equal(docs[0].segments[0].cells.Date,"2026-08-01");
+ assert.equal(docs[0].segments[0].cells.Amount,"1500000");
  assert.equal(docs[0].segments[1].locator,"Sheet Expenses · Row 3");
  assert.match(docs[0].segments[1].text,/formula cell not evaluated/);
 });
