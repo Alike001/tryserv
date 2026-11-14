@@ -100,6 +100,17 @@ function parseSchedule(document, role, currency) {
     }
   }
   if (issues.length) return { status: "incomplete", rows: [], total_minor: null, issues, headers };
+  const sheetNames = new Set(tableSegments.map(segment => {
+    const match = String(segment.locator ?? "").match(/^Sheet (.+?) · Row \d+$/);
+    return match?.[1] ?? null;
+  }).filter(Boolean));
+  if (sheetNames.size > 1) {
+    issues.push({
+      type: "multiple_worksheets",
+      document: document.name,
+      message: "More than one worksheet contains data. Export the relevant worksheet separately so Tabbas does not silently combine different periods or schedules."
+    });
+  }
 
   const rows = [];
   let total = 0;
