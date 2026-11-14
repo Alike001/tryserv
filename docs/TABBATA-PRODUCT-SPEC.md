@@ -85,19 +85,21 @@ Do not use "verified", "fraud", "fraudulent", "fake", "approved" or "audit passe
 
 ## 6. SERV's role
 
-Use the documented OpenServ Chat Completions endpoint from the server, never the browser:
+Use the documented OpenServ Responses endpoint from the server, never the browser:
 
-- Endpoint: `https://inference-api.openserv.ai/v1/chat/completions`
+- Endpoint: `https://inference-api.openserv.ai/v1/responses`
 - Model: configured `SERV_MODEL`, default `gpt-5.4-mini`
-- `reasoning_effort: "medium"`
-- Function tool: `submit_report_review` with a strict JSON Schema.
+- Reasoning: `reasoning: { effort: "medium", summary: "auto" }`
+- Function tool: `submit_report_review` in Responses API format, with a bounded JSON schema.
 - `tool_choice` forces the structured review function.
-- One provider call per user-triggered review; no background or page-load inference.
+- One provider request per user-triggered review; no background inference and no automatic retry after a reserved attempt.
 - The prompt treats all uploaded text as untrusted evidence, never as instructions.
 - The model must cite only supplied source segment IDs and exact quotations.
 - Model output is advisory; backend validation and a human reviewer remain authoritative.
 
-The current [OpenServ Chat Completions API reference](https://docs.openserv.ai/serv-reasoning/api/chat-completions) documents standard request fields such as `model`, `messages`, `reasoning_effort`, `tools` and `tool_choice`; it does not document request flags for enabling Prompt Guard or Shadow Agent. Do not invent those parameters or claim native integration. The current MVP instead treats uploaded text as untrusted evidence and applies application-level schema, source-ID and exact-quotation validation. Tabbas's deterministic source validator is our own application code, not an OpenServ feature.
+The [OpenServ Responses API reference](https://docs.openserv.ai/serv-reasoning/api/responses) supports OpenAI models and function tools. OpenServ's [endpoint compatibility table](https://docs.openserv.ai/serv-reasoning/api/compatibility) confirms that OpenAI models are supported on `/v1/responses`. Tabbas uses this endpoint for GPT-5.4 tool calling with reasoning; it does not disable reasoning merely to keep a Chat Completions request working. The universal Chat Completions endpoint remains appropriate for non-OpenAI model families.
+
+SERV provides the reasoning layer and structured function call. Tabbas's deterministic source validator is application code, not a claim of native OpenServ Prompt Guard, Shadow Agent or audit-product integration.
 
 ## 7. Deterministic responsibilities
 
