@@ -1,21 +1,21 @@
-# Tabbata — Product Specification
+# Tabbas — Product Specification
 
-**Working product name:** Tabbata  
+**Working product name:** Tabbas  
 **Category:** Donor-report pack review  
 **Tagline:** Check the report before it leaves.  
 **Hackathon:** OpenServ Edition 02 — Open Track  
 **Repository:** `Alike001/tryserv` (existing repository retained during the pivot)  
 **Deployment:** Existing TrySERV Render service; no new service or database provisioned for the MVP.
 
-> Name note: Tabbata is a provisional brand selected after discovering an existing Web3 agent project named Shaida. A French fashion/apparel business also uses TABBATA and a company record references a trademark filing. No direct donor-report-review software competitor surfaced in the preliminary search, but this is not trademark, company-name, domain or social-handle clearance.
+> Name note: Tabbas is the current working brand selected by the user. Formal trademark, company-name, domain and social-handle clearance has not been completed.
 
 ## 1. Product thesis
 
-Small and mid-sized civil-society organisations often have to assemble narrative reports, financial schedules and supporting documents against different funder requirements. Tabbata is a focused pre-submission review workspace that checks one prepared report pack for requirement coverage, cross-document inconsistencies and evidence gaps.
+Small and mid-sized civil-society organisations often have to assemble narrative reports, financial schedules and supporting documents against different funder requirements. Tabbas is a focused pre-submission review workspace that checks one prepared report pack for requirement coverage, cross-document inconsistencies and evidence gaps.
 
 **Core promise:** Before a project report is sent to a funder, show which reported claims are supported by the submitted documents, which are only partly supported, which are not found, and which documents disagree.
 
-Tabbata does not establish whether a project activity happened in the physical world. It reviews the material supplied by the user.
+Tabbas does not establish whether a project activity happened in the physical world. It reviews the material supplied by the user.
 
 ## 2. Primary user and job
 
@@ -29,7 +29,8 @@ Tabbata does not establish whether a project activity happened in the physical w
 
 1. Create a review case with project name, funder, reporting period, approved budget, reported expenditure and reporting requirements.
 2. Paste or upload the narrative report, then upload supporting documents.
-3. Tabbata extracts text and spreadsheet rows, retaining document/page/sheet/row references.
+3. Tabbas extracts text and spreadsheet rows, retaining document/page/sheet/row references.
+4. Optional approved-budget and actual-expenditure schedules are reconciled deterministically by line item, category, reference and reporting period; unsupported or incomplete rows are surfaced for human review.
 4. Deterministic checks compare the supplied financial totals and validate the review inputs.
 5. The user explicitly chooses **Analyze with SERV**. One bounded SERV Reasoning request evaluates requirement coverage, claim/evidence relationships and cross-document contradictions.
 6. The backend validates the returned structure and rejects source references or quotations that do not exist in the extracted material.
@@ -94,7 +95,7 @@ Use the documented OpenServ Chat Completions endpoint from the server, never the
 - The model must cite only supplied source segment IDs and exact quotations.
 - Model output is advisory; backend validation and a human reviewer remain authoritative.
 
-Do not claim a native OpenServ Shadow Agent or Prompt Guard integration unless separately verified in official docs and implemented. Tabbata's deterministic source validator is our own application code, not an OpenServ feature.
+Do not claim a native OpenServ Shadow Agent or Prompt Guard integration unless separately verified in official docs and implemented. Tabbas's deterministic source validator is our own application code, not an OpenServ feature.
 
 ## 7. Deterministic responsibilities
 
@@ -160,7 +161,7 @@ Do not claim these targets are achieved until the tests/evaluation are run. Do n
 
 ## 11. Positioning
 
-**Short description:** Tabbata checks donor report packs before submission, mapping claims to source documents and surfacing missing evidence or contradictions.
+**Short description:** Tabbas checks donor report packs before submission, mapping claims to source documents and surfacing missing evidence or contradictions.
 
 **Differentiator:** A narrow, point-in-time review of a prepared narrative + financial + evidence bundle for smaller implementing organisations, rather than another full grant-management or ongoing evidence-capture platform.
 
