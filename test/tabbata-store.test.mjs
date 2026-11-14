@@ -32,7 +32,6 @@ test("case access tokens are random, stored only as hashes and required for ever
  assert.match(created.token,/^[A-Za-z0-9_-]{40,60}$/);
  assert.equal(db.rows.get(created.id).token_hash.length,64);
  assert.notEqual(db.rows.get(created.id).token_hash,created.token);
- assert.equal((await store.get(created.id,"wrong-token")).null,undefined);
  assert.equal(await store.get(created.id,"wrong-token"),null);
  assert.equal(await store.update(created.id,"wrong-token",{bad:true}),false);
  assert.equal(await store.delete(created.id,"wrong-token"),false);
