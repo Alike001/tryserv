@@ -85,6 +85,15 @@ function cellText(value){
   }
   return "";
 }
+function uniqueHeaders(values){
+  const counts=new Map();
+  return values.map((value,index)=>{
+    const base=cellText(value).trim()||"Column "+(index+1);
+    const count=(counts.get(base)??0)+1;
+    counts.set(base,count);
+    return count>1?base+" ("+count+")":base;
+  });
+}
 function inspectOfficeZip(bytes,requiredEntry){
   const minimum=Math.max(0,bytes.length-65557);let eocd=-1;
   for(let offset=bytes.length-22;offset>=minimum;offset--){
@@ -154,7 +163,7 @@ async function extractXlsx(bytes){
   const entries=[];
   for(const sheet of workbook.worksheets){
     const headerRow=sheet.getRow(1);
-    const headers=headerRow.values.slice(1).map((value,index)=>cellText(value).trim()||"Column "+(index+1));
+    const headers=uniqueHeaders(headerRow.values.slice(1));
     let rows=0;
     sheet.eachRow({includeEmpty:false},(row,rowNumber)=>{
       if(rowNumber===1)return;
@@ -174,7 +183,7 @@ async function extractXlsx(bytes){
 async function extractCsv(bytes){
   const rows=parseCsv(decodeText(bytes));
   if(rows.length<2)throw new Error("A CSV needs a header row and at least one data row.");
-  const headers=rows[0].map((value,index)=>String(value).trim()||"Column "+(index+1));
+  const headers=uniqueHeaders(rows[0]);
   return rows.slice(1).map((cells,index)=>{
     const cellMap=Object.fromEntries(headers.map((header,column)=>[header,String(cells[column]??"").trim()]));
     return {
