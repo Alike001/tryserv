@@ -129,4 +129,4 @@ The work must demonstrate a real SERV-powered report-review workflow, explain th
 
 ## Status and honesty
 
-This repository contains a working pivot implementation under review. The latest Node CI run passed all 85 tests; the latest desktop/mobile Playwright run is still being checked. The existing Render deployment remains on the old `main` commit until this PR is approved and merged. Do not claim external NGO adoption, user interviews, revenue, physical verification, audit certification or live production SERV acceptance until independently demonstrated.
+This repository contains a working pivot implementation under review. The latest code-check commit passed all 85 Node tests and all 74 desktop/mobile Playwright tests. Documentation-only commits followed those green checks. The existing Render deployment remains on the old `main` commit until this PR is approved and merged. Do not claim external NGO adoption, user interviews, revenue, physical verification, audit certification or live production SERV acceptance until independently demonstrated.
