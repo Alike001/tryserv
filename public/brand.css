@@ -85,7 +85,6 @@ body[data-page="learn"] .navlabel,body[data-page="learn"] .eyebrow,body[data-pag
 body[data-page="learn"] .progressbox{border-color:var(--ts-line);box-shadow:3px 4px 0 #dae5f054}
 body[data-page="learn"] .progress-track{background:#e8effa}
 body[data-page="learn"] .progress-track>div{background:var(--ts-blue)}
-body[data-page="learn"] .xp-line strong{color:var(--ts-blue-dark)}
 body[data-page="learn"] .nav-lesson.active{background:var(--ts-blue-soft);border-color:#a8bee9;color:var(--ts-blue-dark)}
 body[data-page="learn"] .nav-lesson.complete .nav-number{background:var(--ts-mint-soft);border-color:#a8dbc9;color:#1f775f}
 body[data-page="learn"] .topbar{background:#fff;border-bottom-color:var(--ts-line);padding:17px clamp(18px,3vw,40px)}
