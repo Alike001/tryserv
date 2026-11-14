@@ -54,8 +54,19 @@ export function validateTabbataCaseInput(body){
   const report_text=textField(body.report_text,"Narrative report",80,15000);
   const approved_budget_minor=parseMoneyMinor(body.approved_budget,"Approved budget");
   const reported_spend_minor=parseMoneyMinor(body.reported_spend,"Reported expenditure");
+  const period_start=textField(body.period_start??"","Reporting period start",0,10,true);
+  const period_end=textField(body.period_end??"","Reporting period end",0,10,true);
+  const validDate=value=>{
+    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(value))return false;
+    const parsed=new Date(value+"T00:00:00.000Z");
+    return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===value;
+  };
+  if(Boolean(period_start)!==Boolean(period_end))throw new Error("Enter both reporting period start and end dates, or leave both blank.");
+  if(period_start&&(!validDate(period_start)||!validDate(period_end)))throw new Error("Reporting period dates must be valid YYYY-MM-DD dates.");
+  if(period_start&&period_start>period_end)throw new Error("Reporting period start must not be after its end.");
   return {
     project,requirements,report_text,approved_budget_minor,reported_spend_minor,
+    period_start:period_start||null,period_end:period_end||null,
     budget_check:calculateBudgetCheck(approved_budget_minor,reported_spend_minor,project.currency)
   };
 }
@@ -196,6 +207,8 @@ export async function reviewWithServ({casePayload,apiKey,model="gpt-5.4-mini",fe
     "Never claim that a physical activity occurred, that a photo is authentic, that a receipt is genuine, or that fraud or misconduct happened.",
     "Never make a funding, eligibility, legal, accounting, audit or approval decision. A human reviewer decides what to do.",
     "Do not calculate budget totals; the application performs deterministic arithmetic separately.",
+    "Use the supplied deterministic financial_reconciliation results as the authoritative arithmetic checks. Explain their context when relevant, but never recalculate, override or invent a financial total.",
+    "A category variance, duplicate reference, blank receipt reference or out-of-period row is a review flag, not proof of fraud, ineligibility or misconduct.",
     "Be precise, neutral and concise. If evidence is insufficient, say so.",
     "Return exactly one submit_report_review function call and no free-form answer."
   ].join(" ");
@@ -203,6 +216,7 @@ export async function reviewWithServ({casePayload,apiKey,model="gpt-5.4-mini",fe
     project:casePayload.project,
     requirements:casePayload.requirements,
     narrative_report:casePayload.report_text,
+    financial_reconciliation:casePayload.financial_reconciliation??null,
     supporting_documents:casePayload.source_segments.filter(x=>x.role==="supporting_evidence")
   };
   const controller=new AbortController();
