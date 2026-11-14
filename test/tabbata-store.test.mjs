@@ -6,7 +6,7 @@ function fakeDatabase(){
  const rows=new Map();const statements=[];
  const query=async(_url,sql,params=[])=>{
   statements.push(sql);
-  if(sql.startsWith("CREATE ")||sql.startsWith("DELETE FROM tabbata_cases WHERE expires_at"))return [];
+  if(sql.startsWith("CREATE ")||sql.startsWith("DELETE FROM tabbata_cases WHERE expires_at")||sql.startsWith("DELETE FROM tabbata_cases WHERE id=$1 AND expires_at"))return [];
   if(sql.startsWith("INSERT INTO tabbata_cases")){
    const [id,hash,payload]=params;const row={id,token_hash:hash,payload:JSON.parse(payload),created_at:"2026-11-14T00:00:00Z",expires_at:"2026-11-15T00:00:00Z"};rows.set(id,row);return [{id,created_at:row.created_at,expires_at:row.expires_at}];
   }
