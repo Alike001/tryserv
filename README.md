@@ -44,7 +44,7 @@ The SERV request uses a forced function tool named `submit_report_review`, `reas
 - Scanned-image PDF OCR is not supported.
 - CSV/XLSX line-item checks rely on recognised column headings and stored cell values; unsupported or ambiguous headers are surfaced for review. Financial XLSX schedules must contain one data worksheet; multiple worksheets are not silently combined, so export the relevant sheet separately.
 - Spreadsheet formulas are not executed or recalculated; only stored cell values are read.
-- Financial flags are not proof of fraud, expense eligibility or improper spending.
+- Financial flags are not proof of fraud, expense eligibility or improper spending. A receipt-reference text match does not authenticate the document or verify the amount.
 - This pilot uses one-time private case links rather than organisation accounts or team roles; organisation workspaces and role-based access are on the product roadmap.
 - Cases are stored in the existing Neon database for up to 24 hours and can be deleted sooner. Extracted text, structured spreadsheet cell values, source locators and review output are retained during that period.
 - No original file binaries are stored.
