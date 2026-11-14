@@ -1,24 +1,24 @@
-# Tabbata — OpenServ Edition 02 Submission Notes
+# Tabbas — OpenServ Edition 02 Submission Notes
 
-**Project:** Tabbata  
+**Project:** Tabbas  
 **Tagline:** Check the report before it leaves.  
 **Track:** Open Track  
 **Technology:** OpenServ SERV Reasoning  
 **Repository:** https://github.com/Alike001/tryserv  
-**Existing application URL:** https://tryserv.onrender.com/ (the current `main` deployment still serves TrySERV; the Tabbata pivot is not deployed yet).  
+**Existing application URL:** https://tryserv.onrender.com/ (the current `main` deployment still serves TrySERV; the Tabbas pivot is not deployed yet).  
 **Product specification:** [TABBATA-PRODUCT-SPEC.md](TABBATA-PRODUCT-SPEC.md)
 
 ## Short description
 
-Tabbata is a pre-submission donor report pack reviewer. It checks a project's narrative report against funder requirements, financial totals and supporting documents, then returns structured findings linked to exact source passages. It combines SERV Reasoning for contextual cross-document analysis with deterministic budget arithmetic and backend citation validation. A human reviewer remains responsible for decisions.
+Tabbas is a pre-submission donor report pack reviewer. It checks a project's narrative report against funder requirements, financial totals and supporting documents, then returns structured findings linked to exact source passages. It combines SERV Reasoning for contextual cross-document analysis with deterministic budget arithmetic and backend citation validation. A human reviewer remains responsible for decisions.
 
 ## Problem
 
-Research on Nigerian civil-society organisations reports that donor reporting requirements, templates, formats and reporting frequency can vary across funders and projects. Tabbata tests a focused workflow hypothesis: smaller implementing organisations need a lightweight way to inspect a prepared report bundle for missing support and inconsistencies before submission.
+Research on Nigerian civil-society organisations reports that donor reporting requirements, templates, formats and reporting frequency can vary across funders and projects. Tabbas tests a focused workflow hypothesis: smaller implementing organisations need a lightweight way to inspect a prepared report bundle for missing support and inconsistencies before submission.
 
 This is a problem hypothesis. User interviews and willingness-to-pay validation are not yet complete.
 
-## How SERV powers Tabbata
+## How SERV powers Tabbas
 
 - The server sends the narrative report, funder requirements and extracted supporting-document segments to OpenServ SERV Chat Completions.
 - It uses `reasoning_effort: "medium"` and a forced `submit_report_review` function tool for structured findings.
@@ -31,7 +31,7 @@ This is a problem hypothesis. User interviews and willingness-to-pay validation 
 
 The original repository began as TrySERV, a learning and developer-onboarding product. The hackathon pivot reuses its Node 24 server, Render deployment, Neon connection, SERV integration, CI and browser-test infrastructure to build a substantially different report-review workflow.
 
-The public product root is now Tabbata. The old TrySERV routes are temporarily preserved under `/legacy`, `/learn`, `/try`, `/debug` and `/docs` during transition.
+The public product root is now Tabbas. The old TrySERV routes are temporarily preserved under `/legacy`, `/learn`, `/try`, `/debug` and `/docs` during transition.
 
 ## Demo
 
