@@ -76,7 +76,7 @@ async function filePayload(file){
  return {name:file.name,type:file.type??"",data_base64:bytesToBase64(bytes)};
 }
 function sessionFor(id,token){activeCase={id,token};sessionStorage.setItem(SESSION_KEY,JSON.stringify(activeCase));}
-function clearSession(){activeCase=null;activePayload=null;sessionStorage.removeItem(SESSION_KEY);}
+function clearSession(){activeCase=null;activePayload=null;activeExpiresAt=null;sessionStorage.removeItem(SESSION_KEY);}
 function formatMoney(minor,currency){
  if(minor===null||minor===undefined)return "Not supplied";
  return new Intl.NumberFormat("en-NG",{style:"currency",currency,maximumFractionDigits:2}).format(minor/100);
@@ -91,7 +91,7 @@ function renderBudget(check){
  addText(box,"div","budget-result "+(check.status==="over_budget"?"over":"within"),check.status==="over_budget"?"Above approved budget":"Within entered budget");
  addText(box,"div","budget-details","Approved: "+formatMoney(check.approved_minor,check.currency));
  addText(box,"div","budget-details","Reported: "+formatMoney(check.reported_minor,check.currency));
- addText(box,"div","budget-details","Variance: "+formatMoney(Math.abs(check.variance_minor),check.currency)+(check.variance_minor>0?" over":" under"));
+ addText(box,"div","budget-details","Variance: "+formatMoney(Math.abs(check.variance_minor),check.currency)+(check.variance_minor>0?" over":check.variance_minor<0?" under":" exactly"));
  addText(box,"div","budget-details",check.note);
 }
 function statusLabel(status){
