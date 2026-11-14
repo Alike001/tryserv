@@ -6,7 +6,7 @@ import {readFile} from "node:fs/promises";
 import {publicLessons,checkExercise,findLesson} from "./curriculum.mjs";
 import {answerWithServ} from "./mentor.mjs";
 import {executeLearnerRequest} from "./try-live.mjs";
-import {guestTrialConfigured,reserveGuestTrial,guestFailure,getGuestTrialStatus} from "./guest-budget.mjs";
+import {guestTrialConfigured,reserveGuestTrial,guestFailure,getGuestTrialStatus,guestActorHash} from "./guest-budget.mjs";
 import {debugCases,validateDebugBlueprint} from "./debug-lab.mjs";
 import {extractTABBATADocuments,TABBATA_UPLOAD_LIMITS} from "./tabbata-documents.mjs";
 import {validateTabbataCaseInput,makeReviewSourceSegments,reviewWithServ} from "./tabbata-review.mjs";
@@ -33,6 +33,16 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
  const publicTutorEnabled=enabled&&guestTrialConfigured(env);
  const reviewStore=tabbataStore??createTabbataStore({databaseUrl:env.DATABASE_URL});
  const reviewInFlight=new Set();
+ const caseCreateWindows=new Map();
+ function allowCaseCreate(req){
+  const actor=guestActorHash(req,env.SERV_API_KEY??env.DATABASE_URL??"tabbata-case-limit");
+  const now=Date.now();
+  const recent=(caseCreateWindows.get(actor)??[]).filter(timestamp=>timestamp>now-60*60*1000);
+  if(recent.length>=5)return false;
+  recent.push(now);caseCreateWindows.set(actor,recent);
+  if(caseCreateWindows.size>2000){for(const [key,times] of caseCreateWindows)if(!times.some(timestamp=>timestamp>now-60*60*1000))caseCreateWindows.delete(key);}
+  return true;
+ }
  const recent=new Map();
  let total=0;
  function reservePaidCall(req){
@@ -139,6 +149,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
    return json(res,200,{storage_configured:Boolean(env.DATABASE_URL),serv_configured:guestTrialConfigured(env),model:env.SERV_MODEL??"gpt-5.4-mini",upload_limits:{files:TABBATA_UPLOAD_LIMITS.files,per_file_bytes:TABBATA_UPLOAD_LIMITS.perFileBytes,total_bytes:TABBATA_UPLOAD_LIMITS.totalBytes}});
   if(req.method==="POST"&&pathname==="/api/tabbata/cases"){
    if(!env.DATABASE_URL)return json(res,503,{error:"Review storage is not configured. The existing case workspace is unavailable."});
+   if(!allowCaseCreate(req))return json(res,429,{error:"This browser has reached the five-workspaces-per-hour limit. Reuse or delete an existing case and try later."});
    let normalized,documents,reportDocument;
    try{
     const input=await readJson(req,12*1024*1024);
