@@ -82,6 +82,7 @@ function parseSchedule(document, role, currency) {
     issues: [{ type: "table_structure_missing", document: document.name, message: "This file has no readable spreadsheet or CSV header-and-row structure. Upload a CSV or XLSX schedule with column headings." }]
   };
   const headers = Object.keys(tableSegments[0].cells);
+  const headerSignature = headers.map(normaliseHeader).sort().join("|");
   const columns = Object.fromEntries(Object.keys(HEADER_ALIASES).map(field => [field, findColumn(headers, field)]));
   const issues = [];
   for (const field of ["amount", ...(role === "budget" ? ["category"] : [])]) {
@@ -96,6 +97,16 @@ function parseSchedule(document, role, currency) {
   const rows = [];
   let total = 0;
   for (const segment of tableSegments) {
+    const rowHeaderSignature = Object.keys(segment.cells).map(normaliseHeader).sort().join("|");
+    if (rowHeaderSignature !== headerSignature) {
+      issues.push({
+        type: "inconsistent_columns",
+        document: document.name,
+        locator: String(segment.locator ?? "Unknown row"),
+        message: "This worksheet row uses a different column set from the first schedule sheet; export matching sheets or reconcile them separately."
+      });
+      continue;
+    }
     const cells = segment.cells;
     const rawAmount = cells[columns.amount.header];
     if (rawAmount === null || rawAmount === undefined || String(rawAmount).trim() === "") continue;
