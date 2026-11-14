@@ -70,6 +70,7 @@ The backend calculates budget variance using integer minor currency units. It do
 
 ## Inference protection
 
+- Limit workspace creation to five cases per visitor per hour in the application process.
 - The only paid inference endpoint is the explicit analyze action.
 - Reserve one unit from the existing durable 24-lifetime / 2-per-actor-per-day guest allowance before calling SERV.
 - Never reset, raise or bypass the allowance.
