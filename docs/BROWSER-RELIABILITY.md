@@ -1,16 +1,16 @@
 # TrySERV Browser Reliability Gate
 
-Updated: 12 November 2026.
+Updated: 14 November 2026.
 
 ## Why it exists
 
-Static tests confirm JSON contracts and request logic, but do not prove that a learner can click through a responsive site, use the keyboard, or retain their progress. This suite drives real Chromium in GitHub Actions. It runs on a hosted GitHub runner, **not on the user's laptop**, and never calls the paid SERV API.
+Static tests confirm JSON contracts and request logic, but do not prove that a learner can click through a responsive site, use the keyboard, or retain their progress. This suite drives real Chromium in GitHub Actions. The learning studio tracks completed lessons only; there are no points or XP rewards. It runs on a hosted GitHub runner, **not on the user's laptop**, and never calls the paid SERV API.
 
 ## Browser journeys (Chromium, 1440×900 desktop and 375×812 mobile)
 
 1. Landing links lead to /learn and /try; request builder is visible when chosen.
-2. A wrong answer yields a meaningful hint but no XP until correction passes.
-3. Complete all four lessons, build the request preview, earn exactly 80 XP, see a completion summary, reload and prove idempotence.
+2. A wrong answer yields a meaningful hint; the lesson remains incomplete until the correct answer passes.
+3. Complete all four lessons, build the request preview, see the learning summary, reload and verify saved completion.
 4. Repair all three /debug cases through the UI, then return to the learning studio and retain progress.
 5. Navigate and submit a challenge with keyboard focus and Enter/Space.
 6. Read guest tutor allowance without spending credits; model response is an **explicit test mock**, not a hosted SERV completion.

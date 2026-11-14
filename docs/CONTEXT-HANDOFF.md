@@ -1,3 +1,11 @@
+# TrySERV — Current handoff update (14 November 2026)
+
+**Latest product decision:** XP, point totals and reward messages have been removed. The learning studio now records completed lesson IDs only, shows a 0–4 completion count and a practical learning summary, and keeps the three debugging repairs as a separate progress track. The existing `tryserv-progress-v1` localStorage format (an array of lesson IDs) is unchanged, so previously completed lessons remain completed after this UI update. The change is being delivered through `feat/remove-xp-learning-progress`; do not reintroduce XP or points.
+
+Historical notes below include XP figures and earlier test results from previous builds. Those are historical evidence, not the current product behavior. Current user-facing documentation, demo narration, unit tests, browser tests and production smoke checks must describe completion-only progress.
+
+---
+
 # TrySERV — canonical handoff
 Updated: 12 November 2026, Africa/Lagos. Verify fresh remote status before taking actions.
 
@@ -187,7 +195,7 @@ Work in feat/docs-and-learning-navigation:
 
 **Visual QA:** Cloud Chromium captured five desktop and five phone screenshots, inspected in this chat. Main landing, docs, learning, mobile nav and new desktop debug hero are visually coherent. This is visual screenshot review of local test server, not human usability evaluation of the deployed site. Do not claim screen-reader audit.
 
-**Current product scope:** Four source-backed server-graded lessons, 80 maximum *local* XP, one deterministic request builder, three request repair missions, optional real SERV tutor and post-validation error reasoning, in-app docs and one Render URL. No wallet receipt, official training credential, login, demo fake transactions or fabricated usage.
+**Current product scope:** Four source-backed server-graded lessons with browser-local completion progress, one deterministic request builder, three request repair missions, optional real SERV tutor and post-validation error reasoning, in-app docs and one Render URL. No wallet receipt, official training credential, login, demo fake transactions or fabricated usage.
 
 **Now do (before submission):**
 1. Verify final Render deployment/CI for latest main after documentation updates.

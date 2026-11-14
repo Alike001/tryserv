@@ -12,7 +12,7 @@ Share only: https://tryserv.onrender.com/ . Ask for a fresh private browser wind
 
 > Try this independent OpenServ learning website. Without instructions from me, tell me what it does, complete the beginner lessons, and show me your learning summary. Explain whether its request builder sends an API call or only checks a preview. If anything confuses you, please tell me where you got stuck.
 
-Capture the **actual** result: reached entry CTA, understood that app is independent from OpenServ, completed four lessons/80 local XP, understood preview ≠ live execution, could find official source, and could recover after a wrong answer. Record pass/fail, what they clicked, exact confusing copy, whether mobile/desktop, and one or two direct quotes with permission.
+Capture the **actual** result: reached entry CTA, understood that app is independent from OpenServ, completed all four lessons, understood preview ≠ live execution, could find official source, and could recover after a wrong answer. Record pass/fail, what they clicked, exact confusing copy, whether mobile/desktop, and one or two direct quotes with permission.
 
 ## Tester B — developer familiar with APIs but new to TrySERV
 
@@ -47,4 +47,4 @@ If a tester is blocked before completing a core task, fix that exact blocker, ad
 
 ### Current project boundaries
 
-Free and deterministic: lesson quizzes, XP, request builder validation, three debugging missions. Optional paid live SERV: context-aware tutor and explaining an actual validated debugging issue, only after explicit click and within the durable budget (two calls per approximate visitor per UTC day; 24 shared lifetime). Private custom inference requires operator authorization. Do not ask testers for API keys, private access codes or payments.
+Free and deterministic: lesson quizzes, browser-local lesson completion, request builder validation, and three debugging missions. Optional paid live SERV: context-aware tutor and explaining an actual validated debugging issue, only after explicit click and within the durable budget (two calls per approximate visitor per UTC day; 24 shared lifetime). Private custom inference requires operator authorization. Do not ask testers for API keys, private access codes or payments.

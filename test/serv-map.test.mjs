@@ -25,7 +25,7 @@ test("original interactive explainer is reachable on homepage and in learning st
 test("explainer is clearly illustrative and never performs paid inference or mutates learning progress", () => {
   assert.doesNotMatch(source, /\bfetch\s*\(|XMLHttpRequest|localStorage|\/api\/mentor|\/api\/debug|\/api\/try-serv/);
   assert.match(source, /NOT A LIVE INFERENCE/);
-  assert.match(source, /no API calls and earns no XP/);
+  assert.match(source, /no API calls or changes saved learning progress/);
   assert.match(source, /explicitly opts in/);
   assert.match(source, /raw editable JSON/);
 });

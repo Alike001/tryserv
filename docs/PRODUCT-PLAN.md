@@ -21,20 +21,20 @@ TRY /try — Checkable JSON/curl output and, only when safe server-side spending
 HELP /help — Practical troubleshooting for missing system prompt, bad endpoint, bad model, failed auth and other verified SERV situations. Use deterministic detection first and contextual SERV coaching for ambiguity. Do not manufacture support advice.
 
 ## Learning flow
-Landing -> choose beginner or builder -> explore/lesson -> complete challenge -> see feedback and source -> earn XP -> resume/next -> construct request -> optionally run real SERV behind server controls.
+Landing -> choose beginner or builder -> explore/lesson -> complete challenge -> see feedback and source -> mark lesson complete -> resume/next -> construct request -> optionally run real SERV behind server controls.
 Experienced learners may jump to code without finishing beginner material.
 
-## Points and progress decision
-Yes to simple XP and clear progress; NO to complex gamification.
-- Four lessons, once-per-lesson 20 XP, max 80 XP initially.
-- XP awarded only after deterministic server grading; duplicate submissions do not increase XP.
-- Show completed modules, total XP, progress bar, resume CTA, final completion state.
-- No user login for basic lessons; store progress/XP in browser localStorage and explicitly label as on-device, resettable, not cryptographically certified.
-- No token rewards, leaderboard, certificates, accounts or fabricated user counts.
-- Later server-backed progress only if real users and an explicit privacy model justify it.
+## Learning completion and progress decision
+Keep progress simple and tied to learning outcomes; do not gamify the experience.
+- Four lessons are marked complete only after deterministic server grading.
+- Show completed modules, a progress bar, a resume action and a final learning summary.
+- Store completed lesson IDs in browser localStorage. Explain that progress is on-device and resettable, not a credential.
+- No XP, points, streaks, token rewards, leaderboard, certificates, accounts or fabricated user counts.
+- Keep the three debugging missions as a separate completion track.
+- Consider server-backed progress only if real users and an explicit privacy model justify it.
 
 ## AI scope
-SERV tutor explains mistakes and suggests next learning task with the current lesson's cited official source. Exact quiz grading, arithmetic, XP and completion happen in normal code. The tutor must NEVER certify progress. An actual tutor response should show real model/completion metadata and never substitute a prewritten AI answer silently.
+SERV tutor explains mistakes and suggests next learning task with the current lesson's cited official source. Exact quiz grading and lesson completion happen in normal code. The tutor must NEVER certify progress. An actual tutor response should show real model/completion metadata and never substitute a prewritten AI answer silently.
 Current tutor requires the operator to set secret server-side SERV_API_KEY + separately generated LEARN_ACCESS_TOKEN. Public visitors must not be asked for an API key. A safe limited guest demo can be designed only after rate/budget abuse tests.
 
 ## UX acceptance
@@ -45,8 +45,8 @@ Design all states: welcome, new user, resume, correct/incorrect, loading, AI una
 Phase A: Separate clean GitHub repository and brand, migrate learning app only, keep Opsra archived and intact, make a real landing page and navigation.
 Exit gate: a stranger understands the product in 10 seconds and can start a lesson.
 
-Phase B: Polish the four lessons and request builder, add source-backed ecosystem explore, on-device XP and resumable progress, check model and endpoint against current docs.
-Exit gate: a novice completes all modules without account or API key, only once-per-lesson XP is earned, no dead UI.
+Phase B: Polish the four lessons and request builder, add source-backed ecosystem explore, on-device lesson completion and resumable progress, check model and endpoint against current docs.
+Exit gate: a novice completes all modules without account or API key, all lessons can be completed and resumed, no dead UI.
 
 Phase C: Turn on real SERV with operator-provided secure Render environment variables; verify actual completion IDs, latency, schema, failure conditions; contextual tutoring after wrong answers; limited genuine request lab.
 Exit gate: a first-time user completes a genuinely live SERV-enhanced learning task and can see what SERV did.
@@ -77,7 +77,7 @@ https://docs.openserv.ai/serv-reasoning/introduction
 - [x] Clean standalone GitHub repo: https://github.com/Alike001/tryserv (main, source migrated and CI passing).
 - [x] Dedicated Render service: https://tryserv.onrender.com (new service ID srv-dbqvo68ae00c73bepbj0), live deployment verified through Render.
 - [x] Full public landing page; /learn lessons and /try builder have functional routes and test coverage.
-- [x] On-device 20-XP lesson rewards (maximum 80), idempotence tests, resume and reset.
+- [x] Historical implementation: on-device 20-XP lesson rewards and idempotence tests; superseded on 14 Nov by completion-only progress.
 - [ ] Actual live hosted SERV tutor completion with operator-configured secrets in the NEW service.
 - [ ] Browser/mobile accessibility and first-time learner walkthrough.
 - [ ] Public safe guest SERV try-it flow and final submission evidence.
@@ -99,7 +99,7 @@ Source of truth for next chats: docs/CONTEXT-HANDOFF.md. Old ServSteps preview e
 - [x] Remove instructor-code requirement from regular learner tutoring; the advanced custom-request lab remains private.
 - [x] Create an isolated Neon database to track guest allowances atomically across deployments.
 - [x] Cap guest use at 2 calls per visitor/day and 24 total lifetime calls; a reservation occurs before a paid request.
-- [x] Keep free lessons, deterministic grading, progress and XP usable when guest credits run out.
+- [x] Keep free lessons, deterministic grading, lesson completion progress usable when guest credits run out.
 - [x] Test unavailable database, invalid input, anonymous access, quota denials and retention of the protected custom-request lab.
 - [x] Set `PUBLIC_TUTOR_ENABLED=true` for the Render service, pending live hosted verification.
 - [ ] Prove one real hosted public SERV completion with a redacted completion ID and latency. Simulated upstream test responses are not proof of real inference.
@@ -125,8 +125,8 @@ Canonical research: [docs/INTERACTIVE-LEARNING-RESEARCH.md](INTERACTIVE-LEARNING
 
 ## November 12 functional journey checkpoint (pending CI + preview)
 
-- [x] Connect four-lesson completion to a truthful summary: modules finished, 80 on-device XP, and next action to practise fixing requests. The completion summary is **not a credential or certificate**.
-- [x] Keep the debugging lab as a separate progress track (three real request-repair missions); do not award additional XP just for visiting it.
+- [x] Connect four-lesson completion to a truthful summary of learning outcomes and a next action to practise fixing requests. The original XP counter was removed on 14 Nov; the summary is **not a credential or certificate**.
+- [x] Keep the debugging lab as a separate progress track (three real request-repair missions); repairs do not change lesson completion.
 - [x] Fix last debug mission: continue to any unfinished repair; after all three, return to the learning studio summary rather than an unrelated request-builder page.
 - [x] Add a read-only guest SERV allowance endpoint and visible per-visitor questions remaining today plus shared trial remaining. Reading status **never consumes** SERV inference credits.
 - [x] Free tutor button disabled when daily/global quota is exhausted or budget status cannot be read; no inference is attempted when protections are down.

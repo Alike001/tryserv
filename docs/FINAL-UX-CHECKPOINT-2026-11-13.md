@@ -22,7 +22,7 @@ A polished course site alone is an incomplete submission story. Lead with the **
 | Change | Evidence | Status |
 | --- | --- | --- |
 | Original interactive Learn → Validate → Reason → Verify visual, shared on home and learning studio | [PR #14](https://github.com/Alike001/tryserv/pull/14) | Merged, deployed |
-| Explicit no-inference/no-XP disclosure, accessible stage switching and responsive code-window art | PR #14 tests and Chromium browser journey | Verified by CI |
+| Explicit no-inference and illustrative-only disclosures, accessible stage switching and responsive code-window art | PR #14 tests and Chromium browser journey | Verified by CI |
 | Route allowlist entry for new JS asset and actual HTTP 200/mime regression | PR #14, server.mjs + test/serv-map.test.mjs | Verified |
 | Individual three-step concept diagrams in four active lessons, with illustrative-only labels | [PR #15](https://github.com/Alike001/tryserv/pull/15) | Merged, deployed |
 | Mobile-width stage switching and four lesson-specific diagrams, no paid requests while exploring | PRs #14 and #15 Chromium tests | Verified by CI |
@@ -48,7 +48,7 @@ The previously referenced HeyGen video **`63ef34b8568ac2362576644e7b01c867`** is
 ### Suggested final demo sequence
 
 - **0:00:** name / audience / why API onboarding is confusing.
-- **0:20:** Learn: one lesson, server-graded feedback and concept diagram (show local XP accurately).
+- **0:20:** Learn: one lesson, server-graded feedback and concept diagram (show lesson completion progress accurately).
 - **0:55:** Build: supported model, system instruction and user task, copied valid request marked PREVIEW.
 - **1:25:** Debug: broken request; deterministic error; explicitly opt-in real SERV explanation using preserved genuine evidence; show authentic metadata and source.
 - **2:15:** apply repair and revalidate, without sending an unintended new inference request.

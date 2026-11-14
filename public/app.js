@@ -1,4 +1,4 @@
-import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
+import {loadProgress,markLessonComplete,summaryProgress} from "./progress.mjs";
 
 (() => {
  "use strict";
@@ -37,7 +37,6 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    $("progress-count").textContent=count+" of "+lessons.length;
    $("progress-fill").style.width=lessons.length?(count*100/lessons.length)+"%":"0%";
    $("progress-track").setAttribute("aria-valuenow",String(count));
-   $("xp-count").textContent=pointsFor([...done])+" XP";
    const hasProgress=count>0;
    $("resume").hidden=!hasProgress;
    $("resume-hint").hidden=!hasProgress;
@@ -166,7 +165,7 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    window.scrollTo({top:0,behavior:"smooth"});
  }
  function complete(){
-   const result=award([...done],current);
+   const result=markLessonComplete([...done],current);
    done=new Set(result.completed);
    try{localStorage.setItem(storageKey,JSON.stringify(result.completed));}catch{}
    updateProgress();setLessonStage("apply");
@@ -196,8 +195,8 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
        body:JSON.stringify({lesson_id:current,answer:selected})
      });
      if(data.passed){
-       const alreadyEarned=done.has(current);
-       notify("Correct. "+data.feedback+(alreadyEarned?" · You've already earned XP for this lesson.":" · +20 XP earned!"),true);
+       const alreadyCompleted=done.has(current);
+       notify("Correct. "+data.feedback+(alreadyCompleted?" · This lesson was already marked complete.":" · Lesson marked complete."),true);
        complete();
        if(data.request)showRequest(data);
      }else{
@@ -218,7 +217,7 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
    openLesson((remaining??lessons[lessons.length-1])?.id??"ecosystem");
  }
  function resetProgress(){
-   if(!window.confirm("Reset completed lessons, XP and debugging practice saved on this browser?"))return;
+   if(!window.confirm("Reset completed lessons and debugging practice saved on this browser?"))return;
    done=new Set();
    try{localStorage.removeItem(storageKey);localStorage.removeItem("tryserv-debug-progress-v1");}catch{}
    overview();
@@ -325,7 +324,7 @@ import {loadProgress,award,pointsFor,summaryProgress} from "./progress.mjs";
        output.textContent="You've used today's free tutor allowance. Lessons and practice still work. Check again tomorrow (UTC).";
        $("ask-mentor").disabled=true;
      }else if(status.status==="trial_exhausted"){
-       output.textContent="The shared free SERV trial is exhausted. All lessons, XP and the debugging lab remain available.";
+       output.textContent="The shared free SERV trial is exhausted. All lessons and the debugging lab remain available.";
        $("ask-mentor").disabled=true;
      }else{
        output.textContent="Tutor allowance could not be checked, so paid guest requests are temporarily unavailable. Lessons still work.";

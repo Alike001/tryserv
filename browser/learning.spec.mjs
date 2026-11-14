@@ -22,20 +22,32 @@ test("landing sends newcomers and developers to real working routes",async({page
   await expect(page.locator("#builder")).toBeVisible();
 });
 
-test("wrong answer gives a useful hint and no XP until the correction is checked",async({page})=>{
+test("wrong answers give useful hints; only a correct answer completes the lesson",async({page})=>{
   await page.goto("/learn");
   await page.locator("#start-fresh").click();
   await page.locator("#answers .choice").nth(1).click();
   await page.locator("#check").click();
   await expect(page.locator("#feedback")).toContainText("Hint:");
-  await expect(page.locator("#xp-count")).toHaveText("0 XP");
+  await expect(page.locator("#progress-count")).toHaveText("0 of 4");
+  await expect(page.locator("#xp-count")).toHaveCount(0);
   await page.locator("#answers .choice").nth(0).click();
   await page.locator("#check").click();
-  await expect(page.locator("#feedback")).toContainText("+20 XP");
-  await expect(page.locator("#xp-count")).toHaveText("20 XP");
+  await expect(page.locator("#feedback")).toContainText("Lesson marked complete");
+  await expect(page.locator("#progress-count")).toHaveText("1 of 4");
+  await expect(page.locator("body")).not.toContainText(/\bXP\b/i);
 });
 
-test("four lessons build a valid request, save exactly 80 XP and show a completion path",async({page})=>{
+test("previously saved lesson IDs remain completed after the XP system is removed",async({page})=>{
+  await page.addInitScript(()=>{if(location.origin!=="null")localStorage.setItem("tryserv-progress-v1",JSON.stringify(["ecosystem","understand"]));});
+  await page.goto("/learn");
+  await expect(page.locator("#progress-count")).toHaveText("2 of 4");
+  await expect(page.locator("#lesson-nav .nav-lesson.complete")).toHaveCount(2);
+  await page.locator("#resume").click();
+  await expect(page.locator("#lesson-count")).toHaveText("LESSON 03 OF 04");
+  await expect(page.locator("#xp-count")).toHaveCount(0);
+});
+
+test("four lessons build a valid request and show a persistent learning summary",async({page})=>{
   await page.goto("/learn");
   await page.locator("#start-fresh").click();
   for(const answerIndex of [0,1,1]){
@@ -46,23 +58,24 @@ test("four lessons build a valid request, save exactly 80 XP and show a completi
   }
   await expect(page.locator("#builder")).toBeVisible();
   await page.locator("#check").click();
-  await expect(page.locator("#feedback")).toContainText("+20 XP");
+  await expect(page.locator("#feedback")).toContainText("Lesson marked complete");
   await expect(page.locator("#json-preview")).toContainText('"model": "gpt-5.4-mini"');
   await expect(page.locator("#request-preview")).toBeVisible();
   await expect(page.locator("#live-try-panel")).toBeHidden();
   await page.locator("#next").click();
   await expect(page.locator("#completion-panel")).toBeVisible();
-  await expect(page.locator("#xp-count")).toHaveText("80 XP");
-  await expect(page.locator("#completion-panel")).toContainText("on-device XP");
+  await expect(page.locator("#progress-count")).toHaveText("4 of 4");
+  await expect(page.locator("#completion-panel")).toContainText("all four lessons");
   await expect(page.locator("#completion-panel a[href='/debug']")).toBeVisible();
+  await expect(page.locator("body")).not.toContainText(/\bXP\b/i);
   await page.reload();
   await expect(page.locator("#completion-panel")).toBeVisible();
-  await expect(page.locator("#xp-count")).toHaveText("80 XP");
+  await expect(page.locator("#progress-count")).toHaveText("4 of 4");
   await page.locator("#lesson-nav .nav-lesson").first().click();
   await page.locator("#answers .choice").first().click();
   await page.locator("#check").click();
-  await expect(page.locator("#xp-count")).toHaveText("80 XP");
-  await expect(page.locator("#feedback")).toContainText("already earned XP");
+  await expect(page.locator("#progress-count")).toHaveText("4 of 4");
+  await expect(page.locator("#feedback")).toContainText("already marked complete");
 });
 
 test("developer repairs all three real-contract examples without spending SERV credits",async({page})=>{
@@ -162,7 +175,7 @@ test("shared guest trial exhausted: no paid request and learning remains usable"
  await page.locator("#start-fresh").click();
  await page.locator("#answers .choice").first().click();
  await page.locator("#check").click();
- await expect(page.locator("#xp-count")).toHaveText("20 XP");
+ await expect(page.locator("#progress-count")).toHaveText("1 of 4");
  expect(submissions).toBe(0);
 });
 
@@ -279,7 +292,7 @@ test("learning studio presents a focused journey with a safe contextual SERV coa
  await page.locator("#answers .choice").nth(0).click();
  await page.locator("#check").click();
  await expect(page.locator(".lesson-stages .stage.active")).toContainText("Apply");
- await expect(page.locator("#xp-count")).toHaveText("20 XP");
+ await expect(page.locator("#progress-count")).toHaveText("1 of 4");
 });
 
 test("refreshed studio stays readable at 320, 375, 768, 1024 and 1440 pixels",async({page})=>{
@@ -496,7 +509,7 @@ test("SERV visual walkthrough is accessible, clickable and no-spend at 320px",as
    await stages.nth(3).click();
    await expect(map.locator("[data-serv-sample]")).toContainText("NOT EXECUTED");
    await expect(map.locator("[data-serv-link]")).toHaveAttribute("href","/try");
-   await expect(map).toContainText("no API calls and earns no XP");
+   await expect(map).toContainText("no API calls or changes saved learning progress");
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
    expect(overflow,route+" visual overflow at 320px").toBeLessThanOrEqual(2);
  }
@@ -504,7 +517,7 @@ test("SERV visual walkthrough is accessible, clickable and no-spend at 320px",as
 });
 
 
-test("every active lesson has a distinct OpenServ visual, without inference or extra XP",async({page})=>{
+test("every active lesson has a distinct OpenServ visual, without inference or changes to lesson progress",async({page})=>{
  let paid=0;
  page.on("request",request=>{
    if(["/api/mentor","/api/try-serv","/api/debug/explain"].includes(new URL(request.url()).pathname))paid++;
@@ -528,7 +541,7 @@ test("every active lesson has a distinct OpenServ visual, without inference or e
    expect(overflow,"concept illustration overflow in lesson "+(i+1)).toBeLessThanOrEqual(2);
  }
  expect(paid).toBe(0);
- await expect(page.locator("#xp-count")).toHaveText("0 XP");
+ await expect(page.locator("#progress-count")).toHaveText("0 of 4");
 });
 
 

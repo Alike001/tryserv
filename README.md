@@ -11,7 +11,7 @@
 Getting started with an AI infrastructure platform often means reading multiple documentation pages without knowing whether you understand them—or how to make the first request. TrySERV turns that uncertainty into small, checkable tasks. A newcomer can complete four short lessons; a developer can go directly to the request builder and debug lab.
 
 Unlike a generic documentation chatbot:
-- **Exact answers are graded in code on the server.** The model neither selects the correct quiz answer nor grants XP.
+- **Exact answers are graded in code on the server.** The model does not decide whether an answer is correct or mark lessons complete.
 - **Wrong answers receive specific, non-spoiler hints.** Learners can try again.
 - **A request builder validates the official Chat Completions shape** and produces copyable JSON/curl examples. A preview is never disguised as an API execution.
 - **Three editable debugging missions** teach how to repair missing instructions, a wrong endpoint, and an invalid model choice. All three are free and deterministic.
@@ -30,13 +30,13 @@ The standalone debugging lab shares the same original TrySERV visual language, w
 | Visit | What to do | What proves it works |
 | --- | --- | --- |
 | [Home](https://tryserv.onrender.com/) | Choose **I'm new**, **I can code**, or the debugging path | Task-specific links lead to working routes |
-| [Lessons](https://tryserv.onrender.com/learn) | Finish four short, sourced exercises; deliberately answer one incorrectly first | Specific hint, server-graded result, 20 XP once per lesson |
+| [Lessons](https://tryserv.onrender.com/learn) | Finish four short, sourced exercises; deliberately answer one incorrectly first | Specific hint, server-graded result, completed-lesson progress saved locally |
 | [Request builder](https://tryserv.onrender.com/try) | Validate a system instruction, user task and supported model; copy JSON/curl | Request structure and feedback, explicitly **NOT EXECUTED** |
 | [Debug lab](https://tryserv.onrender.com/debug) | Repair three broken request examples | Each fix is checked and saved locally; no API credits |
 | [SERV tutor](https://tryserv.onrender.com/learn) | Ask a lesson question, **if** public allowance remains | A live answer, official reference, provider model/ID and latency |
 | [Docs](https://tryserv.onrender.com/docs) | Explore integration, safety, progress and troubleshooting | A dedicated in-app guide portal |
 
-Lesson progress is kept in **this browser only**: 4 × 20 XP = **80 XP maximum**. Repeating a lesson does not earn more XP. The three debugging missions are a separate 0–3 count. Progress is not independently certified and can disappear if browser storage is cleared.
+Lesson progress is kept in **this browser only** as completed lesson IDs. The three debugging missions have a separate 0–3 completion count. TrySERV has no XP, points, streaks or leaderboard: the focus is on understanding and practical skills. Progress is not an account, credential or certificate, and can disappear if browser storage is cleared.
 
 A previously tested public SERV response was confirmed in the operator's real browser. Automated integration/browser tests use mocks where appropriate; they are **not** a replacement for a fresh production live-inference verification.
 
@@ -80,7 +80,7 @@ Browser (landing / lessons / builder / debug / docs)
              |-- optional /api/mentor -> atomic Neon guest-budget reservation
              |                        -> SERV Reasoning Chat Completions
              |-- operator-gated /api/try-serv -> authorized SERV call
-Browser localStorage: completed lesson IDs, XP, debug repair markers
+Browser localStorage: completed lesson IDs and debug repair markers
 ```
 
 Node 22+, minimal front-end JavaScript/CSS, Neon for limited public guest-credit accounting, GitHub Actions for Node and Chromium tests, Render for deployment. No account database is used for learners.
