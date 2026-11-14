@@ -93,4 +93,4 @@ The backend calculates budget variance using integer minor currency units. It do
 
 ## Deployment
 
-Render auto-deploys the `main` branch. Work on `feat/shaida-evidence-review-pivot`, run CI and browser tests, open a PR, merge only when green, then verify the deployed commit and health route. Do not modify production environment variables or spend live inference credits as part of CI.
+Render auto-deploys the `main` branch. Work on `feat/tabbata-donor-report-review`, run CI and browser tests, open a PR, merge only when green, then verify the deployed commit and health route. Do not modify production environment variables or spend live inference credits as part of CI.
