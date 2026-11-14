@@ -1,12 +1,14 @@
 const $=id=>document.getElementById(id);
 const SESSION_KEY="tabbata.active-case.v1";
 const MAX_FILE=2*1024*1024,MAX_TOTAL=8*1024*1024,MAX_FILES=5;
-let sampleFiles=null,activeCase=null,activePayload=null,activeExpiresAt=null,servConfigured=false,storageConfigured=false;
+let sampleFiles=null,sampleBudgetFile=null,sampleExpenseFile=null,activeCase=null,activePayload=null,activeExpiresAt=null,servConfigured=false,storageConfigured=false;
 
 const samplePack={
  project_name:"Community Water Access Project",
  funder:"Community Development Fund",
  reporting_period:"Q3 2026",
+ period_start:"2026-07-01",
+ period_end:"2026-09-30",
  currency:"NGN",
  approved_budget:"5000000",
  reported_spend:"4500000",
@@ -21,9 +23,10 @@ const samplePack={
 const sampleEvidence=[
  {name:"site-status.csv",type:"text/csv",content:"Site,Status,Last update,Note\nSite A,Completed,2026-08-02,Commissioning record filed\nSite B,Completed,2026-08-16,Commissioning record filed\nSite C,Testing pending,2026-09-28,Water quality testing not complete"},
  {name:"household-register.csv",type:"text/csv",content:"Community,Households reached,Distribution date\nCommunity A,150,2026-08-12\nCommunity B,140,2026-08-20\nCommunity C,130,2026-09-10"},
- {name:"expense-schedule.csv",type:"text/csv",content:"Date,Category,Description,Amount NGN,Receipt reference\n2026-07-14,Materials,Pipes and fittings,1500000,REC-001\n2026-08-02,Construction,Site works and labour,1200000,REC-002\n2026-09-03,Testing,Water quality and distribution,1800000,REC-003"},
  {name:"field-notes.txt",type:"text/plain",content:"Field notes — 28 September 2026\nSite C: commissioning visit deferred pending water quality testing. The team expects a follow-up inspection after test results are received.\nCommunity reach register currently contains 420 household entries across the three target communities."}
 ];
+const sampleBudgetSchedule={name:"approved-budget.csv",type:"text/csv",content:"Category,Amount NGN\nMaterials,2000000\nConstruction,2000000\nTesting,1000000"};
+const sampleExpenseSchedule={name:"expense-schedule.csv",type:"text/csv",content:"Date,Category,Description,Amount NGN,Receipt reference\n2026-07-14,Materials,Pipes and fittings,1400000,REC-001\n2026-07-14,Materials,Additional fittings,100000,REC-001\n2026-08-02,Construction,Site works and labour,1200000,REC-002\n2026-09-03,Testing,Water quality and distribution,1800000,"};
 const previewData=[
  {status:"PARTIALLY SUPPORTED · SAMPLE",kind:"warning",title:"Three water facilities completed",body:"The report states that all three sites were commissioned. The supplied site log records two as completed and one as still undergoing testing.",source:"SUPPORTING DOCUMENT · site-status.csv · ROW 4",quote:"Site C — Testing pending — 2026-09-28 — Water quality testing not complete",action:"Request the completion or commissioning record for Site C."},
  {status:"PARTIALLY SUPPORTED · SAMPLE",kind:"warning",title:"500 households reached",body:"The report claims 500 households. The supplied household register lists 150, 140 and 130 households, totalling 420 entries.",source:"SUPPORTING DOCUMENT · household-register.csv · ROWS 2–4",quote:"150 + 140 + 130 = 420 household entries in the supplied register.",action:"Reconcile the 80-household difference and attach the missing distribution records."},
@@ -48,8 +51,15 @@ function preview(index){
 function displayFiles(){
  const list=$("file-list");list.replaceChildren();
  const reportFile=$("report-file").files?.[0]??null;
+ const budgetFile=sampleBudgetFile??$("budget-schedule-file").files?.[0]??null;
+ const expenseFile=sampleExpenseFile??$("expense-schedule-file").files?.[0]??null;
  const files=sampleFiles??Array.from($("evidence-files").files??[]);
- const entries=[...(reportFile?[{file:reportFile,label:"Narrative report"}]:[]),...files.map(file=>({file,label:"Supporting evidence"}))];
+ const entries=[
+  ...(reportFile?[{file:reportFile,label:"Narrative report"}]:[]),
+  ...(budgetFile?[{file:budgetFile,label:"Approved budget schedule"}]:[]),
+  ...(expenseFile?[{file:expenseFile,label:"Actual expenditure schedule"}]:[]),
+  ...files.map(file=>({file,label:"Supporting evidence"}))
+ ];
  if(!entries.length){const empty=document.createElement("span");empty.className="file-empty";empty.textContent="No files added yet.";list.append(empty);return;}
  for(const entry of entries){
   const file=entry.file;
@@ -61,11 +71,13 @@ function displayFiles(){
 }
 function loadSample(){
  Object.entries(samplePack).forEach(([key,value])=>{
-  const map={project_name:"project-name",funder:"funder",reporting_period:"reporting-period",currency:"currency",approved_budget:"approved-budget",reported_spend:"reported-spend",requirements:"requirements",report_text:"report-text"};
+  const map={project_name:"project-name",funder:"funder",reporting_period:"reporting-period",period_start:"period-start",period_end:"period-end",currency:"currency",approved_budget:"approved-budget",reported_spend:"reported-spend",requirements:"requirements",report_text:"report-text"};
   $(map[key]).value=value;
  });
  sampleFiles=sampleEvidence.map(file=>({...file,size:new TextEncoder().encode(file.content).length}));
- $("report-file").value="";$("evidence-files").value="";
+ sampleBudgetFile={...sampleBudgetSchedule,size:new TextEncoder().encode(sampleBudgetSchedule.content).length};
+ sampleExpenseFile={...sampleExpenseSchedule,size:new TextEncoder().encode(sampleExpenseSchedule.content).length};
+ $("report-file").value="";$("budget-schedule-file").value="";$("expense-schedule-file").value="";$("evidence-files").value="";
  displayFiles();
  formStatus("Fictional sample loaded. Review the details, then create a workspace. No SERV request has been made.","success");
  $("review").scrollIntoView({behavior:"smooth",block:"start"});
@@ -97,6 +109,40 @@ function renderBudget(check){
  addText(box,"div","budget-details","Variance: "+formatMoney(Math.abs(check.variance_minor),check.currency)+(check.variance_minor>0?" over":check.variance_minor<0?" under":" exactly"));
  addText(box,"div","budget-details",check.note);
 }
+function renderFinancial(reconciliation){
+ const box=$("financial-check");box.replaceChildren();
+ if(!reconciliation||reconciliation.status==="not_provided"){
+  addText(box,"p","budget-details",reconciliation?.summary??"No line-item schedules supplied. Upload CSV or XLSX schedules to reconcile individual expense rows.");
+  return;
+ }
+ const labels={reconciled:"Schedules reconciled",attention_required:"Review flags found",incomplete:"Reconciliation incomplete",partial:"Partial schedule check"};
+ addText(box,"div","budget-result "+(reconciliation.status==="reconciled"?"within":reconciliation.status==="attention_required"?"over":"within"),labels[reconciliation.status]??"Review required");
+ addText(box,"p","budget-details",reconciliation.summary);
+ const totals=reconciliation.schedule_totals??{};
+ if(totals.budget_minor!==null&&totals.budget_minor!==undefined)addText(box,"div","budget-details","Budget schedule total: "+formatMoney(totals.budget_minor,reconciliation.currency));
+ if(totals.expense_minor!==null&&totals.expense_minor!==undefined)addText(box,"div","budget-details","Expense schedule total: "+formatMoney(totals.expense_minor,reconciliation.currency));
+ const checks=(reconciliation.checks??[]).filter(item=>!["budget_schedule_total","expense_schedule_total"].includes(item.type)||item.status==="variance");
+ if(checks.length){
+  const list=document.createElement("ul");list.className="financial-flag-list";
+  for(const item of checks){
+   let message="";
+   if(item.type==="category_over_budget")message=item.category+": "+formatMoney(item.variance_minor,reconciliation.currency)+" above its approved category budget";
+   else if(item.type==="unbudgeted_category")message=item.category+": expenditure has no matching approved budget category";
+   else if(item.type==="duplicate_reference")message="Duplicate reference "+item.reference+" at "+item.locators.join(", ");
+   else if(item.type==="missing_receipt_reference")message="Missing receipt reference at "+item.locator+(item.description?" · "+item.description:"");
+   else if(item.type==="outside_reporting_period")message="Out-of-period transaction "+item.date+" at "+item.locator;
+   else if(item.type==="budget_schedule_total"||item.type==="expense_schedule_total")message=item.label+": variance "+formatMoney(Math.abs(item.difference_minor),reconciliation.currency);
+   if(message)addText(list,"li","",""+message);
+  }
+  if(list.children.length)box.append(list);
+ }
+ if(reconciliation.issues?.length){
+  const issues=document.createElement("ul");issues.className="financial-flag-list";
+  for(const issue of reconciliation.issues)addText(issues,"li","",issue.document+(issue.locator?" · "+issue.locator:"")+": "+issue.message);
+  box.append(issues);
+ }
+ for(const note of reconciliation.notes??[])addText(box,"p","financial-note",note);
+}
 function statusLabel(status){
  return ({
   supported_in_documents:["Supported in submitted documents","supported"],
@@ -108,7 +154,7 @@ function statusLabel(status){
 }
 function renderDocuments(payload){
  const list=$("case-documents");list.replaceChildren();
- const allDocs=[...(payload.report_document?[{...payload.report_document,display_name:"Narrative report"}]:[]),...(payload.documents??[]).map(doc=>({...doc,display_name:"Supporting evidence"}))];
+ const allDocs=[...(payload.report_document?[{...payload.report_document,display_name:"Narrative report"}]:[]),...(payload.documents??[]).map(doc=>({...doc,display_name:doc.purpose==="approved_budget_schedule"?"Approved budget schedule":doc.purpose==="expense_schedule"?"Actual expenditure schedule":"Supporting evidence"}))];
  for(const doc of allDocs){
   const row=addText(list,"div","case-doc",(doc.display_name?doc.display_name+": ":"")+doc.name);
   row.title=doc.extracted_chars+" extracted characters"+(doc.truncated?" · text limit reached":"");
@@ -162,7 +208,7 @@ function renderCase(payload,expiresAt){
  $("case-workspace").hidden=false;
  $("workspace-title").textContent=payload.project.name;
  $("workspace-meta").textContent=[payload.project.funder,payload.project.reporting_period,payload.project.currency].filter(Boolean).join(" · ");
- renderDocuments(payload);renderBudget(payload.budget_check);
+ renderDocuments(payload);renderBudget(payload.budget_check);renderFinancial(payload.financial_reconciliation);
  const status=$("case-status");
  status.textContent=payload.analysis_status==="complete"?"Review complete":payload.analysis_status==="failed"?"Analysis attempt used":"Ready to analyze";
  $("case-expiry").textContent=expiresAt?"Expires "+new Date(expiresAt).toLocaleString():"This workspace expires within 24 hours.";
@@ -178,9 +224,12 @@ async function createWorkspace(event){
  event.preventDefault();
  if(!storageConfigured){formStatus("Secure review storage is not configured on the server yet. The form has not been sent.","error");return;}
  const reportFile=$("report-file").files?.[0]??null;
+ const budgetFile=sampleBudgetFile??$("budget-schedule-file").files?.[0]??null;
+ const expenseFile=sampleExpenseFile??$("expense-schedule-file").files?.[0]??null;
  const supportFiles=sampleFiles??Array.from($("evidence-files").files??[]);
- const files=[...(reportFile?[reportFile]:[]),...supportFiles];
- if(supportFiles.length<1||files.length>MAX_FILES){formStatus("Add at least one supporting document and no more than 5 files total, including the report.","error");return;}
+ const evidenceFiles=[...(budgetFile?[budgetFile]:[]),...(expenseFile?[expenseFile]:[]),...supportFiles];
+ const files=[...(reportFile?[reportFile]:[]),...evidenceFiles];
+ if(evidenceFiles.length<1||files.length>MAX_FILES){formStatus("Add at least one supporting document or financial schedule, with no more than 5 files total.","error");return;}
  const total=files.reduce((sum,file)=>sum+(file.size??new TextEncoder().encode(file.content??"").length),0);
  if(files.some(file=>(file.size??new TextEncoder().encode(file.content??"").length)>MAX_FILE)||total>MAX_TOTAL){formStatus("Files exceed the 2 MiB per-file or 8 MiB combined limit.","error");return;}
  if(!reportFile&&$("report-text").value.trim().length<80){formStatus("Paste at least 80 characters of narrative report, or upload the report file above.","error");$("report-text").focus();return;}
@@ -189,11 +238,13 @@ async function createWorkspace(event){
   const encoded=[];for(const file of supportFiles)encoded.push(await filePayload(file));
   const body={
    project_name:$("project-name").value,funder:$("funder").value,
-   reporting_period:$("reporting-period").value,currency:$("currency").value,
+   reporting_period:$("reporting-period").value,period_start:$("period-start").value,period_end:$("period-end").value,currency:$("currency").value,
    approved_budget:$("approved-budget").value,reported_spend:$("reported-spend").value,
    requirements:$("requirements").value,report_text:$("report-text").value,files:encoded
   };
   if(reportFile)body.report_file=await filePayload(reportFile);
+  if(budgetFile)body.budget_schedule_file=await filePayload(budgetFile);
+  if(expenseFile)body.expense_schedule_file=await filePayload(expenseFile);
   button.textContent="Creating workspace…";
   const response=await fetch("/api/tabbata/cases",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   const result=await response.json();
@@ -215,6 +266,7 @@ async function analyzeCase(){
   if(!response.ok){const error=new Error(result.error??"SERV review failed.");error.httpStatus=response.status;throw error;}
   activePayload.review=result.review;activePayload.provider=result.provider;activePayload.analysis_status="complete";
   activePayload.budget_check=result.budget_check;
+  activePayload.financial_reconciliation=result.financial_reconciliation??activePayload.financial_reconciliation;
   renderCase(activePayload,activeExpiresAt);
   toast("SERV review completed. Inspect each source-linked finding.");
  }catch(error){analysisStatus(error.message||"SERV review failed.","error");const status=error.httpStatus??0;if(status===502||status===409){button.disabled=true;button.textContent="Analysis attempt used";}else{button.disabled=false;button.textContent="Analyze with SERV";}return;}
@@ -263,6 +315,8 @@ document.addEventListener("DOMContentLoaded",async()=>{
  $("load-sample").addEventListener("click",loadSample);
  $("load-sample-top").addEventListener("click",loadSample);
  $("evidence-files").addEventListener("change",()=>{sampleFiles=null;displayFiles();});
+ $("budget-schedule-file").addEventListener("change",()=>{sampleBudgetFile=null;displayFiles();});
+ $("expense-schedule-file").addEventListener("change",()=>{sampleExpenseFile=null;displayFiles();});
  $("report-file").addEventListener("change",displayFiles);
  $("case-form").addEventListener("submit",createWorkspace);
  $("analyze-case").addEventListener("click",analyzeCase);
