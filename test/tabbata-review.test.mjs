@@ -60,6 +60,19 @@ test("case input validates report, requirements and currency",()=>{
  assert.equal(result.budget_check.variance_minor,-50000000);
  assert.throws(()=>validateTabbataCaseInput({}),/Project name/);
 });
+test("reporting period dates are optional but must be a valid ordered pair",()=>{
+ const base={
+  project_name:"Community Water Access",funder:"Community Fund",reporting_period:"Q3 2026",currency:"NGN",
+  requirements:"Report progress against approved milestones.",
+  report_text:"A sufficiently detailed narrative report that describes the activities and outputs for this reporting period."
+ };
+ const result=validateTabbataCaseInput({...base,period_start:"2026-07-01",period_end:"2026-09-30"});
+ assert.equal(result.period_start,"2026-07-01");
+ assert.equal(result.period_end,"2026-09-30");
+ assert.throws(()=>validateTabbataCaseInput({...base,period_start:"2026-07-01"}),/both reporting period/);
+ assert.throws(()=>validateTabbataCaseInput({...base,period_start:"2026-02-30",period_end:"2026-03-31"}),/valid YYYY-MM-DD/);
+ assert.throws(()=>validateTabbataCaseInput({...base,period_start:"2026-10-01",period_end:"2026-09-30"}),/must not be after/);
+});
 test("report is a claim source while only supporting files are eligible evidence sources",()=>{
  const sources=makeReviewSourceSegments("Report text",[{
   id:"doc-1",name:"evidence.txt",segments:[{id:"doc-1-s1",locator:"Line 1",text:evidenceText}]
