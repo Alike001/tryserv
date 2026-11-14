@@ -18,6 +18,8 @@ Research on Nigerian civil-society organisations reports that donor reporting re
 
 This is a problem hypothesis. User interviews and willingness-to-pay validation are not yet complete.
 
+**Live acceptance status (2026-11-14):** Two authorised fictional tests have reached the hosted provider but neither returned a complete review. The first returned HTTP 502 using the previous Chat Completions request shape. The second returned an incomplete Responses result at the original 2,800-token cap. Both test cases were deleted, no automatic retry occurred, and the current code raises the cap to 8,000 tokens. A complete hosted review is not yet demonstrated.
+
 ## How SERV powers Tabbas
 
 - The server sends the narrative report, funder requirements and extracted supporting-document segments to OpenServ SERV Responses API.
