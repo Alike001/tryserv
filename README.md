@@ -17,7 +17,7 @@ See [problem and competitor research](docs/TABBATA-RESEARCH.md) for the evidence
 ## The workflow
 
 1. **Create a review case.** Enter the project, funder, reporting period, currency, requirements and optional budget totals.
-2. **Add the narrative report.** Paste the report text you want to check.
+2. **Add the narrative report.** Paste the report text or upload one PDF, DOCX, XLSX, CSV, TXT or Markdown report file.
 3. **Upload supporting evidence.** PDF, DOCX, XLSX, CSV, TXT and Markdown are supported within strict size limits.
 4. **Create a private workspace.** Files are extracted to text with page, sheet, row or paragraph locators. Original binary uploads are not retained.
 5. **Choose Analyze with SERV.** Only this explicit action calls the OpenServ Chat Completions API. It uses one unit from the existing shared durable guest allowance.
