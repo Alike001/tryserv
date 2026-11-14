@@ -296,12 +296,14 @@ body[data-page="tabbata"] :is(a,button,input,select,textarea):focus-visible{outl
 }
 @media print{
  body[data-page="tabbata"]{background:#fff}
- .topbar,.hero,.value-strip,.how-section,.preview-section,.review-section,.safety-section,.footer,.toast,.workspace-head-actions,.analysis-cta,.reviewer-card{display:none!important}
+ .topbar,.hero,.value-strip,.how-section,.preview-section,.review-section,.safety-section,.footer,.toast,.workspace-head-actions,.analysis-cta{display:none!important}
  #case-workspace{display:block!important;padding:0!important;background:#fff!important}
  .workspace-head,.workspace-grid{max-width:none}
  .workspace-grid{display:block}
  .workspace-sidebar{grid-template-columns:repeat(3,1fr);margin-bottom:14px}
  .workspace-main{display:block}
+ .reviewer-card{display:block!important;break-inside:avoid}
+ .reviewer-card .field,.reviewer-card .reviewer-actions{display:none!important}
  .review-summary-card,.finding-card,.limitations-card,.workspace-card{break-inside:avoid;box-shadow:none}
  .review-findings{gap:8px}
  .finding-card{padding:12px}
