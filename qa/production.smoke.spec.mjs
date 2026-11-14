@@ -73,7 +73,7 @@ test("public production: beginner and developer workflows, no paid inference",as
  await page.locator("#next").click();
  await expect(page.locator("#completion-panel")).toBeVisible();
  await expect(page.locator("#completion-panel")).toContainText("all four lessons");
- await expect(page.locator("body")).not.toContainText(/XP/i);
+ await expect(page.locator("body")).not.toContainText(/\bXP\b/i);
  await picture(page,"beginner-real-completion");
  await page.reload();
  await expect(page.locator("#progress-count")).toHaveText("4 of 4");
