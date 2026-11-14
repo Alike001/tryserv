@@ -1,4 +1,4 @@
-# Tabbata — Hackathon Demo Script
+# Tabbas — Hackathon Demo Script
 
 **Target length:** 2–3 minutes  
 **Demo data:** Fictional Community Water Access Project  
@@ -6,7 +6,7 @@
 
 ## Before recording
 
-1. Open the deployed Tabbata root page and hard refresh.
+1. Open the deployed Tabbas root page and hard refresh.
 2. Confirm `/healthz` reports `service: tabbata`.
 3. Confirm `/api/tabbata/status` reports storage and SERV configured.
 4. Confirm the existing shared guest allowance has capacity. Do not reset or increase it.
@@ -18,7 +18,7 @@
 
 ### 0:00–0:20 — The problem
 
-"Donor reports bring together a narrative, financial schedule and supporting documents. Requirements vary between funders, and checking whether every claim is supported across those files takes time. Tabbata is a focused pre-submission review workspace—not another grant-management platform."
+"Donor reports bring together a narrative, financial schedule and supporting documents. Requirements vary between funders, and checking whether every claim is supported across those files takes time. Tabbas is a focused pre-submission review workspace—not another grant-management platform."
 
 ### 0:20–0:45 — Create a report pack
 
@@ -48,7 +48,7 @@ Open one finding and show its document and row/page locator. Show the budget com
 
 ### 2:15–2:35 — Human review and limitations
 
-"The reviewer can record a note or request clarification. Tabbata does not approve funding, certify an audit, detect fraud or verify physical delivery. A human remains responsible for the decision."
+"The reviewer can record a note or request clarification. Tabbas does not approve funding, certify an audit, detect fraud or verify physical delivery. A human remains responsible for the decision."
 
 Record a clarification request, then show Print / Save PDF. Optionally delete the case.
 
@@ -68,11 +68,11 @@ Record a clarification request, then show Print / Save PDF. Optionally delete th
 
 ## Claims not to make
 
-- "Tabbata verified the project happened."
+- "Tabbas verified the project happened."
 - "The receipts are authentic."
 - "SERV detected fraud."
 - "The report passed an audit."
 - "A funder approved the project."
-- "NGOs are already using Tabbata."
+- "NGOs are already using Tabbas."
 - "We have paying customers or revenue."
 - "We conducted human testing" unless real testers have participated.
