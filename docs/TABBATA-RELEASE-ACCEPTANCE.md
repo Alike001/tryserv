@@ -2,6 +2,8 @@
 
 This checklist is a gate, not a record of completed work. Check an item only after the named evidence exists.
 
+**Current hosted checkpoint (2026-11-14):** The pivot is deployed and code/browser checks pass (104 Node tests, 74 desktop/mobile journeys). One authorised live analysis attempt against the earlier Chat Completions implementation returned HTTP 502; it was not retried, and its fictional case was deleted. Tabbas now uses the documented OpenServ Responses endpoint for GPT-5.4-mini tool calling with reasoning. A new live provider acceptance is still pending and requires fresh approval; do not mark the live inference or production acceptance boxes complete.
+
 ## A. Build and code quality
 
 - [ ] `npm run check` passes.
