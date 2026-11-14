@@ -1,4 +1,4 @@
-# Tabbata — Real-User Acceptance Plan
+# Tabbas — Real-User Acceptance Plan
 
 **Status:** Not yet conducted. This document is a test plan, not evidence that human testing happened.
 
@@ -39,7 +39,7 @@ Observe:
 - Can they find the relevant financial row?
 - Do they expect line-item reconciliation that is not yet implemented?
 - Can they distinguish a budget overrun from an ineligible expense?
-- Do they understand that Tabbata is not an audit or funder approval?
+- Do they understand that Tabbas is not an audit or funder approval?
 
 ## Interview questions
 
