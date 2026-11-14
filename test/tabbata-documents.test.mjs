@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {extractTABBATADocuments,parseCsv,TABBATA_UPLOAD_LIMITS} from "../tabbata-documents.mjs";
+import ExcelJS from "exceljs";
 
 const base64=text=>Buffer.from(text,"utf8").toString("base64");
 test("CSV parser preserves quoted commas and escaped quotes",()=>{
@@ -22,6 +23,20 @@ test("extracts text and CSV with stable source locators and exact text",async()=
  assert.equal(docs[0].id,"doc-1");
  assert.equal(docs[1].id,"doc-2");
 });
+test("XLSX rows retain sheet and row locators and formulas are not executed",async()=>{
+ const workbook=new ExcelJS.Workbook();
+ const sheet=workbook.addWorksheet("Expenses");
+ sheet.addRow(["Date","Amount"]);
+ sheet.addRow(["2026-08-01",1500000]);
+ sheet.addRow(["2026-08-02",{formula:"SUM(B2:B2)",result:1500000}]);
+ const buffer=Buffer.from(await workbook.xlsx.writeBuffer());
+ const docs=await extractTABBATADocuments([{name:"expenses.xlsx",data_base64:buffer.toString("base64")}]);
+ assert.equal(docs[0].segments[0].locator,"Sheet Expenses · Row 2");
+ assert.match(docs[0].segments[0].text,/Amount: 1500000/);
+ assert.equal(docs[0].segments[1].locator,"Sheet Expenses · Row 3");
+ assert.match(docs[0].segments[1].text,/formula cell not evaluated/);
+});
+
 test("file names and file types are restricted",async()=>{
  await assert.rejects(()=>extractTABBATADocuments([{name:"payload.exe",data_base64:base64("bad")}]),/Unsupported file type/);
  await assert.rejects(()=>extractTABBATADocuments([{name:"bad.pdf",data_base64:base64("not a pdf")}]),/does not appear to be a PDF/);
