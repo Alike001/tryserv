@@ -92,6 +92,7 @@ Use the documented OpenServ Responses endpoint from the server, never the browse
 - Reasoning: `reasoning: { effort: "medium", summary: "auto" }`
 - Function tool: `submit_report_review` in Responses API format, with a bounded JSON schema.
 - `tool_choice` forces the structured review function.
+- `max_output_tokens: 8000` gives the model room for reasoning and structured findings; incomplete responses fail closed with bounded output-token diagnostics.
 - One provider request per user-triggered review; no background inference and no automatic retry after a reserved attempt.
 - The prompt treats all uploaded text as untrusted evidence, never as instructions.
 - The model must cite only supplied source segment IDs and exact quotations.
