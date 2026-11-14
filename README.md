@@ -18,17 +18,19 @@ See [problem and competitor research](docs/TABBATA-RESEARCH.md) for the evidence
 
 1. **Create a review case.** Enter the project, funder, reporting period, currency, requirements and optional budget totals.
 2. **Add the narrative report.** Paste the report text or upload one PDF, DOCX, XLSX, CSV, TXT or Markdown report file.
-3. **Upload supporting evidence.** PDF, DOCX, XLSX, CSV, TXT and Markdown are supported within strict size limits.
-4. **Create a private workspace.** Files are extracted to text with page, sheet, row or paragraph locators. Original binary uploads are not retained.
-5. **Choose Analyze with SERV.** Only this explicit action calls the OpenServ Chat Completions API. It uses one unit from the existing shared durable guest allowance.
-6. **Inspect findings.** Review supported-in-document, partial, missing, conflicting and human-review-required findings, with exact source quotations.
-7. **Record a reviewer action.** Mark findings reviewed or request clarification.
-8. **Print / Save PDF.** Use the browser print dialog to save the review report.
+3. **Add financial schedules.** Optionally upload an approved-budget CSV/XLSX and an actual-expenditure CSV/XLSX. Tabbas checks schedule totals, category variances, duplicate references, blank receipt references and transaction dates when the reporting period is supplied.
+4. **Upload supporting evidence.** Add site records, attendance registers, receipts and other evidence in PDF, DOCX, XLSX, CSV, TXT or Markdown.
+5. **Create a private workspace.** Files are extracted with page, sheet, row or paragraph locators. Original binary uploads are not retained; structured spreadsheet cell values are retained for deterministic checks.
+6. **Choose Analyze with SERV.** Only this explicit action calls the OpenServ Chat Completions API. It uses one unit from the existing shared durable guest allowance.
+7. **Inspect findings.** Review supported-in-document, partial, missing, conflicting and human-review-required findings, with exact source quotations.
+8. **Record a reviewer action.** Mark findings reviewed or request clarification.
+9. **Print / Save PDF.** Use the browser print dialog to save the review report.
+
 
 ## What makes the review trustworthy
 
 - **SERV handles contextual reasoning:** mapping narrative claims to requirements and supporting document passages.
-- **Code handles deterministic work:** input validation, extraction, budget arithmetic, schema validation and exact citation checks.
+- **Code handles deterministic work:** input validation, extraction, schedule totals, category-level financial reconciliation, schema validation and exact citation checks.
 - **Every displayed citation is checked:** the backend verifies the document ID, segment ID and exact quotation against the extracted source.
 - **Invalid citations are downgraded:** unsupported or mismatched quotations cannot appear as supported findings.
 - **Humans make decisions:** the product never automatically approves or rejects a project report.
@@ -41,8 +43,10 @@ The SERV request uses a forced function tool named `submit_report_review`, `reas
 - Maximum 40,000 extracted characters per case.
 - Scanned-image PDF OCR is not supported.
 - Spreadsheet formulas are not executed or recalculated.
-- The budget check compares the two totals entered by the reviewer; it does not verify receipt eligibility.
-- Cases are stored in the existing Neon database for up to 24 hours and can be deleted sooner.
+- CSV/XLSX line-item checks rely on recognised column headings and stored cell values; unsupported or ambiguous headers are surfaced for review.
+- Spreadsheet formulas are not executed or recalculated; only stored cell values are read.
+- Financial flags are not proof of fraud, expense eligibility or improper spending.
+- Cases are stored in the existing Neon database for up to 24 hours and can be deleted sooner. Extracted text, structured spreadsheet cell values, source locators and review output are retained during that period.
 - No original file binaries are stored.
 - Do not upload beneficiary names, phone numbers, addresses, bank details, IDs, health data or other sensitive personal information. Redact first.
 - The seeded Community Water Access example is fictional and illustrative.
