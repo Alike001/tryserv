@@ -121,9 +121,11 @@ OpenServ Edition 02's official page says every track must use SERV Reasoning. Th
 
 Sources:
 - [Official Edition 02 page](https://www.openserv.ai/hackathon-2)
-- [SERV Chat Completions API](https://docs.openserv.ai/serv-reasoning/api/chat-completions)
+- [SERV Responses API](https://docs.openserv.ai/serv-reasoning/api/responses)
+- [SERV endpoint compatibility](https://docs.openserv.ai/serv-reasoning/api/compatibility)
+- [SERV model catalogue](https://docs.openserv.ai/serv-reasoning/models)
 
-The Chat Completions reference documents `reasoning_effort`, function tools, `tool_choice`, token limits and standard completion metadata. Tabbas will use those documented API features. It will not claim unverified native OpenServ agent products.
+The Responses reference documents the OpenAI Responses endpoint, reasoning controls, function tools, forced `tool_choice`, output-token limits and response metadata. The compatibility table confirms that OpenAI models are supported on `/v1/responses`; Tabbas uses this path for GPT-5.4-mini function calling with reasoning. Chat Completions remains the universal endpoint for other model families. Tabbas does not claim unverified native OpenServ agent products.
 
 ## 6. Validation still required
 
