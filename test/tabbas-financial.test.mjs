@@ -8,14 +8,14 @@ const budgetSchedule = {
   segments: [
     {locator: "Row 2", cells: {"Category": "Materials", "Approved amount NGN": "2000000"}},
     {locator: "Row 3", cells: {"Category": "Construction", "Approved amount NGN": "2000000"}},
-    {locator: "Row 4", cells: {"Category": "Testing", "Amount NGN": "1000000"}}
+    {locator: "Row 4", cells: {"Category": "Testing", "Approved amount NGN": "1000000"}}
   ]
 };
 const expenseSchedule = {
   name: "expense-schedule.csv",
   truncated: false,
   segments: [
-    {locator: "Row 2", cells: {"Date": "2026-06-30", "Category": "Materials", "Description": "Pipes", "Amount NGN": "1400000", "Receipt reference": "REC-001"}},
+    {locator: "Row 2", cells: {"Date": "2026-06-30T00:00:00.000Z", "Category": "Materials", "Description": "Pipes", "Amount NGN": "1400000", "Receipt reference": "REC-001"}},
     {locator: "Row 3", cells: {"Date": "2026-07-14", "Category": "Materials", "Description": "Fittings", "Amount NGN": "100000", "Receipt reference": "REC-001"}},
     {locator: "Row 4", cells: {"Date": "2026-08-02", "Category": "Construction", "Description": "Site works", "Amount NGN": "1200000", "Receipt reference": "REC-002"}},
     {locator: "Row 5", cells: {"Date": "2026-09-03", "Category": "Testing", "Description": "Water quality", "Amount NGN": "1800000", "Receipt reference": ""}}
