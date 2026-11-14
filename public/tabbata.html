@@ -149,20 +149,27 @@
             <label class="field"><span>Funder / donor</span><input name="funder" id="funder" maxlength="120" placeholder="Funder name"></label>
             <label class="field"><span>Reporting period <i>*</i></span><input name="reporting_period" id="reporting-period" required maxlength="80" placeholder="e.g. Q3 2026"></label>
             <label class="field"><span>Currency</span><select id="currency" name="currency"><option value="NGN">NGN · Nigerian naira</option><option value="USD">USD · US dollar</option><option value="GBP">GBP · Pound sterling</option><option value="EUR">EUR · Euro</option></select></label>
-            <label class="field"><span>Approved budget</span><input name="approved_budget" id="approved-budget" inputmode="decimal" placeholder="e.g. 5000000"></label>
-            <label class="field"><span>Reported expenditure</span><input name="reported_spend" id="reported-spend" inputmode="decimal" placeholder="e.g. 4500000"></label>
+            <label class="field"><span>Period start</span><input type="date" name="period_start" id="period-start"></label>
+            <label class="field"><span>Period end</span><input type="date" name="period_end" id="period-end"></label>
+            <label class="field"><span>Approved budget total</span><input name="approved_budget" id="approved-budget" inputmode="decimal" placeholder="e.g. 5000000"></label>
+            <label class="field"><span>Reported expenditure total</span><input name="reported_spend" id="reported-spend" inputmode="decimal" placeholder="e.g. 4500000"></label>
           </div>
           <label class="field block-field"><span>Funder reporting requirements <i>*</i></span><textarea name="requirements" id="requirements" required rows="5" placeholder="One requirement per line. For example:&#10;Report progress against all three approved milestones.&#10;Provide household reach figures and supporting records.&#10;Reconcile expenditure against the approved budget."></textarea><small>Paste the relevant requirements from the grant agreement or reporting template. Use one requirement per line (up to 12).</small></label>
           <label class="field block-field"><span>Narrative report</span><textarea name="report_text" id="report-text" rows="7" placeholder="Paste the narrative report you want to review. Include reported activities, outputs, outcomes, delays and explanations."></textarea><small>Paste up to 15,000 characters, or upload the report file below. If both are supplied, the uploaded report is used.</small></label>
           <div class="upload-block report-upload"><div class="upload-heading"><span>Or upload the narrative report</span><small>One PDF, DOCX, XLSX, CSV, TXT or Markdown file</small></div><label class="dropzone compact-dropzone" for="report-file"><span class="upload-icon">↥</span><b>Choose narrative report file</b><span>Optional · counts toward the 5-file total</span><input type="file" id="report-file" accept=".pdf,.docx,.xlsx,.csv,.txt,.md"></label></div>
+          <div class="upload-block schedule-grid">
+            <div class="upload-heading"><span>Financial schedules</span><small>Optional, but required for line-item reconciliation. CSV or XLSX with clear column headings.</small></div>
+            <label class="dropzone compact-dropzone" for="budget-schedule-file"><span class="upload-icon">↥</span><b>Approved budget schedule</b><span>Category and approved amount columns</span><input type="file" id="budget-schedule-file" accept=".csv,.xlsx"></label>
+            <label class="dropzone compact-dropzone" for="expense-schedule-file"><span class="upload-icon">↥</span><b>Actual expenditure schedule</b><span>Amount, category, date and receipt reference where available</span><input type="file" id="expense-schedule-file" accept=".csv,.xlsx"></label>
+          </div>
           <div class="upload-block">
-            <div class="upload-heading"><span>Supporting documents <i>*</i></span><small>1–5 files total, including report · 2 MiB each · 8 MiB total</small></div>
+            <div class="upload-heading"><span>Additional supporting documents</span><small>PDF, DOCX, XLSX, CSV, TXT or Markdown · 5 files total across all uploads</small></div>
             <label class="dropzone" for="evidence-files">
-              <span class="upload-icon">↥</span><b>Choose supporting files</b><span>PDF, DOCX, XLSX, CSV, TXT or Markdown</span>
+              <span class="upload-icon">↥</span><b>Choose supporting files</b><span>Site records, attendance registers, receipts and other evidence</span>
               <input type="file" id="evidence-files" accept=".pdf,.docx,.xlsx,.csv,.txt,.md" multiple>
             </label>
             <div id="file-list" class="file-list" aria-live="polite"><span class="file-empty">No files added yet.</span></div>
-            <p class="upload-note">Scanned-image PDF OCR is not supported in this MVP. Spreadsheet formulas are not executed; cached formula values are not treated as verified calculations.</p>
+            <p class="upload-note">Scanned-image PDF OCR is not supported. Spreadsheet formulas are not executed or recalculated. For line-item checks, Tabbas reads the stored cell values from CSV/XLSX schedules and shows the source row for each flag.</p>
           </div>
           <div class="safety-callout" id="safety">
             <span class="safety-icon">!</span>
@@ -187,8 +194,9 @@
     <div class="workspace-grid">
       <aside class="workspace-sidebar">
         <div class="workspace-card"><span class="mini-label">CASE STATUS</span><strong id="case-status">Ready to analyze</strong><p id="case-expiry">This workspace expires in 24 hours.</p></div>
-        <div class="workspace-card"><span class="mini-label">SUPPORTING DOCUMENTS</span><div id="case-documents"></div></div>
-        <div class="workspace-card budget-card"><span class="mini-label">RULE-BASED BUDGET CHECK</span><div id="budget-check"><p>Not calculated yet.</p></div></div>
+        <div class="workspace-card"><span class="mini-label">SOURCE DOCUMENTS</span><div id="case-documents"></div></div>
+        <div class="workspace-card budget-card"><span class="mini-label">ENTERED TOTALS CHECK</span><div id="budget-check"><p>Not calculated yet.</p></div></div>
+        <div class="workspace-card financial-card"><span class="mini-label">LINE-ITEM RECONCILIATION</span><div id="financial-check"><p>Not calculated yet.</p></div></div>
       </aside>
       <div class="workspace-main">
         <div class="analysis-cta" id="analysis-cta">
