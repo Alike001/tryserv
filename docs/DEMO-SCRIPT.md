@@ -10,7 +10,7 @@ Created 13 November 2026. **Not a recorded demo yet.** This is a ready-to-read s
 
 **Scene 2 — Guided learning, 0:24–0:55, https://tryserv.onrender.com/learn**
 
-> A newcomer starts with four short, sourced lessons. The exercises are checked by deterministic server logic, not by a language model guessing the answer. Here's an incorrect choice, followed by a helpful hint. When the answer is fixed, the learner earns twenty XP, saved in this browser. Four completed lessons give eighty XP in total. This is learning progress, not a certificate.
+> A newcomer starts with four short, sourced lessons. The exercises are checked by deterministic server logic, not by a language model guessing the answer. Here's an incorrect choice, followed by a helpful hint. When the answer is fixed, the lesson is marked complete and saved in this browser. After four lessons, the learner sees a summary of what they explored and where to practise next. This is learning progress, not a certificate.
 
 **Scene 3 — Debug request, 0:55–1:27, https://tryserv.onrender.com/debug**
 
@@ -38,7 +38,7 @@ Created 13 November 2026. **Not a recorded demo yet.** This is a ready-to-read s
 - Screen-record the actual public URL. Do not expose API keys, operator-only codes, user IP addresses or private Render/Neon dashboards.
 - At Scene 4, the overlay should say **OPTIONAL LIVE SERV INFERENCE**, not 'unlimited free' or 'OpenServ-certified'.
 - At Scene 5, emphasize **NOT EXECUTED HERE** on the blueprint.
-- XP is on-device local progress; avoid 'verified proof', 'certified' or 'onchain'.
+- Lesson completion is saved locally; avoid claims of 'verified proof', 'certified' or 'onchain'.
 - Only mention verified functionality and public source code. Do not invent user totals, customer revenue or trial cost figures.
 - Visuals: use genuine recordings and screenshots with the navy `#132b42`, cobalt `#4269e9`, mint `#38d4ad` product palette, large legible captions and seamless transitions. Subtitles should match the narration, not improvise extra claims.
 - Publish demo as unlisted or public YouTube and link it in the official Typeform. X post should include at least one genuine screenshot or a short video clip.
@@ -46,7 +46,7 @@ Created 13 November 2026. **Not a recorded demo yet.** This is a ready-to-read s
 ## Screen sequence for recording
 
 1. `/` home hero and value proposition.
-2. `/learn` open first lesson → wrong choice/hint → correct choice/20 XP → short scroll through remaining lessons.
+2. `/learn` open first lesson → wrong choice/hint → correct choice/lesson marked complete → short scroll through remaining lessons.
 3. `/debug` select first case → submit original broken blueprint → show precise missing-instructions error.
 4. **Only after checking allowance** click Ask SERV to explain this issue → wait for real model/ID and explanation → capture safely.
 5. Add system instruction → free Validate → show successful request shape.
