@@ -94,10 +94,12 @@ This is a product hypothesis, not a defensible moat yet.
 
 The first proposed name, **Shaida**, is being retired because a Web3 project named Shaida already exists and describes itself as a verifiable memory layer for autonomous agents.
 
-The current working name is **Tabbata**, a Hausa word used for being certain, confirming or affirming. A preliminary web search did not surface an obvious direct software competitor under that exact name. This is not trademark, domain or corporate-name clearance.
+The current working name is **Tabbata**, a Hausa word used for becoming certain, being confirmed or proving true. The exact name also appears in an unrelated French fashion/apparel business, and a French company record references a trademark filing. A preliminary search did not surface a direct donor-report-review software competitor under that exact name, but the name is **not cleared** for trademark, domain, company registration or social handles. Keep it as a hackathon working name pending formal checks.
 
 Sources:
 - [HausaDictionary — tabbata](https://hausadictionary.com/tabbata)
+- [French company filing record for TABBATA](https://www.pappers.fr/entreprise/tabbata-878172873/documents/TABBATA%20-%20Statuts%20mis%20%C3%A0%20jour%2008-07-2021.pdf)
+- [TABBATA apparel brand listing](https://www.faire.com/brand/b_upnv8ksqan)
 - [Existing Web3 project named Shaida](https://www.hackquest.io/zh-tw/projects/Shaida)
 
 ## 5. OpenServ track fit
