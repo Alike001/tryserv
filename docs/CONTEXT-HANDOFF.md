@@ -22,7 +22,7 @@
 
 ## Verification status at handoff
 
-- Node CI: **81 passed, 0 failed** on the latest completed run.
+- Node CI: **85 passed, 0 failed** on the latest completed run (includes PDF and XLSX extraction fixtures, token-protected storage, HTTP workflow, rate limits and exact evidence validation).
 - Browser Playwright workflow: still running at last check; do not claim passed until the run concludes.
 - No live SERV inference credits have been spent by the pivot implementation or CI.
 - Hosted production database readiness and a real live SERV review still need verification.
