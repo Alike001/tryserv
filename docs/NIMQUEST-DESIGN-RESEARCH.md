@@ -17,7 +17,7 @@ Purpose: product research only. No NimQuest source files, artwork, photography, 
 | NimQuest | TrySERV |
 | --- | --- |
 | Nimiq education, wallet signing | OpenServ Agents, Workflows and SERV Reasoning |
-| Wallet-verified completion and leaderboard | On-device 80 XP maximum, no signed credential |
+| Wallet-verified completion and leaderboard | Browser-local lesson completion, no signed credential |
 | Nimiq Pay mini-app | Source-grounded real SERV inference for optional tutoring |
 | Wallet proof after quiz | Learn → Practice → Build → Review without wallet actions |
 | Nimiq developer onboarding | SERV API request construction, validation and repair |
@@ -32,7 +32,7 @@ NimQuest's public repository uses the MIT license. TrySERV uses high-level inter
 - Distinguish editorial discovery on the homepage from functional learning studio screens.
 - Build first-class documentation at /docs: Overview, paths, progress, SERV integration, sample request, troubleshooting, architecture, security/privacy and FAQ.
 - Surface guide links from homepage, lessons, builder and debugging.
-- Show exact boundaries: local XP is not an official credential, validated preview is not a live API call, SERV tutor can err, and free inference is credit capped.
+- Show exact boundaries: local completion progress is not an official credential, validated preview is not a live API call, SERV tutor can err, and free inference is credit capped.
 - Maintain responsive layouts and accessibility.
 
 ## Implemented on feat/docs-and-learning-navigation
