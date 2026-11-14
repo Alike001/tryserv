@@ -47,7 +47,7 @@ Tabbas does not establish whether a project activity happened in the physical wo
 - One explicit, budget-reserved SERV Reasoning analysis per case.
 - Structured findings with status, explanation, evidence quotations and source locations.
 - Exact-quote/source-ID validation in deterministic backend code.
-- Deterministic line-item financial reconciliation for CSV/XLSX schedules: schedule-to-total comparison, category-level budget variances, unbudgeted categories, duplicate references, blank receipt references and reporting-period checks.
+- Deterministic line-item financial reconciliation for CSV/XLSX schedules: schedule-to-total comparison, category-level budget variances, unbudgeted categories, duplicate references, blank or unmatched receipt references (checked against submitted supporting documents) and reporting-period checks.
 - Human review actions; no automatic funder decision.
 - Print-friendly evidence review report (browser Print / Save as PDF).
 - Fictional seeded sample data, visibly labelled illustrative.
