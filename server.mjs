@@ -254,17 +254,30 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
     let input;try{input=await readJson(req,5000);}catch(error){return json(res,400,{error:String(error.message).slice(0,160)});}
     const allowed=new Set(["mark_reviewed","request_clarification","acknowledge_finding","dismiss_finding"]);
     if(!allowed.has(input?.action))return json(res,400,{error:"Choose a supported reviewer action."});
-    const note=typeof input.note==="string"?input.note.trim().slice(0,500):"";
+    if(input.note!==undefined&&typeof input.note!=="string")return json(res,400,{error:"Reviewer notes must be text."});
+    const note=(input.note??"").trim();
+    if(note.length>500)return json(res,400,{error:"Reviewer notes must be 500 characters or fewer."});
     if(input.action==="request_clarification"&&!note)return json(res,400,{error:"Add a short clarification request."});
+    if(input.finding_id!==undefined&&(typeof input.finding_id!=="string"||!input.finding_id.trim()))
+     return json(res,400,{error:"Choose a valid finding."});
+    const findingId=input.finding_id?.trim()??"";
+    if(["acknowledge_finding","dismiss_finding"].includes(input.action)&&!findingId)
+     return json(res,400,{error:"Choose a finding for this action."});
     let record;try{record=await reviewStore.get(caseId,caseToken);}catch{return json(res,503,{error:"Review storage is temporarily unavailable."});}
     if(!record)return json(res,404,{error:"Review workspace not found or expired."});
     if(!record.payload.review)return json(res,409,{error:"Run the report review before recording reviewer actions."});
-    if(record.payload.reviewer_actions.length>=50)return json(res,429,{error:"This review has reached its reviewer-action limit."});
-    const findingId=typeof input.finding_id==="string"?input.finding_id:"";
-    if(findingId&&!(record.payload.review?.findings??[]).some(finding=>finding.id===findingId))return json(res,400,{error:"The selected finding does not exist in this review."});
-    record.payload.reviewer_actions.push({id:"A-"+(record.payload.reviewer_actions.length+1),action:input.action,finding_id:findingId||null,note,created_at:new Date().toISOString()});
-    try{await reviewStore.update(caseId,caseToken,record.payload);return json(res,200,{reviewer_actions:record.payload.reviewer_actions});}
-    catch{return json(res,503,{error:"Could not save the reviewer action."});}
+    if(findingId&&!(record.payload.review?.findings??[]).some(finding=>finding.id===findingId))
+     return json(res,400,{error:"The selected finding does not exist in this review."});
+    const actionRecord={
+     id:"A-"+crypto.randomUUID(),action:input.action,finding_id:findingId||null,
+     note,created_at:new Date().toISOString()
+    };
+    try{
+     const saved=await reviewStore.appendReviewerAction(caseId,caseToken,actionRecord,50);
+     if(saved.status==="limit")return json(res,429,{error:"This review has reached its reviewer-action limit."});
+     if(saved.status!=="appended")return json(res,404,{error:"Review workspace not found or expired."});
+     return json(res,200,{reviewer_actions:saved.reviewer_actions});
+    }catch{return json(res,503,{error:"Could not save the reviewer action."});}
    }
    return json(res,405,{error:"Method not allowed."});
   }
