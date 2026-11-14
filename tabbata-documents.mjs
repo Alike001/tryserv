@@ -120,9 +120,9 @@ async function extractPdf(bytes){
   const {getDocument}=await import("pdfjs-dist/legacy/build/pdf.mjs");
   const task=getDocument({data:new Uint8Array(bytes),disableFontFace:true,useSystemFonts:true,isEvalSupported:false});
   const pdf=await task.promise;
-  if(pdf.numPages>80)throw new Error("A PDF may contain at most 80 pages.");
   const entries=[];
   try{
+    if(pdf.numPages>80)throw new Error("A PDF may contain at most 80 pages.");
     for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
       const page=await pdf.getPage(pageNumber);
       const content=await page.getTextContent();
