@@ -24,7 +24,7 @@
 
 - Node CI: **85 passed, 0 failed** on the latest completed run (includes PDF and XLSX extraction fixtures, token-protected storage, HTTP workflow, rate limits and exact evidence validation).
 - Browser Playwright workflow: **74 passed, 0 failed** on code commit `980f640` (desktop and mobile).
-- No live SERV inference credits have been spent by the pivot implementation or CI.
+- No live SERV inference credits have been spent by the pivot implementation or CI. The connected Neon project `tryserv-public-tutor-budget` contains `tryserv_reserve_guest`, `tryserv_guest_budget` and `tryserv_guest_daily`; the current global counter is **4/24 used (20 remain)**. The new `tabbata_cases` table has not been created yet; the app creates it lazily on first case creation. Render's deployed `DATABASE_URL` binding still needs confirmation through the post-merge readiness check.
 - Latest PR head is documentation-only commit `c215fd3`; tested code commit `980f640` is unchanged. Node CI 85/85 and browser CI 74/74 are green.
 - Render service `tryserv` still tracks `main` with auto-deploy. Latest live deployment is old TrySERV commit `a897876`; the pivot has not been deployed. No new Render service/database was created.
 - OpenServ Edition 02 official deadline: 15 November 2026, 23:59 UTC (16 November 00:59 Africa/Lagos). X post and Typeform submission are required.
