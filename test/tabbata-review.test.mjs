@@ -118,7 +118,7 @@ test("SERV review uses one forced structured function call and returns provenanc
    }]}}]
   })};
  };
- const reviewCase={...casePayload,financial_reconciliation:{
+ const reviewCase={...casePayload,budget_check:{status:"within_budget",currency:"NGN",approved_minor:500000000,reported_minor:450000000,variance_minor:-50000000},financial_reconciliation:{
   status:"attention_required",summary:"Testing category exceeds the approved amount.",
   checks:[{type:"category_over_budget",category:"Testing",approved_minor:100000000,actual_minor:180000000,variance_minor:80000000}]
  }};
@@ -134,6 +134,8 @@ test("SERV review uses one forced structured function call and returns provenanc
  assert.ok(!JSON.stringify(result).includes("test-secret-openserv-api-key"));
  assert.match(request.body.messages[0].content,/untrusted data/);
  assert.match(request.body.messages[1].content,/financial_reconciliation/);
+ assert.match(request.body.messages[1].content,/budget_check/);
+ assert.match(request.body.messages[1].content,/within_budget/);
  assert.match(request.body.messages[1].content,/category_over_budget/);
 });
 test("uploaded prompt-injection text is passed as untrusted evidence, not system instructions",async()=>{
