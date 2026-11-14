@@ -1,0 +1,182 @@
+import path from "node:path";
+
+export const TABBATA_UPLOAD_LIMITS=Object.freeze({
+  files:5, perFileBytes:2*1024*1024, totalBytes:8*1024*1024,
+  charsPerDocument:12000, charsPerCase:40000, segmentsPerDocument:80
+});
+
+const EXTENSIONS=new Set([".pdf",".docx",".xlsx",".csv",".txt",".md"]);
+const BASE64=/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+
+function safeName(value){
+  if(typeof value!=="string")throw new Error("Every uploaded file needs a filename.");
+  const name=path.basename(value).replace(/[\u0000-\u001f\u007f]/g,"").trim().slice(0,120);
+  if(!name||name==="."||name==="..")throw new Error("A filename is invalid.");
+  return name;
+}
+function decodeFile(value){
+  if(typeof value!=="string"||value.length<4||value.length>Math.ceil(TABBATA_UPLOAD_LIMITS.perFileBytes*4/3)+8||!BASE64.test(value))
+    throw new Error("A file has invalid or oversized base64 data.");
+  const bytes=Buffer.from(value,"base64");
+  if(!bytes.length||bytes.toString("base64")!==value)throw new Error("A file has invalid base64 encoding.");
+  if(bytes.length>TABBATA_UPLOAD_LIMITS.perFileBytes)throw new Error("Each file must be 2 MiB or smaller.");
+  return bytes;
+}
+function decodeText(bytes){
+  try{return new TextDecoder("utf-8",{fatal:true}).decode(bytes);}
+  catch{throw new Error("A text document is not valid UTF-8. Save it as UTF-8 and upload again.");}
+}
+function cleanText(value){
+  return String(value??"").replace(/\u0000/g,"").replace(/\r\n?/g,"\n").trim();
+}
+function splitSegments(documentId,entries){
+  const segments=[];let used=0;let truncated=false;
+  for(const entry of entries){
+    const text=cleanText(entry.text);
+    if(!text)continue;
+    const remaining=TABBATA_UPLOAD_LIMITS.charsPerDocument-used;
+    if(remaining<=0){truncated=true;break;}
+    const bounded=text.slice(0,remaining);
+    if(bounded.length<text.length)truncated=true;
+    for(let offset=0;offset<bounded.length;offset+=1500){
+      if(segments.length>=TABBATA_UPLOAD_LIMITS.segmentsPerDocument){truncated=true;break;}
+      const part=bounded.slice(offset,offset+1500);
+      const suffix=bounded.length>1500?" · part "+(Math.floor(offset/1500)+1):"";
+      segments.push({id:documentId+"-s"+(segments.length+1),locator:String(entry.locator).slice(0,100)+suffix,text:part});
+      used+=part.length;
+    }
+    if(truncated||segments.length>=TABBATA_UPLOAD_LIMITS.segmentsPerDocument)break;
+  }
+  return {segments,chars:used,truncated};
+}
+function parseCsv(text){
+  const rows=[];let row=[];let field="";let quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}
+      else if(ch==='"')quoted=false;
+      else field+=ch;
+    }else if(ch==='"'&&field.length===0)quoted=true;
+    else if(ch===","){row.push(field);field="";}
+    else if(ch==="\n"){row.push(field);rows.push(row);row=[];field="";}
+    else if(ch==="\r"){if(text[i+1]==="\n")i++;row.push(field);rows.push(row);row=[];field="";}
+    else field+=ch;
+    if(rows.length>2001)throw new Error("A CSV file may contain at most 2,000 data rows.");
+  }
+  if(quoted)throw new Error("A CSV file contains an unclosed quoted field.");
+  if(field.length||row.length){row.push(field);rows.push(row);}
+  return rows.filter(cells=>cells.some(cell=>String(cell).trim()));
+}
+function cellText(value){
+  if(value===null||value===undefined)return "";
+  if(value instanceof Date)return value.toISOString();
+  if(typeof value==="string"||typeof value==="number"||typeof value==="boolean")return String(value);
+  if(typeof value==="object"){
+    if(Array.isArray(value.richText))return value.richText.map(x=>x.text??"").join("");
+    if(typeof value.text==="string")return value.text;
+    if(Object.hasOwn(value,"formula")||Object.hasOwn(value,"sharedFormula"))return "[formula cell not evaluated]";
+    if(Object.hasOwn(value,"error"))return "[spreadsheet error cell]";
+    return "";
+  }
+  return "";
+}
+async function extractPdf(bytes){
+  const {getDocument}=await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const task=getDocument({data:new Uint8Array(bytes),disableFontFace:true,useSystemFonts:true,isEvalSupported:false});
+  const pdf=await task.promise;
+  if(pdf.numPages>80)throw new Error("A PDF may contain at most 80 pages.");
+  const entries=[];
+  try{
+    for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
+      const page=await pdf.getPage(pageNumber);
+      const content=await page.getTextContent();
+      const text=content.items.map(item=>typeof item.str==="string"?item.str:"").filter(Boolean).join(" ");
+      if(text.trim())entries.push({locator:"Page "+pageNumber,text});
+    }
+  }finally{await pdf.destroy();}
+  if(!entries.length)throw new Error("This PDF has no selectable text. Scanned-image OCR is not supported yet.");
+  return entries;
+}
+async function extractDocx(bytes){
+  const module=await import("mammoth");
+  const mammoth=module.default??module;
+  const result=await mammoth.extractRawText({buffer:bytes});
+  const entries=result.value.split(/\n\s*\n/).map((text,index)=>({locator:"Paragraph "+(index+1),text}));
+  if(!entries.some(x=>x.text.trim()))throw new Error("No readable text was found in this DOCX.");
+  return entries;
+}
+async function extractXlsx(bytes){
+  const module=await import("exceljs");
+  const ExcelJS=module.default??module;
+  const workbook=new ExcelJS.Workbook();
+  await workbook.xlsx.load(bytes);
+  if(workbook.worksheets.length>10)throw new Error("An XLSX file may contain at most 10 worksheets.");
+  const entries=[];
+  for(const sheet of workbook.worksheets){
+    const headerRow=sheet.getRow(1);
+    const headers=headerRow.values.slice(1).map((value,index)=>cellText(value).trim()||"Column "+(index+1));
+    let rows=0;
+    sheet.eachRow({includeEmpty:false},(row,rowNumber)=>{
+      if(rowNumber===1)return;
+      if(++rows>1000)throw new Error("Each worksheet may contain at most 1,000 data rows.");
+      const cells=row.values.slice(1);
+      const parts=cells.map((value,index)=>{
+        const label=headers[index]??("Column "+(index+1));
+        const text=cellText(value).trim();
+        return text?label+": "+text:"";
+      }).filter(Boolean);
+      if(parts.length)entries.push({locator:"Sheet "+sheet.name+" · Row "+rowNumber,text:parts.join(" | ")});
+    });
+  }
+  if(!entries.length)throw new Error("No non-empty data rows were found in this XLSX.");
+  return entries;
+}
+async function extractCsv(bytes){
+  const rows=parseCsv(decodeText(bytes));
+  if(rows.length<2)throw new Error("A CSV needs a header row and at least one data row.");
+  const headers=rows[0].map((value,index)=>String(value).trim()||"Column "+(index+1));
+  return rows.slice(1).map((cells,index)=>({
+    locator:"Row "+(index+2),
+    text:cells.map((value,column)=>value.trim()?headers[column]+": "+value.trim():"").filter(Boolean).join(" | ")
+  })).filter(row=>row.text);
+}
+
+export async function extractTABBATADocuments(files){
+  if(!Array.isArray(files)||files.length<1||files.length>TABBATA_UPLOAD_LIMITS.files)
+    throw new Error("Upload between 1 and 5 supporting documents.");
+  let totalBytes=0,totalChars=0;
+  const documents=[];
+  for(let index=0;index<files.length;index++){
+    const file=files[index];
+    const name=safeName(file?.name);
+    const extension=path.extname(name).toLowerCase();
+    if(!EXTENSIONS.has(extension))throw new Error("Unsupported file type: "+extension+". Use PDF, DOCX, XLSX, CSV, TXT or Markdown.");
+    const bytes=decodeFile(file?.data_base64);
+    totalBytes+=bytes.length;
+    if(totalBytes>TABBATA_UPLOAD_LIMITS.totalBytes)throw new Error("All supporting documents combined must be 8 MiB or smaller.");
+    if(extension===".pdf"&&!bytes.subarray(0,5).equals(Buffer.from("%PDF-")))throw new Error(name+" does not appear to be a PDF.");
+    if((extension===".docx"||extension===".xlsx")&&!(bytes[0]===0x50&&bytes[1]===0x4b))throw new Error(name+" does not appear to be a valid Office Open XML file.");
+    let entries;
+    if(extension===".pdf")entries=await extractPdf(bytes);
+    else if(extension===".docx")entries=await extractDocx(bytes);
+    else if(extension===".xlsx")entries=await extractXlsx(bytes);
+    else if(extension===".csv")entries=await extractCsv(bytes);
+    else{
+      const text=decodeText(bytes);
+      entries=text.split(/\n/).map((line,lineIndex)=>({locator:"Line "+(lineIndex+1),text:line}));
+    }
+    const id="doc-"+(index+1);
+    const parsed=splitSegments(id,entries);
+    if(!parsed.segments.length)throw new Error(name+" contains no extractable text.");
+    totalChars+=parsed.chars;
+    if(totalChars>TABBATA_UPLOAD_LIMITS.charsPerCase)throw new Error("Extracted text across all files exceeds the 40,000-character review limit.");
+    documents.push({
+      id,name,kind:extension.slice(1),size_bytes:bytes.length,
+      segments:parsed.segments,extracted_chars:parsed.chars,truncated:parsed.truncated
+    });
+  }
+  return documents;
+}
+
+export {parseCsv};
