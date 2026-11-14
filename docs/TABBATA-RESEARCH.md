@@ -109,12 +109,10 @@ This is a product hypothesis, not a defensible moat yet.
 
 The first proposed name, **Shaida**, is being retired because a Web3 project named Shaida already exists and describes itself as a verifiable memory layer for autonomous agents.
 
-The current working name is **Tabbas**. The name has not yet received formal trademark, company-name, domain or social-handle clearance; complete those checks before a wider commercial launch.
+The current working name is **Tabbas**, a Hausa word associated with certainty, assurance and being sure. The name has not yet received formal trademark, company-name, domain or social-handle clearance; complete those checks before a wider commercial launch.
 
 Sources:
 - [HausaDictionary — tabbas](https://hausadictionary.com/tabbas)
-- [French company filing record for TABBATA](https://www.pappers.fr/entreprise/tabbata-878172873/documents/TABBATA%20-%20Statuts%20mis%20%C3%A0%20jour%2008-07-2021.pdf)
-- [TABBATA apparel brand listing](https://www.faire.com/brand/b_upnv8ksqan)
 - [Existing Web3 project named Shaida](https://www.hackquest.io/zh-tw/projects/Shaida)
 
 ## 5. OpenServ track fit
