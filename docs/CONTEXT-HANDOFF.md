@@ -1,56 +1,57 @@
-# Tabbata pivot — Current handoff (14 November 2026)
+# Tabbas — Current product handoff (14 November 2026)
 
-**Current direction:** The public product is pivoting from TrySERV's OpenServ learning companion into **Tabbata**, a focused pre-submission donor report pack reviewer. The user explicitly selected **Shaida**. The current draft branch was instead branded **Tabbata** after the previous assistant found an existing Shaida Web3/AI project; this substitution was not explicitly approved by the user. Do not treat Tabbata as the final brand until the user confirms the choice. Shaida has a same-name autonomous-agent/0G project in the Web3 ecosystem, so the collision is real and should be discussed rather than silently overridden.
+**Current product decision:** Build **Tabbas**, an independent, file-first pre-submission donor-report quality checker for NGOs and implementing organisations. This is a real product build, not a demo-only exercise. The fictional sample pack is optional onboarding material only; real users must be able to submit their own authorised, redacted report packs and get reliable, traceable checks. The user has selected the name **Tabbas** for the current direction. Earlier Tabbata and Shaida references are superseded for public branding. Formal trademark, domain and handle clearance remains outstanding.
+
+**Problem:** Donor report packs combine narrative claims, funder requirements, approved budgets, expenditure schedules and supporting evidence. These files can disagree or leave requirements unsupported. Tabbas checks one prepared pack before submission; it does not replace an NGO MIS, accounting system or auditor.
 
 **Repository:** `Alike001/tryserv`  
 **Branch:** `feat/tabbata-donor-report-review`  
 **Draft PR:** [#22](https://github.com/Alike001/tryserv/pull/22)  
-**Existing Render service:** `https://tryserv.onrender.com/`  
-**Open Track:** OpenServ Edition 02.
+**Existing Render service:** `https://tryserv.onrender.com/` (still deploys `main`; not yet updated to Tabbas)  
+**Track:** OpenServ Edition 02 — Open Track.
 
-## Current pivot implementation
+## Current product implementation
 
-- New root page `public/tabbata.html`, styling `public/tabbata.css`, browser workflow `public/tabbata.js`.
-- New backend modules: `tabbata-documents.mjs`, `tabbata-review.mjs`, `tabbata-store.mjs`.
-- New short-lived Neon table `tabbata_cases` using the existing `DATABASE_URL`; no new DB or Render service.
-- File extraction for PDF, DOCX, XLSX, CSV, TXT and Markdown with file, archive, text and segment limits.
-- One explicit SERV Chat Completions request per case, forced `submit_report_review` function output, `reasoning_effort: "medium"`.
-- Exact source ID/quote validation and deterministic budget arithmetic.
-- Random per-case token, hash-only token storage, 24-hour expiry, explicit deletion, reviewer actions.
-- Fictional community water project sample. No real NGO data or beneficiary information.
-- Old TrySERV product preserved temporarily at `/legacy`, `/learn`, `/try`, `/debug`, `/docs` during transition.
+- Public product workspace is at `/`; legacy TrySERV learning routes are temporarily preserved at `/legacy`, `/learn`, `/try`, `/debug` and `/docs`.
+- Bounded extraction for PDF, DOCX, XLSX, CSV, TXT and Markdown, retaining page/sheet/row/line source locators.
+- Private case workspaces use the existing Neon `DATABASE_URL`, random one-time case tokens (hashes stored), 24-hour expiry and explicit deletion. Original file binaries are not persisted.
+- SERV is invoked only after an explicit Analyze action, with one reservation from the existing durable guest allowance and a forced `submit_report_review` structured response.
+- Backend verifies document IDs and exact quotations against extracted supporting-source text. Invalid or unsupported citations are downgraded.
+- Human reviewer actions and print/save-PDF output are implemented. Tabbas never makes funding or audit decisions.
+- Optional approved-budget and actual-expenditure CSV/XLSX schedules are now supported. Structured cell values are retained separately from source text for deterministic calculations.
+- New `tabbas-financial.mjs` computes schedule totals, compares them with entered totals, reconciles spend by budget category, flags category overspend/unbudgeted categories, duplicate references, blank receipt references and transactions outside an explicitly entered reporting period. Invalid rows, unsupported headers and truncated schedules fail visibly as incomplete; totals are never silently treated as reconciled.
+- SERV receives the deterministic reconciliation result as context and is instructed not to recalculate or override it. The code remains authoritative for arithmetic.
+- The workspace UI has dedicated schedule uploads and a line-item reconciliation panel. The optional fictional sample pack now demonstrates category overspend and receipt-reference issues; it is explicitly illustrative and not a real customer case.
 
-## Verification status at handoff
+## Verification status
 
-- Node CI: **85 passed, 0 failed** on the latest completed run (includes PDF and XLSX extraction fixtures, token-protected storage, HTTP workflow, rate limits and exact evidence validation).
-- Browser Playwright workflow: **74 passed, 0 failed** on code commit `980f640` (desktop and mobile).
-- No live SERV inference credits have been spent by the pivot implementation or CI. The connected Neon project `tryserv-public-tutor-budget` contains `tryserv_reserve_guest`, `tryserv_guest_budget` and `tryserv_guest_daily`; the current global counter is **4/24 used (20 remain)**. The new `tabbata_cases` table has not been created yet; the app creates it lazily on first case creation. Render's deployed `DATABASE_URL` binding still needs confirmation through the post-merge readiness check.
-- Latest PR head is documentation-only commit `c215fd3`; tested code commit `980f640` is unchanged. Node CI 85/85 and browser CI 74/74 are green.
-- Render service `tryserv` still tracks `main` with auto-deploy. Latest live deployment is old TrySERV commit `a897876`; the pivot has not been deployed. No new Render service/database was created.
-- OpenServ Edition 02 official deadline: 15 November 2026, 23:59 UTC (16 November 00:59 Africa/Lagos). X post and Typeform submission are required.
-- Hosted production database readiness and a real live SERV review still need verification.
-- No NGO programme officer or finance reviewer has tested the product yet.
-- No revenue, adoption, physical verification or audit certification claims.
+- Latest Node CI for commit `40ba9bb8d4c7cb23e2bb84e4d835942e89773104`: **passed**. This includes the new financial parser, reporting-period validation, schedule integration, existing extraction, security and case-workflow tests.
+- Browser Playwright workflow for that commit was still running at the time of this handoff; recheck its final result before marking the UI verified.
+- No live SERV inference credits have been spent by these financial changes or CI.
+- PR #22 remains **open and draft**. Do not merge it or claim production acceptance until all tests, product branding, security and release checks pass.
+- Render `tryserv` still tracks `main`; the public URL is still the previous TrySERV deployment. No new Render service or database has been created.
+- No NGO programme/M&E officer or finance reviewer has tested Tabbas yet. No customer adoption, revenue or product-market fit is claimed.
 
-## Safety and inference
+## Safety and product boundaries
 
-- The user must click Analyze to trigger SERV.
-- One call reserves one unit from the existing durable guest allowance. Do not reset, raise or bypass it.
-- No automatic retries after a reserved provider failure.
-- Uploaded binaries are not persisted; extracted text and review output are stored for up to 24 hours.
-- Never upload beneficiary names, phone numbers, addresses, bank details, IDs, health data or other sensitive personal information.
-- Tabbata is not an auditor, fraud detector, funder or physical verification service.
+- Only the explicit Analyze action may trigger SERV; no automatic retries after a reserved provider failure.
+- Never reset, raise or bypass the existing shared inference allowance.
+- Uploaded binaries are not persisted; extracted text and review output expire after up to 24 hours.
+- Do not upload beneficiary names, phone numbers, addresses, bank details, IDs, health data or other sensitive personal information; redact first.
+- Financial checks are arithmetic and document-structure checks. A duplicate reference, missing receipt reference, category variance or out-of-period row is a review flag—not proof of fraud, misconduct, ineligibility or improper spending.
+- Tabbas is not an auditor, accountant, funder, fraud detector or physical-verification service. A human reviewer remains responsible for decisions.
 
 ## Next actions
 
-1. Confirm the final product brand with the user; the current draft says Tabbata, but the user originally selected Shaida.
-2. Decide whether to add deterministic expense-schedule total reconciliation; the current budget check only compares user-entered totals.
-3. Review the current draft PR and keep it draft until brand, browser CI, security and production readiness are accepted.
-4. After explicit approval, merge and let the existing Render `main` service auto-deploy; do not create a second service or database.
-5. Run the no-inference production smoke workflow to verify the deployed root, storage readiness, SERV readiness and synthetic case create/read/delete.
-6. Only after the user explicitly authorises a live analysis, spend one existing guest allowance unit on a fictional report pack; capture actual completion metadata and verify source quotes.
-7. Ask one NGO programme/M&E officer and one finance/report reviewer to test the workflow; do not claim this until it happens.
-8. Record the final demo from the actual hosted result, post the required X submission, submit the official Typeform, and retain confirmation.
+1. Finish public brand alignment to **Tabbas** across the page, README, submission notes, product specification, smoke workflow and PR metadata. Internal filenames/API identifiers may remain historical temporarily, but user-facing copy must be consistent.
+2. Verify the in-progress browser workflow. Fix any failures and add regression coverage for uploaded financial schedules, mobile layout and the reconciliation panel.
+3. Review the financial schedule parser against real-world CSV/XLSX variations, especially headers, number formats, date formats, totals rows, duplicate columns and truncated files. Keep unsupported formats explicit rather than guessing.
+4. Add the stronger SERV Prompt Guard / Shadow Agent integration only after checking the current official API contract and benchmarking it against the existing one-call implementation. Do not claim native features that have not been verified and tested.
+5. Keep PR #22 draft until all tests and release gates pass. After explicit approval, merge and let the existing Render service auto-deploy; do not create a second service or database.
+6. Run the no-inference production smoke workflow, verify storage/SERV readiness, and then perform a live SERV review only after the user explicitly authorises spending one existing allowance unit on fictional or otherwise authorised redacted data.
+7. Conduct real acceptance sessions with at least one NGO programme/M&E officer and one finance/report reviewer. Record findings and revise the product; do not claim this has happened before it does.
+8. Prepare the submission from the actual working product: truthful screenshots/video, public repository, clear SERV integration explanation, commercial hypothesis and required X/Typeform submission.
+
 
 ---
 
