@@ -84,6 +84,16 @@ test("invalid amounts and truncated files make the result incomplete", () => {
   assert.ok(result.issues.some(issue => issue.type === "truncated_document"));
 });
 
+test("accepts correctly grouped currency values and converts to minor units",()=>{
+ const schedule={
+  name:"expenses.csv",truncated:false,
+  segments:[{locator:"Row 2",cells:{"Amount":"NGN 1,250.00"}}]
+ };
+ const result=reconcileFinancialSchedules({expenseSchedule:schedule,reportedSpendMinor:125000,currency:"NGN"});
+ assert.equal(result.status,"partial");
+ assert.equal(result.schedule_totals.expense_minor,125000);
+ assert.equal(result.checks.find(item=>item.type==="expense_schedule_total").status,"matched");
+});
 test("currency markers must agree with the case currency", () => {
   const foreignCurrency = {
     name: "expenses.csv",
