@@ -10,7 +10,7 @@ Persona A: curious beginner, no account or API key; free lessons and progress. P
 
 ## Visual research: NimQuest (https://nimquest.midelabs.xyz and user-provided screenshot walkthrough)
 
-NimQuest uses a strong, generously spaced first impression, a simple Learn → Answer → Prove progression, distinct vivid cards, persistent quest progress and a dedicated docs surface. Its verified wallet receipt is specific to Nimiq and should **not** be copied or misrepresented as TrySERV's XP.
+NimQuest uses a strong, generously spaced first impression, a simple Learn → Answer → Prove progression, distinct vivid cards, persistent quest progress and a dedicated docs surface. Its verified wallet receipt is specific to Nimiq and should **not** be copied or misrepresented as a TrySERV credential.
 
 **Reusable high-level design principles:**
 - One strong primary action and clear alternative for developers.
@@ -53,7 +53,7 @@ TrySERV should not mimic NimQuest's photography, colors, logos, wallet confirmat
 2. **Stronger SERV evaluation evidence:** a redacted genuine production completion; model/ID/latency; prompt safety tests; no new tokens used until budget check and explicit permission.
 3. **Consistent cross-page polish:** request-builder and debug editor copy/spacing, large readable labels, coherent completion summary and docs navigation; test keyboard/mobile.
 4. **Honest free-trial economics:** continue durable guest 2/day and 24 overall limit, review token spend and drop-off before any increase. Document what happens when the quota runs out.
-5. **Demo and submission:** one free lesson task, one deterministic request repair, one real opt-in SERV explanation if available, honest local XP, public source, X post.
+5. **Demo and submission:** one free lesson task, one deterministic request repair, one real opt-in SERV explanation if available, honest browser-local lesson completion, public source, X post.
 
 ## Non-goals before deadline
 
