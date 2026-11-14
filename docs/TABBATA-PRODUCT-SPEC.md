@@ -7,7 +7,7 @@
 **Repository:** `Alike001/tryserv` (existing repository retained during the pivot)  
 **Deployment:** Existing TrySERV Render service; no new service or database provisioned for the MVP.
 
-> Name note: Tabbata is a provisional brand selected after discovering an existing Web3 agent project named Shaida. Preliminary search did not surface an obvious directly competing Tabbata software product. This is not trademark, company-name or domain clearance.
+> Name note: Tabbata is a provisional brand selected after discovering an existing Web3 agent project named Shaida. A French fashion/apparel business also uses TABBATA and a company record references a trademark filing. No direct donor-report-review software competitor surfaced in the preliminary search, but this is not trademark, company-name, domain or social-handle clearance.
 
 ## 1. Product thesis
 
