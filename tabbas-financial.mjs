@@ -57,9 +57,10 @@ function parseAmountMinor(value, currency) {
 function parseIsoDate(value) {
   if (value instanceof Date && Number.isFinite(value.getTime())) return value.toISOString().slice(0, 10);
   const text = String(value ?? "").trim();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) return null;
-  const date = new Date(text + "T00:00:00.000Z");
-  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === text ? text : null;
+  const match = text.match(/^(\d{4}-\d{2}-\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?Z)?$/);
+  if (!match) return null;
+  const date = new Date(match[1] + "T00:00:00.000Z");
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === match[1] ? match[1] : null;
 }
 
 function normaliseCategory(value) {
@@ -250,6 +251,12 @@ export function reconcileFinancialSchedules({
     }
   }
   checks.push(...outsidePeriod.map(item => ({ type: "outside_reporting_period", ...item })));
+  for (const item of unparsedDates) {
+    issues.push({ type: "unparsed_date", document: expenseSchedule?.name, locator: item.locator, message: "Could not interpret transaction date: " + item.value });
+  }
+  if (periodStart && periodEnd && expenseSchedule && !expenses.has_date) {
+    issues.push({ type: "missing_date_column", document: expenseSchedule.name, message: "No recognised transaction-date column was found, so reporting-period checks could not be completed." });
+  }
 
   const issues = [...budget.issues, ...expenses.issues];
   const attention = checks.some(check => ["variance", "category_over_budget", "unbudgeted_category", "duplicate_reference", "missing_receipt_reference", "outside_reporting_period"].includes(check.type) || check.status === "variance");
