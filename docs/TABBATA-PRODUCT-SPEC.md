@@ -28,7 +28,7 @@ Tabbata does not establish whether a project activity happened in the physical w
 ## 3. The one workflow
 
 1. Create a review case with project name, funder, reporting period, approved budget, reported expenditure and reporting requirements.
-2. Paste the narrative report and upload supporting documents.
+2. Paste or upload the narrative report, then upload supporting documents.
 3. Tabbata extracts text and spreadsheet rows, retaining document/page/sheet/row references.
 4. Deterministic checks compare the supplied financial totals and validate the review inputs.
 5. The user explicitly chooses **Analyze with SERV**. One bounded SERV Reasoning request evaluates requirement coverage, claim/evidence relationships and cross-document contradictions.
@@ -40,7 +40,7 @@ Tabbata does not establish whether a project activity happened in the physical w
 ### P0 — must work
 
 - Project/report metadata and funder-specific requirements.
-- Narrative report input.
+- Narrative report input, pasted or uploaded with source locators.
 - Upload and text extraction for PDF, DOCX, XLSX, CSV, TXT and Markdown, within strict file/size limits.
 - Source segments with stable IDs and page/sheet/row/paragraph locators.
 - One explicit, budget-reserved SERV Reasoning analysis per case.
