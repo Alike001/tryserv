@@ -9,9 +9,9 @@ import {executeLearnerRequest} from "./try-live.mjs";
 import {guestTrialConfigured,reserveGuestTrial,guestFailure,getGuestTrialStatus,guestActorHash} from "./guest-budget.mjs";
 import {debugCases,validateDebugBlueprint} from "./debug-lab.mjs";
 import {extractTABBATADocuments,TABBATA_UPLOAD_LIMITS} from "./tabbata-documents.mjs";
-import {validateTabbasCaseInput,makeReviewSourceSegments,reviewWithServ} from "./tabbata-review.mjs";
+import {validateTabbataCaseInput,makeReviewSourceSegments,reviewWithServ} from "./tabbata-review.mjs";
 import {reconcileFinancialSchedules} from "./tabbas-financial.mjs";
-import {createTabbasStore} from "./tabbata-store.mjs";
+import {createTabbataStore} from "./tabbata-store.mjs";
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 const files={"/":["tabbata.html","text/html; charset=utf-8"],"/legacy":["landing.html","text/html; charset=utf-8"],"/tabbata.css":["tabbata.css","text/css; charset=utf-8"],"/tabbata.js":["tabbata.js","text/javascript; charset=utf-8"],"/learn":["index.html","text/html; charset=utf-8"],"/try":["index.html","text/html; charset=utf-8"],"/landing.css":["landing.css","text/css; charset=utf-8"],"/styles.css":["styles.css","text/css; charset=utf-8"],"/app.js":["app.js","text/javascript; charset=utf-8"],"/serv-map.js":["serv-map.js","text/javascript; charset=utf-8"],"/serv-hero-illustration.svg":["serv-hero-illustration.svg","image/svg+xml"],"/progress.mjs":["progress.mjs","text/javascript; charset=utf-8"],"/debug":["debug.html","text/html; charset=utf-8"],"/debug.js":["debug.js","text/javascript; charset=utf-8"],"/debug.css":["debug.css","text/css; charset=utf-8"],"/brand.css":["brand.css","text/css; charset=utf-8"],"/docs":["docs.html","text/html; charset=utf-8"],"/docs.css":["docs.css","text/css; charset=utf-8"],"/docs.js":["docs.js","text/javascript; charset=utf-8"]};
 function json(res,status,payload){res.writeHead(status,{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"});res.end(JSON.stringify(payload));}
@@ -32,7 +32,7 @@ async function readJson(req,maxBytes=2400){
 export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveGuestTrial,guestStatus=getGuestTrialStatus,tabbataStore,documentExtractor=extractTABBATADocuments,reviewWithServFn=reviewWithServ}={}){
  const enabled=Boolean(env.SERV_API_KEY&&env.LEARN_ACCESS_TOKEN);
  const publicTutorEnabled=enabled&&guestTrialConfigured(env);
- const reviewStore=tabbataStore??createTabbasStore({databaseUrl:env.DATABASE_URL});
+ const reviewStore=tabbataStore??createTabbataStore({databaseUrl:env.DATABASE_URL});
  const reviewInFlight=new Set();
  const caseCreateWindows=new Map();
  function allowCaseCreate(req){
@@ -160,7 +160,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
     const supportingFiles=Array.isArray(input.files)?input.files:[];
     if(supportingFiles.length<1&&!budgetScheduleFile&&!expenseScheduleFile)
      throw new Error("Upload at least one supporting document or a financial schedule.");
-    if(!reportFile)normalized=validateTabbasCaseInput(input);
+    if(!reportFile)normalized=validateTabbataCaseInput(input);
     const uploadFiles=[];
     if(reportFile)uploadFiles.push(reportFile);
     if(budgetScheduleFile)uploadFiles.push(budgetScheduleFile);
@@ -174,7 +174,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
     if(reportFile){
      if(!reportDocument)throw new Error("The narrative report could not be extracted.");
      const reportText=reportDocument.segments.map(segment=>segment.text).join("\n\n");
-     normalized=validateTabbasCaseInput({...input,report_text:reportText});
+     normalized=validateTabbataCaseInput({...input,report_text:reportText});
     }
     if((budgetScheduleFile&&!budgetSchedule)||(expenseScheduleFile&&!expenseSchedule))
      throw new Error("A selected financial schedule could not be extracted.");
