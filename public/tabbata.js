@@ -124,6 +124,8 @@ function renderActions(actions=[]){
 function renderReview(review,provider){
  $("review-results").hidden=false;
  $("review-summary").textContent=review.summary;
+ const stateLabels={ready_for_human_review:"Ready for human review",needs_clarification:"Needs clarification",insufficient_evidence:"Insufficient evidence"};
+ const state=$("review-state");state.textContent=stateLabels[review.review_state]??"Human review required";state.className="review-state "+(review.review_state==="ready_for_human_review"?"state-ready":review.review_state==="needs_clarification"?"state-clarify":"state-insufficient");
  const meta=$("review-provider");meta.textContent="SERV model: "+(provider?.model??"unknown")+" · "+(provider?.latency_ms??"—")+" ms · completion "+(provider?.completion_id??"not returned")+" · usage "+(provider?.usage?.input_tokens??"—")+"/"+(provider?.usage?.output_tokens??"—")+" tokens";
  const findings=$("review-findings");findings.replaceChildren();
  $("finding-count").textContent=review.findings.length+" findings";
