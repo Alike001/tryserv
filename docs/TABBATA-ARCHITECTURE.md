@@ -47,7 +47,7 @@ Use bounded JSON request bodies, strict route/method matching, no arbitrary URLs
 
 ## SERV review contract
 
-Use one OpenServ Responses API call per review with a forced function tool named `submit_report_review` and `reasoning.effort: "medium"` and an 8,000-token output cap. Inputs include project requirements, the report narrative and source segments. The model must return:
+Use one OpenServ Responses API call per review with a forced function tool named `submit_report_review` with `reasoning.effort: "medium"` and an 8,000-token output cap. Inputs include project requirements, the report narrative and source segments. The model must return:
 
 - A concise review summary.
 - Findings with `requirement_id`, `claim`, `status`, `severity`, `explanation`, `evidence_refs`, `missing_items` and `suggested_question`.
