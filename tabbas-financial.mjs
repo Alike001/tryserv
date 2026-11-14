@@ -293,7 +293,7 @@ export function reconcileFinancialSchedules({
   if (periodStart && periodEnd && expenses.has_date) {
     for (const row of expenses.rows) {
       if (!row.date) {
-        if (row.raw_date) unparsedDates.push({ locator: row.locator, value: row.raw_date });
+        unparsedDates.push({ locator: row.locator, value: row.raw_date || "(blank)" });
       } else if (row.date < periodStart || row.date > periodEnd) {
         outsidePeriod.push({ locator: row.locator, date: row.date, amount_minor: row.amount_minor });
       }
@@ -302,7 +302,7 @@ export function reconcileFinancialSchedules({
   checks.push(...outsidePeriod.map(item => ({ type: "outside_reporting_period", ...item })));
   const issues = [...budget.issues, ...expenses.issues];
   for (const item of unparsedDates) {
-    issues.push({ type: "unparsed_date", document: expenseSchedule?.name, locator: item.locator, message: "Could not interpret transaction date: " + item.value });
+    issues.push({ type: "unparsed_date", document: expenseSchedule?.name, locator: item.locator, message: "Transaction date is blank or could not be interpreted: " + item.value });
   }
   if (periodStart && periodEnd && expenseSchedule && !expenses.has_date) {
     issues.push({ type: "missing_date_column", document: expenseSchedule.name, message: "No recognised transaction-date column was found, so reporting-period checks could not be completed." });
