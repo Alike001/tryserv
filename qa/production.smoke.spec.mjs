@@ -6,9 +6,9 @@ const base="https://tryserv.onrender.com";
 const reportDir=path.resolve("production-evidence");
 fs.mkdirSync(reportDir,{recursive:true});
 const note=(name,data)=>fs.writeFileSync(path.join(reportDir,name+".json"),
- JSON.stringify({checked_at:new Date().toISOString(),environment:"Tabbata public Render production",...data},null,2)+"\n");
+ JSON.stringify({checked_at:new Date().toISOString(),environment:"Tabbas public Render production",...data},null,2)+"\n");
 
-test("public production: Tabbata report-review interface is responsive and makes no inference automatically",async({page})=>{
+test("public production: Tabbas report-review interface is responsive and makes no inference automatically",async({page})=>{
  let inference=0;
  page.on("request",request=>{
   const url=new URL(request.url());
@@ -17,7 +17,7 @@ test("public production: Tabbata report-review interface is responsive and makes
  });
  const health=await page.request.get(base+"/healthz");
  expect(health.status()).toBe(200);
- expect((await health.json()).service).toBe("tabbata");
+ expect((await health.json()).service).toBe("tabbas");
  const status=await page.request.get(base+"/api/tabbata/status");
  expect(status.status()).toBe(200);
  const readiness=await status.json();
@@ -32,7 +32,7 @@ test("public production: Tabbata report-review interface is responsive and makes
   await expect(page.locator("#case-form")).toBeVisible();
   await expect(page.locator('link[href="/tabbata.css"]')).toHaveCount(1);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
-  expect(overflow,"Tabbata horizontal overflow at "+width).toBeLessThanOrEqual(2);
+  expect(overflow,"Tabbas horizontal overflow at "+width).toBeLessThanOrEqual(2);
  }
  await page.setViewportSize({width:375,height:812});
  await page.goto("/");
@@ -45,5 +45,5 @@ test("public production: Tabbata report-review interface is responsive and makes
  expect(inference).toBe(0);
  const legacy=await page.request.get(base+"/legacy");
  expect(legacy.status()).toBe(200);
- note("tabbata-public-journey",{status:"pass",widths:[320,375,768,1024,1440],routes:["/","/legacy"],sample_files:4,automatic_inference_calls:inference,limitations:"No live SERV request was made by this smoke test; no human testing is implied."});
+ note("tabbata-public-journey",{status:"pass",widths:[320,375,768,1024,1440],routes:["/","/legacy"],sample_files:5,automatic_inference_calls:inference,limitations:"No live SERV request was made by this smoke test; no human testing is implied."});
 });
