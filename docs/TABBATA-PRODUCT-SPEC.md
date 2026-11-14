@@ -58,7 +58,7 @@ Tabbas does not establish whether a project activity happened in the physical wo
 - Organisation accounts, role-based access and secure team workspaces.
 - Configurable retention, encrypted persistent document storage and a durable audit log.
 - Import requirements from donor templates.
-- Interactive column mapping for unusual spreadsheet headers and additional regional number/date formats.
+- Interactive column mapping, explicit multi-sheet selection for XLSX schedules and additional regional number/date formats.
 - DOCX/PDF report export generated server-side.
 - Multiple reviewer collaboration, clarification assignments and secure sharing.
 
