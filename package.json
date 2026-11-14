@@ -8,11 +8,14 @@
   },
   "scripts": {
     "start": "node index.mjs",
-    "check": "node --check server.mjs && node --check curriculum.mjs && node --check mentor.mjs && node --check guest-budget.mjs && node --check try-live.mjs && node --check public/app.js && node --check debug-lab.mjs && node --check public/debug.js && node --check qa/production.playwright.config.mjs && node --check qa/production.smoke.spec.mjs",
+    "check": "node --check server.mjs && node --check curriculum.mjs && node --check mentor.mjs && node --check guest-budget.mjs && node --check try-live.mjs && node --check public/app.js && node --check debug-lab.mjs && node --check public/debug.js && node --check qa/production.playwright.config.mjs && node --check qa/production.smoke.spec.mjs && node --check tabbata-documents.mjs && node --check tabbata-review.mjs && node --check tabbata-store.mjs && node --check public/tabbata.js",
     "test": "node --test test/*.test.mjs",
     "build": "npm install --ignore-scripts --no-audit --no-fund && npm run check && npm test"
   },
   "dependencies": {
-    "@neondatabase/serverless": "1.2.0"
+    "@neondatabase/serverless": "1.2.0",
+    "exceljs": "4.4.0",
+    "mammoth": "1.9.0",
+    "pdfjs-dist": "4.10.38"
   }
 }
