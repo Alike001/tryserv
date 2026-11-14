@@ -21,8 +21,8 @@ test("Tabbata is the public root product and its assets are allowlisted",async()
   assert.match(html,/<title>Tabbata/);
   assert.match(html,/Check the report/);
   assert.match(html,/SERV Reasoning/);
-  assert.match(html,/href="\\/tabbata\\.css"/);
-  assert.match(html,/src="\\/tabbata\\.js"/);
+  assert.ok(html.includes('href="/tabbata.css"'));
+  assert.ok(html.includes('src="/tabbata.js"'));
   assert.equal((await fetch(url+"/tabbata.css")).status,200);
   assert.equal((await fetch(url+"/tabbata.js")).status,200);
   assert.equal(calls(),0);
