@@ -43,8 +43,8 @@
 
 ## Next actions
 
-1. Finish public brand alignment to **Tabbas** across the page, README, submission notes, product specification, smoke workflow and PR metadata. Internal filenames/API identifiers may remain historical temporarily, but user-facing copy must be consistent.
-2. Verify the in-progress browser workflow. Fix any failures and add regression coverage for uploaded financial schedules, mobile layout and the reconciliation panel.
+1. Public brand alignment to **Tabbas** is complete across the page, README, submission notes, product specification, smoke workflow and PR metadata. Historical internal filenames/API identifiers still use `tabbata`; rename them only as a separate cleanup after the product review.
+2. Confirm the latest browser workflow finishes successfully, then run the no-inference production smoke check after deployment approval. Desktop/mobile Playwright already passed 74 journeys on the current UI-tested commit.
 3. Review the financial schedule parser against real-world CSV/XLSX variations, especially headers, number formats, date formats, totals rows, duplicate columns and truncated files. Keep unsupported formats explicit rather than guessing.
 4. Add the stronger SERV Prompt Guard / Shadow Agent integration only after checking the current official API contract and benchmarking it against the existing one-call implementation. Do not claim native features that have not been verified and tested.
 5. Keep PR #22 draft until all tests and release gates pass. After explicit approval, merge and let the existing Render service auto-deploy; do not create a second service or database.
