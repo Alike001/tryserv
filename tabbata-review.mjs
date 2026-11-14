@@ -57,7 +57,7 @@ export function validateTabbataCaseInput(body){
   const period_start=textField(body.period_start??"","Reporting period start",0,10,true);
   const period_end=textField(body.period_end??"","Reporting period end",0,10,true);
   const validDate=value=>{
-    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(value))return false;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
     const parsed=new Date(value+"T00:00:00.000Z");
     return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===value;
   };
