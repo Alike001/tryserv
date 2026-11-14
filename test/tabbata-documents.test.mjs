@@ -25,6 +25,14 @@ test("extracts text and CSV with stable source locators and exact text",async()=
  assert.equal(docs[0].id,"doc-1");
  assert.equal(docs[1].id,"doc-2");
 });
+test("duplicate CSV headings are preserved instead of silently overwriting a column",async()=>{
+ const docs=await extractTABBATADocuments([
+  {name:"duplicate-headings.csv",data_base64:base64("Amount,Amount\\n100,200")}
+ ]);
+ const cells=docs[0].segments[0].cells;
+ assert.equal(cells.Amount,"100");
+ assert.equal(cells["Amount (2)"],"200");
+});
 function makeOnePagePdf(text){
  const slash=String.fromCharCode(92);
  const escaped=text.split(slash).join(slash+slash).split("(").join(slash+"(").split(")").join(slash+")");
