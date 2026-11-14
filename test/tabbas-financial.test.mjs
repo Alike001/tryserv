@@ -96,6 +96,23 @@ test("invalid amounts and truncated files make the result incomplete", () => {
   assert.ok(result.issues.some(issue => issue.type === "truncated_document"));
 });
 
+test("checks receipt references against separate supporting documents",()=>{
+ const expenseSchedule={
+  name:"actuals.csv",truncated:false,
+  segments:[
+   {locator:"Row 2",cells:{"Amount":"1000","Receipt reference":"REC-001"}},
+   {locator:"Row 3",cells:{"Amount":"2000","Receipt reference":"REC-002"}}
+  ]
+ };
+ const supportingDocuments=[{
+  name:"receipt-bundle.txt",
+  segments:[{locator:"Line 1",text:"Receipt REC-001 records a payment for approved materials."}]
+ }];
+ const result=reconcileFinancialSchedules({expenseSchedule,supportingDocuments,currency:"NGN"});
+ assert.equal(result.status,"attention_required");
+ assert.ok(result.checks.some(item=>item.type==="receipt_reference_found"&&item.reference==="REC-001"));
+ assert.ok(result.checks.some(item=>item.type==="receipt_reference_not_found"&&item.reference==="REC-002"));
+});
 test("accepts correctly grouped currency values and converts to minor units",()=>{
  const schedule={
   name:"expenses.csv",truncated:false,
