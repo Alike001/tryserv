@@ -5,7 +5,7 @@
 **Track:** Open Track  
 **Technology:** OpenServ SERV Reasoning  
 **Repository:** https://github.com/Alike001/tryserv  
-**Live application:** https://tryserv.onrender.com/  
+**Existing application URL:** https://tryserv.onrender.com/ (the current `main` deployment still serves TrySERV; the Tabbata pivot is not deployed yet).  
 **Product specification:** [TABBATA-PRODUCT-SPEC.md](TABBATA-PRODUCT-SPEC.md)
 
 ## Short description
