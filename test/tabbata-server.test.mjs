@@ -128,6 +128,21 @@ test("invalid case input is rejected before document extraction or credit reserv
   assert.equal(reserve,0);
  });
 });
+test("case creation is rate-limited per visitor without spending inference credits",async()=>{
+ const store=fakeStore();let creates=0,reserves=0;
+ const wrapped={...store,async create(payload){creates++;return store.create(payload);}};
+ await withApp({env,tabbataStore:wrapped,documentExtractor:async()=>docs,guestReserve:async()=>{reserves++;return {allowed:true};}},async url=>{
+  for(let index=0;index<5;index++){
+   const response=await post(url,"/api/tabbata/cases",input);
+   assert.equal(response.status,201);
+  }
+  const limited=await post(url,"/api/tabbata/cases",input);
+  assert.equal(limited.status,429);
+  assert.equal(creates,5);
+  assert.equal(reserves,0);
+ });
+});
+
 test("reviewer actions are recorded and case deletion removes the workspace",async()=>{
  const store=fakeStore();
  await withApp({env,tabbataStore:store,documentExtractor:async()=>docs,guestReserve:async()=>({allowed:true}),reviewWithServFn:async()=>({review,provider:{model:"test",completion_id:"c",latency_ms:1,usage:{}}})},async url=>{
