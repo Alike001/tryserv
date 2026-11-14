@@ -9,7 +9,7 @@ const reviewCase={
  report_text:"The narrative report says that all three facilities were completed and 500 households were reached during the reporting period.",
  approved_budget_minor:500000000,reported_spend_minor:450000000,
  budget_check:{status:"within_budget",currency:"NGN",approved_minor:500000000,reported_minor:450000000,variance_minor:-50000000,note:"Arithmetic only."},
- financial_reconciliation:{status:"attention_required",summary:"The supplied schedules contain differences or evidence gaps that need human review.",currency:"NGN",schedule_totals:{budget_minor:500000000,expense_minor:450000000},checks:[{type:"category_over_budget",category:"Testing",variance_minor:80000000},{type:"missing_receipt_reference",locator:"Row 5",description:"Water quality",amount_minor:180000000}],issues:[],notes:["Arithmetic checks only."]},
+ financial_reconciliation:{status:"attention_required",summary:"The supplied schedules contain differences or evidence gaps that need human review.",currency:"NGN",schedule_totals:{budget_minor:500000000,expense_minor:450000000},checks:[{type:"category_over_budget",category:"Testing",variance_minor:80000000},{type:"missing_receipt_reference",locator:"Row 5",description:"Water quality",amount_minor:180000000},{type:"receipt_reference_found",reference:"REC-001",locator:"Row 2",supporting_documents:["receipt-register.pdf"]}],issues:[],notes:["Arithmetic checks only."]},
  documents:[{id:"doc-1",name:"site-status.csv",kind:"csv",size_bytes:120,extracted_chars:quote.length,truncated:false,segments:[{id:"doc-1-s1",locator:"Row 2",text:quote}]}],
  source_segments:[],analysis_status:"not_started",review:null,provider:null,analysis_error:null,reviewer_actions:[]
 };
@@ -96,6 +96,7 @@ test("a report pack is created without inference; SERV runs only after explicit 
  expect(createBody.budget_schedule_file.name).toBe("approved-budget.csv");
  expect(createBody.expense_schedule_file.name).toBe("expense-schedule.csv");
  await expect(page.locator("#financial-check")).toContainText("Testing");
+ await expect(page.locator("#financial-check")).toContainText("receipt-register.pdf");
  expect(analysisCalls).toBe(0);
  await expect(page.locator("#analysis-cta")).toBeVisible();
  await page.locator("#analyze-case").click();
