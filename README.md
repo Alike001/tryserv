@@ -18,7 +18,7 @@ See [problem and competitor research](docs/TABBATA-RESEARCH.md) for the evidence
 
 1. **Create a review case.** Enter the project, funder, reporting period, currency, requirements and optional budget totals.
 2. **Add the narrative report.** Paste the report text or upload one PDF, DOCX, XLSX, CSV, TXT or Markdown report file.
-3. **Add financial schedules.** Optionally upload an approved-budget CSV/XLSX and an actual-expenditure CSV/XLSX. Tabbas checks schedule totals, category variances, duplicate references, blank receipt references and transaction dates when the reporting period is supplied.
+3. **Add financial schedules.** Optionally upload an approved-budget CSV/XLSX and an actual-expenditure CSV/XLSX. Tabbas checks schedule totals, category variances, duplicate references, blank or unmatched receipt references and transaction dates when the reporting period is supplied.
 4. **Upload supporting evidence.** Add site records, attendance registers, receipts and other evidence in PDF, DOCX, XLSX, CSV, TXT or Markdown.
 5. **Create a private workspace.** Files are extracted with page, sheet, row or paragraph locators. Original binary uploads are not retained; structured spreadsheet cell values are retained for deterministic checks.
 6. **Choose Analyze with SERV.** Only this explicit action calls the OpenServ Chat Completions API. It uses one unit from the existing shared durable guest allowance.
