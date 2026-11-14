@@ -346,16 +346,16 @@ test("debug lab has clear repair stages, accessible entry and no mobile overflow
 
 test("all pages share the landing's navy/blue brand and mobile page navigation",async({page})=>{
  await page.setViewportSize({width:375,height:812});
- for(const route of ["/","/learn","/try","/debug","/docs"]){
+ for(const route of ["/legacy","/learn","/try","/debug","/docs"]){
    await page.goto(route);
    await expect(page.locator('link[href="/brand.css"]')).toHaveCount(1);
    const visibleNav=page.getByRole("navigation",{name:"TrySERV pages"});
    await expect(visibleNav).toBeVisible();
-   for(const href of ["/","/learn","/try","/debug","/docs"]){
+   for(const href of ["/legacy","/learn","/try","/debug","/docs"]){
      await expect(visibleNav.locator('a[href="'+href+'"]')).toBeVisible();
    }
    const bg=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
-   expect(bg).toBe(route==="/"?"rgb(255, 255, 255)":"rgb(247, 249, 252)");
+   expect(bg).toBe(route==="/legacy"?"rgb(255, 255, 255)":"rgb(247, 249, 252)");
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
    expect(overflow,"shared UI overflow at "+route).toBeLessThanOrEqual(2);
  }
@@ -495,7 +495,7 @@ test("SERV visual walkthrough is accessible, clickable and no-spend at 320px",as
    if(["/api/mentor","/api/try-serv","/api/debug/explain"].includes(new URL(request.url()).pathname))inferenceCalls++;
  });
  await page.setViewportSize({width:320,height:850});
- for(const route of ["/","/learn"]){
+ for(const route of ["/legacy","/learn"]){
    await page.goto(route,{waitUntil:"load"});
    const map=page.locator("[data-serv-map] .serv-map");
    await expect(map).toBeVisible();
