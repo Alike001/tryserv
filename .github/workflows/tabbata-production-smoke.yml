@@ -1,4 +1,4 @@
-name: Tabbata production smoke (no inference)
+name: Tabbas production smoke (no inference)
 on:
   push:
     branches: [main]
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Check public Tabbata deployment without making inference calls
+      - name: Check public Tabbas deployment without making inference calls
         run: |
           node --input-type=module <<'NODE'
           const base = "https://tryserv.onrender.com";
@@ -29,12 +29,12 @@ jobs:
             return response;
           }
           const health = await (await get("/healthz")).json();
-          if (health.service !== "tabbata" || health.status !== "ok") throw new Error("Unexpected production health response");
+          if (health.service !== "tabbas" || health.status !== "ok") throw new Error("Unexpected production health response");
           const status = await (await get("/api/tabbata/status")).json();
-          if (status.storage_configured !== true) throw new Error("Tabbata case storage is not configured");
-          if (status.serv_configured !== true) throw new Error("SERV is not configured for Tabbata");
+          if (status.storage_configured !== true) throw new Error("Tabbas case storage is not configured");
+          if (status.serv_configured !== true) throw new Error("SERV is not configured for Tabbas");
           const html = await (await get("/")).text();
-          if (!html.includes("<title>Tabbata") || !html.includes('href="/tabbata.css"')) throw new Error("Tabbata root page is not deployed");
+          if (!html.includes("<title>Tabbas") || !html.includes('href="/tabbata.css"')) throw new Error("Tabbas root page is not deployed");
           await get("/tabbata.css");
           await get("/tabbata.js");
           const sample = {
