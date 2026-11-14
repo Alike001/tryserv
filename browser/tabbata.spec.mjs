@@ -126,9 +126,31 @@ test("a report pack is created without inference; SERV runs only after explicit 
  await page.locator("#mark-reviewed").click();
  await expect(page.locator("#reviewer-action-list")).toContainText("Findings marked reviewed");
  expect(actions).toHaveLength(2);
+ await expect(page.locator("#reviewer-action-list .action-item")).toHaveCount(2);
+ await expect(page.locator("#reviewer-action-list")).toContainText("Please attach the missing Site C commissioning record.");
  await page.evaluate(()=>{window.__printed=false;window.print=()=>{window.__printed=true;};});
  await page.locator("#print-report").click();
  expect(await page.evaluate(()=>window.__printed)).toBe(true);
+ await expect(page.locator("#report-generated")).toContainText("Generated");
+ await page.emulateMedia({media:"print"});
+ const printState=await page.evaluate(()=>({
+  workspace:getComputedStyle(document.querySelector("#case-workspace")).display,
+  summary:getComputedStyle(document.querySelector("#review-results")).display,
+  disclaimer:getComputedStyle(document.querySelector(".report-disclaimer")).display,
+  actionHistory:getComputedStyle(document.querySelector("#reviewer-action-list")).display,
+  topbar:getComputedStyle(document.querySelector(".topbar")).display,
+  generated:getComputedStyle(document.querySelector("#report-generated")).display
+ }));
+ expect(printState.workspace).toBe("block");
+ expect(printState.summary).not.toBe("none");
+ expect(printState.disclaimer).not.toBe("none");
+ expect(printState.actionHistory).not.toBe("none");
+ expect(printState.generated).not.toBe("none");
+ expect(printState.topbar).toBe("none");
+ const pdf=await page.pdf({format:"A4",printBackground:true});
+ expect(pdf.subarray(0,4).toString("ascii")).toBe("%PDF");
+ expect(pdf.length).toBeGreaterThan(1000);
+ await page.emulateMedia({media:"screen"});
  page.on("dialog",dialog=>dialog.accept());
  await page.locator("#delete-case").click();
  await expect(page.locator("#case-workspace")).toBeHidden();
@@ -179,4 +201,37 @@ test("reduced-motion preference disables decorative flow animation",async({page}
  await page.goto("/");
  const animation=await page.locator(".reason-orbit").evaluate(element=>getComputedStyle(element).animationName);
  expect(animation).toBe("none");
+});
+
+test("reviewer action network failures preserve the note and re-enable controls",async({page})=>{
+ await mockStatus(page,true);
+ await page.route("**/api/tabbata/cases**",async route=>{
+  const request=route.request();const url=new URL(request.url());
+  if(url.pathname==="/api/tabbata/cases"&&request.method()==="POST"){
+   await route.fulfill({status:201,contentType:"application/json",body:JSON.stringify({
+    case_id:caseId,case_token:caseToken,expires_at:"2026-11-15T00:00:00Z",review_case:reviewCase
+   })});return;
+  }
+  if(url.pathname.endsWith("/analyze")&&request.method()==="POST"){
+   await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
+    analysis_status:"complete",review,provider:{model:"gpt-5.4-mini",completion_id:"mock-completion",latency_ms:1,usage:{input_tokens:10,output_tokens:20}},reused:false
+   })});return;
+  }
+  if(url.pathname.endsWith("/actions")&&request.method()==="POST"){
+   await route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"Could not save the reviewer action."})});return;
+  }
+  await route.fulfill({status:404,contentType:"application/json",body:JSON.stringify({error:"Unexpected route"})});
+ });
+ await page.goto("/");
+ await page.getByRole("button",{name:/Load fictional sample pack/i}).click();
+ await page.getByRole("button",{name:/Create review workspace/i}).click();
+ await page.locator("#analyze-case").click();
+ await expect(page.locator("#review-summary")).toBeVisible();
+ const note="Please provide the signed Site C commissioning record.";
+ await page.locator("#review-note").fill(note);
+ await page.locator("#request-clarification").click();
+ await expect(page.locator("#toast")).toContainText("Could not save the reviewer action.");
+ await expect(page.locator("#review-note")).toHaveValue(note);
+ await expect(page.locator("#request-clarification")).toBeEnabled();
+ await expect(page.locator("#mark-reviewed")).toBeEnabled();
 });
