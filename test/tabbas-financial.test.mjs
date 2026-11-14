@@ -134,6 +134,20 @@ test("currency markers must agree with the case currency", () => {
   assert.match(result.issues[0].message, /currency marker/);
 });
 
+test("does not claim category reconciliation when the expense schedule has no category column",()=>{
+ const budget={name:"budget.csv",truncated:false,segments:[{locator:"Row 2",cells:{"Category":"Travel","Amount":"1000"}}]};
+ const expenses={name:"actuals.csv",truncated:false,segments:[{locator:"Row 2",cells:{"Amount":"500"}}]};
+ const result=reconcileFinancialSchedules({budgetSchedule:budget,expenseSchedule:expenses,approvedBudgetMinor:100000,reportedSpendMinor:50000,currency:"NGN"});
+ assert.equal(result.status,"partial");
+ assert.match(result.summary,/category-level reconciliation was not possible/);
+});
+test("blank expense categories make a category schedule incomplete",()=>{
+ const budget={name:"budget.csv",truncated:false,segments:[{locator:"Row 2",cells:{"Category":"Travel","Amount":"1000"}}]};
+ const expenses={name:"actuals.csv",truncated:false,segments:[{locator:"Row 2",cells:{"Category":"","Amount":"500"}}]};
+ const result=reconcileFinancialSchedules({budgetSchedule:budget,expenseSchedule:expenses,currency:"NGN"});
+ assert.equal(result.status,"incomplete");
+ assert.ok(result.issues.some(issue=>issue.type==="invalid_row"&&/expense category is blank/.test(issue.message)));
+});
 test("both schedules without entered control totals remain partial, not reconciled",()=>{
  const budget={name:"budget.csv",truncated:false,segments:[{locator:"Row 2",cells:{"Category":"Travel","Approved amount":"1000"}}]};
  const expenses={name:"actuals.csv",truncated:false,segments:[{locator:"Row 2",cells:{"Category":"Travel","Amount":"500"}}]};
