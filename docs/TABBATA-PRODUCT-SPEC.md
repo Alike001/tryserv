@@ -53,12 +53,14 @@ Tabbas does not establish whether a project activity happened in the physical wo
 - Fictional seeded sample data, visibly labelled illustrative.
 - Case deletion and short retention.
 
-### P1 — only after P0 passes
+### P1 — after the pilot workflow is accepted
 
+- Organisation accounts, role-based access and secure team workspaces.
+- Configurable retention, encrypted persistent document storage and a durable audit log.
 - Import requirements from donor templates.
 - Interactive column mapping for unusual spreadsheet headers and additional regional number/date formats.
 - DOCX/PDF report export generated server-side.
-- Multiple reviewer collaboration and secure sharing.
+- Multiple reviewer collaboration, clarification assignments and secure sharing.
 
 ### Explicit non-goals
 
