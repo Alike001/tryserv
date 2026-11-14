@@ -166,7 +166,14 @@ function renderActions(actions=[]){
  const list=$("reviewer-action-list");list.replaceChildren();
  for(const action of actions){
   const label=({mark_reviewed:"Findings marked reviewed",request_clarification:"Clarification requested",acknowledge_finding:"Finding acknowledged",dismiss_finding:"Finding dismissed"})[action.action]??action.action;
-  const row=addText(list,"div","action-item",label+(action.note?" — "+action.note:""));
+  const row=document.createElement("div");row.className="action-item";
+  addText(row,"strong","action-label",label);
+  const created=action.created_at?new Date(action.created_at):null;
+  const timestamp=created&&Number.isFinite(created.getTime())?created.toLocaleString():"";
+  const meta=[action.finding_id?"Finding "+action.finding_id:"Whole review",timestamp].filter(Boolean).join(" · ");
+  if(meta)addText(row,"small","action-meta",meta);
+  if(action.note)addText(row,"p","action-note",action.note);
+  list.append(row);
  }
 }
 function renderReview(review,provider){
@@ -217,7 +224,7 @@ function renderCase(payload,expiresAt){
  $("analysis-cta").hidden=Boolean(payload.review)||payload.analysis_status==="failed";
  if(!servConfigured){$("analyze-case").disabled=true;analysisStatus("SERV review is not configured. You can still inspect, print and delete this workspace.","error");}else{$("analyze-case").disabled=false;}
  if(payload.analysis_status==="failed"){analysisStatus(payload.analysis_error??"The analysis attempt could not be completed. No automatic retry was made.","error");}
- else if(payload.review){renderReview(payload.review,payload.provider);renderActions(payload.reviewer_actions);}
+ else if(payload.review){renderReview(payload.review,payload.provider);renderActions(payload.reviewer_actions??[]);}
  else if(payload.analysis_status==="running"){analysisStatus("A SERV review is already running for this case.","info");}
  else{$("review-results").hidden=true;$("analysis-status").hidden=true;}
  $("case-workspace").scrollIntoView({behavior:"smooth",block:"start"});
@@ -278,19 +285,41 @@ async function recordAction(action){
  if(!activeCase)return;
  const note=$("review-note").value.trim();
  if(action==="request_clarification"&&!note){toast("Add a short clarification request first.");$("review-note").focus();return;}
- const response=await fetch("/api/tabbata/cases/"+activeCase.id+"/actions",{method:"POST",headers:{"Content-Type":"application/json","X-Case-Token":activeCase.token},body:JSON.stringify({action,note})});
- const result=await response.json();
- if(!response.ok){toast(result.error??"Could not save reviewer action.");return;}
- activePayload.reviewer_actions=result.reviewer_actions;renderActions(result.reviewer_actions);$("review-note").value="";
- toast("Reviewer action recorded.");
+ const buttons=[$("mark-reviewed"),$("request-clarification")];
+ if(buttons.some(button=>button.disabled))return;
+ buttons.forEach(button=>button.disabled=true);
+ try{
+  const response=await fetch("/api/tabbata/cases/"+activeCase.id+"/actions",{method:"POST",headers:{"Content-Type":"application/json","X-Case-Token":activeCase.token},body:JSON.stringify({action,note})});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok){toast(result.error??"Could not save reviewer action. Check your connection and try again.");return;}
+  if(!Array.isArray(result.reviewer_actions))throw new Error("The saved reviewer history could not be confirmed.");
+  activePayload.reviewer_actions=result.reviewer_actions;renderActions(result.reviewer_actions);$("review-note").value="";
+  toast("Reviewer action recorded.");
+ }catch{
+  toast("Could not reach secure storage. Your note has not been confirmed as saved.");
+ }finally{
+  buttons.forEach(button=>button.disabled=false);
+ }
 }
 async function deleteCase(){
  if(!activeCase)return;
  if(!confirm("Delete this review workspace and its extracted document text? This cannot be undone."))return;
- const response=await fetch("/api/tabbata/cases/"+activeCase.id,{method:"DELETE",headers:{"X-Case-Token":activeCase.token}});
- const result=await response.json();
- if(!response.ok){toast(result.error??"Could not delete the case.");return;}
- clearSession();$("case-workspace").hidden=true;$("review-results").hidden=true;toast("Review workspace deleted.");
+ const button=$("delete-case");button.disabled=true;
+ try{
+  const response=await fetch("/api/tabbata/cases/"+activeCase.id,{method:"DELETE",headers:{"X-Case-Token":activeCase.token}});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok){toast(result.error??"Could not delete the case. Try again.");return;}
+  clearSession();activeCase=null;activePayload=null;$("case-workspace").hidden=true;$("review-results").hidden=true;toast("Review workspace deleted.");
+ }catch{
+  toast("Could not reach secure storage. The workspace may still exist; reconnect and try again.");
+ }finally{
+  button.disabled=false;
+ }
+}
+function printReport(){
+ const label=$("report-generated");
+ if(label)label.textContent="Generated "+new Intl.DateTimeFormat(undefined,{dateStyle:"medium",timeStyle:"short"}).format(new Date());
+ window.print();
 }
 async function restoreCase(){
  let saved;try{saved=JSON.parse(sessionStorage.getItem(SESSION_KEY)??"null");}catch{return;}
@@ -322,7 +351,7 @@ document.addEventListener("DOMContentLoaded",async()=>{
  $("report-file").addEventListener("change",displayFiles);
  $("case-form").addEventListener("submit",createWorkspace);
  $("analyze-case").addEventListener("click",analyzeCase);
- $("print-report").addEventListener("click",()=>window.print());
+ $("print-report").addEventListener("click",printReport);
  $("delete-case").addEventListener("click",deleteCase);
  $("mark-reviewed").addEventListener("click",()=>recordAction("mark_reviewed"));
  $("request-clarification").addEventListener("click",()=>recordAction("request_clarification"));
