@@ -66,6 +66,45 @@ export function createTabbataStore({databaseUrl,query=defaultQuery}={}){
         [id,tokenHash(token),JSON.stringify(payload)]);
       return Array.isArray(rows)&&rows.length>0;
     },
+    async appendReviewerAction(id,token,action,maxActions=50){
+      if(!UUID.test(String(id))||typeof token!=="string"||!TOKEN.test(token))
+        return {status:"not_found",reviewer_actions:[]};
+      if(!action||typeof action!=="object"||Array.isArray(action)||!Number.isInteger(maxActions)||maxActions<1||maxActions>100)
+        throw new Error("Reviewer action is invalid.");
+      await ensureSchema();
+      await query(databaseUrl,"DELETE FROM tabbata_cases WHERE expires_at <= now()",[]);
+      const rows=await query(databaseUrl,`WITH target AS (
+        SELECT id,
+          CASE WHEN jsonb_typeof(payload->'reviewer_actions')='array'
+            THEN payload->'reviewer_actions' ELSE '[]'::jsonb END AS actions
+        FROM tabbata_cases
+        WHERE id=$1 AND token_hash=$2 AND expires_at>now()
+        FOR UPDATE
+      ),
+      updated AS (
+        UPDATE tabbata_cases AS cases
+        SET payload=jsonb_set(cases.payload,'{reviewer_actions}',target.actions || $3::jsonb,true),
+            updated_at=now()
+        FROM target
+        WHERE cases.id=target.id AND jsonb_array_length(target.actions)<$4
+        RETURNING cases.payload
+      )
+      SELECT payload, 'appended'::text AS result FROM updated
+      UNION ALL
+      SELECT NULL::jsonb,
+        CASE WHEN EXISTS(SELECT 1 FROM target) THEN 'limit' ELSE 'not_found' END AS result
+      WHERE NOT EXISTS(SELECT 1 FROM updated)`,
+      [id,tokenHash(token),JSON.stringify(action),maxActions]);
+      const row=Array.isArray(rows)?rows[0]:null;
+      if(!row)return {status:"not_found",reviewer_actions:[]};
+      if(row.result!=="appended")return {status:row.result,reviewer_actions:[]};
+      let payload=row.payload;
+      if(typeof payload==="string")payload=JSON.parse(payload);
+      return {
+        status:"appended",
+        reviewer_actions:Array.isArray(payload?.reviewer_actions)?payload.reviewer_actions:[]
+      };
+    },
     async delete(id,token){
       if(!UUID.test(String(id))||typeof token!=="string"||!TOKEN.test(token))return false;
       await ensureSchema();
