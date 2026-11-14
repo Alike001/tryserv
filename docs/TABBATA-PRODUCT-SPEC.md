@@ -121,7 +121,7 @@ Ordinary code, not SERV, must:
 - Cases expire after 24 hours and can be explicitly deleted. Expired cases are purged on subsequent store access.
 - Upload limits: maximum 5 files, 2 MiB per file, 8 MiB combined; extracted text capped per file and per case.
 - Allow only PDF, DOCX, XLSX, CSV, TXT and Markdown.
-- Do not upload beneficiary names, phone numbers, addresses, bank/account details, national IDs, health records or other sensitive personal data. Demo with synthetic data only.
+- Do not upload beneficiary names, phone numbers, addresses, bank/account details, national IDs, health records or other sensitive personal data. Use synthetic data for demonstrations; real users may submit only documents they are authorised to process and have appropriately redacted.
 - Never expose `SERV_API_KEY`, `DATABASE_URL`, access tokens or full private logs to the browser.
 - Never pass raw secrets or hidden app instructions to SERV.
 - SERV is called only after a clear user click. Reuse the existing shared durable guest allowance; do not raise/reset its 24 lifetime / 2 daily limits.
