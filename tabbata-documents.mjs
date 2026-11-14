@@ -10,7 +10,7 @@ const BASE64=/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 
 function safeName(value){
   if(typeof value!=="string")throw new Error("Every uploaded file needs a filename.");
-  const name=path.basename(value).replace(/[\u0000-\u001f\u007f]/g,"").trim().slice(0,120);
+  const name=path.basename(value.replace(/\\\\/g,"/")).replace(/[\u0000-\u001f\u007f]/g,"").trim().slice(0,120);
   if(!name||name==="."||name==="..")throw new Error("A filename is invalid.");
   return name;
 }
@@ -80,6 +80,41 @@ function cellText(value){
     return "";
   }
   return "";
+}
+function inspectOfficeZip(bytes,requiredEntry){
+  const minimum=Math.max(0,bytes.length-65557);let eocd=-1;
+  for(let offset=bytes.length-22;offset>=minimum;offset--){
+    if(bytes.readUInt32LE(offset)===0x06054b50){eocd=offset;break;}
+  }
+  if(eocd<0)throw new Error("The Office file has an invalid ZIP container.");
+  const entries=bytes.readUInt16LE(eocd+10);
+  const centralSize=bytes.readUInt32LE(eocd+12);
+  const centralOffset=bytes.readUInt32LE(eocd+16);
+  if(entries>2000||centralOffset+centralSize>eocd||centralOffset>bytes.length)
+    throw new Error("The Office file has an invalid or oversized archive directory.");
+  let offset=centralOffset,totalExpanded=0,found=false;
+  for(let index=0;index<entries;index++){
+    if(offset+46>bytes.length||bytes.readUInt32LE(offset)!==0x02014b50)
+      throw new Error("The Office file has an invalid ZIP entry.");
+    const compressed=bytes.readUInt32LE(offset+20);
+    const expanded=bytes.readUInt32LE(offset+24);
+    const nameLength=bytes.readUInt16LE(offset+28);
+    const extraLength=bytes.readUInt16LE(offset+30);
+    const commentLength=bytes.readUInt16LE(offset+32);
+    const end=offset+46+nameLength+extraLength+commentLength;
+    if(end>bytes.length||compressed===0xffffffff||expanded===0xffffffff)
+      throw new Error("ZIP64 or malformed Office archives are not supported.");
+    const name=bytes.subarray(offset+46,offset+46+nameLength).toString("utf8");
+    if(name.startsWith("/")||name.includes("\\\\")||name.split("/").includes(".."))
+      throw new Error("The Office archive contains an unsafe entry path.");
+    if(expanded>10*1024*1024||(compressed===0&&expanded>0)||(compressed>0&&expanded/compressed>100))
+      throw new Error("The Office archive contains an oversized or highly compressed entry.");
+    totalExpanded+=expanded;
+    if(totalExpanded>30*1024*1024)throw new Error("The Office archive expands beyond the safe extraction limit.");
+    if(name===requiredEntry)found=true;
+    offset=end;
+  }
+  if(!found)throw new Error("The Office file is missing its required document structure.");
 }
 async function extractPdf(bytes){
   const {getDocument}=await import("pdfjs-dist/legacy/build/pdf.mjs");
@@ -157,6 +192,8 @@ export async function extractTABBATADocuments(files){
     if(totalBytes>TABBATA_UPLOAD_LIMITS.totalBytes)throw new Error("All supporting documents combined must be 8 MiB or smaller.");
     if(extension===".pdf"&&!bytes.subarray(0,5).equals(Buffer.from("%PDF-")))throw new Error(name+" does not appear to be a PDF.");
     if((extension===".docx"||extension===".xlsx")&&!(bytes[0]===0x50&&bytes[1]===0x4b))throw new Error(name+" does not appear to be a valid Office Open XML file.");
+    if(extension===".docx")inspectOfficeZip(bytes,"word/document.xml");
+    if(extension===".xlsx")inspectOfficeZip(bytes,"xl/workbook.xml");
     let entries;
     if(extension===".pdf")entries=await extractPdf(bytes);
     else if(extension===".docx")entries=await extractDocx(bytes);
