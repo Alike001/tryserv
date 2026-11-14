@@ -190,7 +190,8 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
      reportedSpendMinor:normalized.reported_spend_minor,
      currency:normalized.project.currency,
      periodStart:normalized.period_start,
-     periodEnd:normalized.period_end
+     periodEnd:normalized.period_end,
+     supportingDocuments:documents.filter(document=>document.purpose==="supporting_evidence")
     });
    }catch(error){return json(res,400,{error:String(error.message).slice(0,220)});}
    const payload={...normalized,financial_reconciliation,report_document:reportDocument??null,documents,analysis_status:"not_started",review:null,provider:null,analysis_error:null,reviewer_actions:[],created_at:new Date().toISOString()};
