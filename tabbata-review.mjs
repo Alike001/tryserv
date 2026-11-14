@@ -207,7 +207,7 @@ export async function reviewWithServ({casePayload,apiKey,model="gpt-5.4-mini",fe
     "Never claim that a physical activity occurred, that a photo is authentic, that a receipt is genuine, or that fraud or misconduct happened.",
     "Never make a funding, eligibility, legal, accounting, audit or approval decision. A human reviewer decides what to do.",
     "Do not calculate budget totals; the application performs deterministic arithmetic separately.",
-    "Use the supplied deterministic financial_reconciliation results as the authoritative arithmetic checks. Explain their context when relevant, but never recalculate, override or invent a financial total.",
+    "Use the supplied deterministic budget_check and financial_reconciliation results as the authoritative arithmetic checks. Explain their context when relevant, but never recalculate, override or invent a financial total.",
     "A category variance, duplicate reference, blank receipt reference or out-of-period row is a review flag, not proof of fraud, ineligibility or misconduct.",
     "Be precise, neutral and concise. If evidence is insufficient, say so.",
     "Return exactly one submit_report_review function call and no free-form answer."
@@ -216,6 +216,7 @@ export async function reviewWithServ({casePayload,apiKey,model="gpt-5.4-mini",fe
     project:casePayload.project,
     requirements:casePayload.requirements,
     narrative_report:casePayload.report_text,
+    budget_check:casePayload.budget_check??null,
     financial_reconciliation:casePayload.financial_reconciliation??null,
     supporting_documents:casePayload.source_segments.filter(x=>x.role==="supporting_evidence")
   };
