@@ -36,7 +36,7 @@
 
 - Only the explicit Analyze action may trigger SERV; no automatic retries after a reserved provider failure.
 - Never reset, raise or bypass the existing shared inference allowance.
-- Uploaded binaries are not persisted; extracted text and review output expire after up to 24 hours.
+- Uploaded binaries are not persisted; extracted text, structured CSV/XLSX cell values, source locators and review output expire after up to 24 hours.
 - Do not upload beneficiary names, phone numbers, addresses, bank details, IDs, health data or other sensitive personal information; redact first.
 - Financial checks are arithmetic and document-structure checks. A duplicate reference, missing receipt reference, category variance or out-of-period row is a review flag—not proof of fraud, misconduct, ineligibility or improper spending.
 - Tabbas is not an auditor, accountant, funder, fraud detector or physical-verification service. A human reviewer remains responsible for decisions.
