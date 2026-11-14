@@ -79,7 +79,7 @@ This checklist is a gate, not a record of completed work. Check an item only aft
 ## G. Production acceptance
 
 - [ ] Render deployment uses the merged commit SHA.
-- [ ] `/healthz` returns `service: tabbata`.
+- [ ] `/healthz` returns `service: tabbas`.
 - [ ] `/api/tabbata/status` reports storage configured.
 - [ ] `/api/tabbata/status` reports SERV configured.
 - [ ] A case is created in production with fictional sample data.
