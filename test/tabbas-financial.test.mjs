@@ -69,6 +69,18 @@ test("does not treat an unsupported schedule as reconciled", () => {
   assert.ok(result.issues.some(issue => issue.type === "missing_column" && issue.field === "amount"));
 });
 
+test("inconsistent worksheet column sets fail visibly",()=>{
+ const workbook={
+  name:"multi-sheet.xlsx",truncated:false,
+  segments:[
+   {locator:"Sheet Budget · Row 2",cells:{"Category":"Materials","Amount":"1000"}},
+   {locator:"Sheet Other · Row 2",cells:{"Category":"Transport","Cost":"200"}}
+  ]
+ };
+ const result=reconcileFinancialSchedules({expenseSchedule:workbook,currency:"NGN"});
+ assert.equal(result.status,"incomplete");
+ assert.ok(result.issues.some(issue=>issue.type==="inconsistent_columns"));
+});
 test("invalid amounts and truncated files make the result incomplete", () => {
   const malformed = {
     name: "expenses.csv",
