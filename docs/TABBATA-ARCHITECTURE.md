@@ -1,4 +1,4 @@
-# Tabbata — Technical Architecture
+# Tabbas — Technical Architecture
 
 ## Existing infrastructure retained
 
@@ -15,12 +15,13 @@ Do not touch `Alike001/opsra`. Do not create a new Render service, Postgres inst
 
 - `tabbata-review.mjs`: input validation, prompt construction, SERV tool definition, provider call, strict response parsing and evidence-reference validation.
 - `tabbata-documents.mjs`: safe extraction and source segmentation for PDF, DOCX, XLSX, CSV, TXT and Markdown.
+- `tabbas-financial.mjs`: deterministic CSV/XLSX schedule totals, category comparisons, duplicate/missing reference flags and reporting-period checks.
 - `tabbata-store.mjs`: Neon-backed case persistence, random case tokens, expiry, read/update/delete.
 - `public/tabbata.html`, `public/tabbata.css`, `public/tabbata.js`: new root experience and review workspace.
 - `test/tabbata-*.test.mjs`: parser, schema, source citation, budget and store tests.
 - `browser/tabbata.spec.mjs`: end-to-end review workflow, explicit SERV opt-in, mobile and accessibility smoke checks.
 
-Legacy TrySERV routes may remain temporarily for rollback, but the root navigation and README must clearly present Tabbata after the pivot is accepted.
+Legacy TrySERV routes may remain temporarily for rollback, but the root navigation and README must clearly present Tabbas after the pivot is accepted.
 
 ## Data model
 
@@ -34,7 +35,7 @@ No original binary uploads are persisted. Extracted text and review results are 
 
 ## HTTP API
 
-- `GET /`: Tabbata landing and review workspace.
+- `GET /`: Tabbas landing and review workspace.
 - `GET /api/tabbata/status`: readiness flags only; never expose secret values.
 - `POST /api/tabbata/cases`: accept either pasted narrative text or one uploaded report file plus at least one supporting file; extract all files, persist case, return ID and one-time case token.
 - `GET /api/tabbata/cases/:id`: retrieve case after case-token verification.
