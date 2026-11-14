@@ -184,7 +184,7 @@ test("malformed requests return 400, no crash",async()=>{
 
 test("dedicated landing page and both learning entry routes serve usable HTML",async()=>{
  await withApp({},async url=>{
-   const home=await fetch(url+"/");
+   const home=await fetch(url+"/legacy");
    assert.equal(home.status,200);
    const homeHtml=await home.text();
    assert.match(homeHtml,/Stop reading about it/);
