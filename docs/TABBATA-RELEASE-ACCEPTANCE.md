@@ -2,7 +2,7 @@
 
 This checklist is a gate, not a record of completed work. Check an item only after the named evidence exists.
 
-**Current hosted checkpoint (2026-11-14):** The pivot is deployed and code/browser checks pass (104 Node tests, 74 desktop/mobile journeys). One authorised live analysis attempt against the earlier Chat Completions implementation returned HTTP 502; it was not retried, and its fictional case was deleted. Tabbas now uses the documented OpenServ Responses endpoint for GPT-5.4-mini tool calling with reasoning. A new live provider acceptance is still pending and requires fresh approval; do not mark the live inference or production acceptance boxes complete.
+**Current hosted checkpoint (2026-11-14):** Production is deployed and the no-inference smoke check passed. CI passed 104 Node tests and 74 desktop/mobile browser journeys. Two authorised fictional live analyses reached SERV but did not complete: the earlier Chat Completions request returned HTTP 502; the Responses API request returned `incomplete` with `max_output_tokens` at the original 2,800-token cap. Both test cases were deleted; neither request was retried. The Responses integration now raises the output cap to 8,000 tokens and adds output-token diagnostics. This change still requires CI/deployment verification. A successful, source-validated live review, persisted reviewer action, PDF export and real-user validation remain outstanding. Do not mark live inference or production acceptance complete.
 
 ## A. Build and code quality
 
