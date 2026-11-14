@@ -27,14 +27,14 @@ Tabbas does not establish whether a project activity happened in the physical wo
 
 ## 3. The one workflow
 
-1. Create a review case with project name, funder, reporting period, approved budget, reported expenditure and reporting requirements.
-2. Paste or upload the narrative report, then upload supporting documents.
-3. Tabbas extracts text and spreadsheet rows, retaining document/page/sheet/row references.
-4. Optional approved-budget and actual-expenditure schedules are reconciled deterministically by line item, category, reference and reporting period; unsupported or incomplete rows are surfaced for human review.
-4. Deterministic checks compare the supplied financial totals and validate the review inputs.
-5. The user explicitly chooses **Analyze with SERV**. One bounded SERV Reasoning request evaluates requirement coverage, claim/evidence relationships and cross-document contradictions.
-6. The backend validates the returned structure and rejects source references or quotations that do not exist in the extracted material.
-7. The reviewer inspects findings, records a human action and prints/saves an evidence-linked review report.
+1. Create a review case with project name, funder, reporting period, currency, reporting requirements and optional reporting-period start/end dates.
+2. Paste or upload the narrative report.
+3. Optionally upload an approved-budget schedule and an actual-expenditure schedule in CSV/XLSX, plus supporting evidence.
+4. Tabbas extracts text and spreadsheet rows, retaining document/page/sheet/row references and structured cell values for deterministic calculations.
+5. Code reconciles schedule totals, budget categories, references and transaction dates; unsupported headers, invalid rows and truncated schedules are surfaced as incomplete.
+6. The user explicitly chooses **Analyze with SERV**. One bounded SERV Reasoning request evaluates requirement coverage, claim/evidence relationships and cross-document contradictions using the deterministic financial results as context.
+7. The backend validates the returned structure and rejects source references or quotations that do not exist in the extracted material.
+8. The reviewer inspects findings, records a human action and prints/saves an evidence-linked review report.
 
 ## 4. MVP scope
 
@@ -47,7 +47,7 @@ Tabbas does not establish whether a project activity happened in the physical wo
 - One explicit, budget-reserved SERV Reasoning analysis per case.
 - Structured findings with status, explanation, evidence quotations and source locations.
 - Exact-quote/source-ID validation in deterministic backend code.
-- Deterministic budget comparison when both approved budget and reported spend are supplied.
+- Deterministic line-item financial reconciliation for CSV/XLSX schedules: schedule-to-total comparison, category-level budget variances, unbudgeted categories, duplicate references, blank receipt references and reporting-period checks.
 - Human review actions; no automatic funder decision.
 - Print-friendly evidence review report (browser Print / Save as PDF).
 - Fictional seeded sample data, visibly labelled illustrative.
@@ -56,7 +56,7 @@ Tabbas does not establish whether a project activity happened in the physical wo
 ### P1 — only after P0 passes
 
 - Import requirements from donor templates.
-- Better spreadsheet column mapping and row-level financial reconciliation.
+- Interactive column mapping for unusual spreadsheet headers and additional regional number/date formats.
 - DOCX/PDF report export generated server-side.
 - Multiple reviewer collaboration and secure sharing.
 
@@ -115,7 +115,7 @@ Ordinary code, not SERV, must:
 
 ## 8. Data protection and security
 
-- No original uploaded file is retained after extraction; only extracted text, metadata and review output are stored for the short-lived case.
+- No original uploaded file is retained after extraction; extracted text, structured CSV/XLSX cell values, source locators, metadata and review output are stored for the short-lived case.
 - Use the existing Neon database through `DATABASE_URL`; do not create a new database for this MVP.
 - Each case has a random access token. Store only its SHA-256 hash; return the token once and keep it in the current browser session.
 - Cases expire after 24 hours and can be explicitly deleted. Expired cases are purged on subsequent store access.
