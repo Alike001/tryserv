@@ -141,7 +141,7 @@ A release is acceptable only when:
 7. The review can be printed/saved as PDF.
 8. A case can be deleted and expires after 24 hours on access.
 9. No API key or database credential reaches the browser.
-10. Existing SERV budget protections and non-Shaida/Tabbata project boundaries remain intact.
+10. Existing SERV budget protections and the current product scope boundaries remain intact.
 11. Unit and browser CI pass at desktop and mobile sizes.
 12. The demo uses fictional data and does not claim human testing, physical verification or real NGO adoption.
 
