@@ -272,6 +272,20 @@ body[data-page="tabbata"] :is(a,button,input,select,textarea):focus-visible{outl
  .safety-section{padding:58px 18px}.safety-inner{grid-template-columns:1fr;gap:10px}.safety-inner h2{font-size:31px}
  .footer{padding:23px 18px}.footer-inner{gap:13px}.footer p{flex-basis:100%;order:2;margin:0}
 }
+@media(max-width:520px){
+ .visual-flow{grid-template-columns:1fr;gap:7px}
+ .visual-docs{grid-template-columns:1fr;gap:6px}
+ .visual-doc{min-height:46px;padding:8px 10px;gap:9px}
+ .visual-doc b{font-size:9px;white-space:normal}
+ .visual-doc small{font-size:8px}
+ .flow-connector{height:14px;flex-direction:row;justify-content:center;gap:5px}
+ .flow-connector span{width:22px}
+ .final-connector{height:12px}
+ .reason-card{min-height:115px}
+ .result-card{padding:12px}
+ .result-row{font-size:8px;gap:7px}
+ .result-row b{font-size:9px}
+}
 @media(max-width:390px){
  .hero-visual{padding:11px}.visual-doc{gap:3px}.visual-doc b{font-size:6px}.visual-doc small{font-size:6px}
  .reason-card{min-height:135px}.reason-card small{font-size:6px}
