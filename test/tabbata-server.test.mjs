@@ -182,6 +182,7 @@ test("case creation assigns financial schedules and persists deterministic line-
   assert.equal(result.review_case.financial_reconciliation.schedule_totals.budget_minor,300000000);
   assert.equal(result.review_case.financial_reconciliation.schedule_totals.expense_minor,350000000);
   assert.ok(result.review_case.financial_reconciliation.checks.some(item=>item.type==="category_over_budget"&&item.category==="Materials"));
+  assert.ok(result.review_case.financial_reconciliation.checks.some(item=>item.type==="receipt_reference_not_found"&&item.reference==="REC-1"));
  });
 });
 test("reviewer actions are recorded and case deletion removes the workspace",async()=>{
