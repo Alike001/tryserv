@@ -228,7 +228,7 @@ export async function reviewWithServ({casePayload,apiKey,model="gpt-5.4-mini",fe
       headers:{"Authorization":"Bearer "+apiKey,"Content-Type":"application/json"},
       body:JSON.stringify({
         model,instructions,input:JSON.stringify(context),
-        reasoning:{effort:"medium",summary:"auto"},max_output_tokens:2800,
+        reasoning:{effort:"medium",summary:"auto"},max_output_tokens:8000,
         tools:[tool],tool_choice:{type:"function",name:"submit_report_review"},
         parallel_tool_calls:false
       }),
@@ -244,7 +244,8 @@ export async function reviewWithServ({casePayload,apiKey,model="gpt-5.4-mini",fe
     const data=await response.json();
     if(data?.status&&data.status!=="completed"){
       const detail=typeof data.error?.message==="string"?data.error.message:typeof data.incomplete_details?.reason==="string"?data.incomplete_details.reason:"";
-      throw new Error("SERV response did not complete ("+String(data.status).slice(0,40)+")."+(detail?" "+detail.slice(0,160):""));
+      const used=Number.isSafeInteger(data.usage?.output_tokens)?" output_tokens="+data.usage.output_tokens:"";
+      throw new Error("SERV response did not complete ("+String(data.status).slice(0,40)+")."+(detail?" "+detail.slice(0,160):"")+used);
     }
     const calls=Array.isArray(data?.output)?data.output.filter(item=>item?.type==="function_call"&&item?.name==="submit_report_review"):[];
     if(calls.length!==1||typeof calls[0].arguments!=="string")
