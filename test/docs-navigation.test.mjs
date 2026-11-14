@@ -95,7 +95,7 @@ test("one shared brand stylesheet and working first-party navigation across the 
    const html=await (await fetch(url+route)).text();
    assert.match(html,/href="\/brand\.css"/,route+" must use the same brand");
    assert.match(html,/class="brand-route-nav"/,route+" must have mobile page navigation");
-   for(const link of ["/","/learn","/try","/debug","/docs"]){
+   for(const link of ["/legacy","/learn","/try","/debug","/docs"]){
     assert.ok(html.includes('href="'+link+'"'),route+" links to "+link);
    }
   }
