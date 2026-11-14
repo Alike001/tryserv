@@ -34,6 +34,7 @@ test("wrong answers give useful hints; only a correct answer completes the lesso
   await page.locator("#check").click();
   await expect(page.locator("#feedback")).toContainText("Lesson marked complete");
   await expect(page.locator("#progress-count")).toHaveText("1 of 4");
+  await expect(page.locator("body")).not.toContainText(/XP/i);
 });
 
 test("previously saved lesson IDs remain completed after the XP system is removed",async({page})=>{
@@ -57,7 +58,7 @@ test("four lessons build a valid request and show a persistent learning summary"
   }
   await expect(page.locator("#builder")).toBeVisible();
   await page.locator("#check").click();
-  await expect(page.locator("#feedback")).toContainText("+20 XP");
+  await expect(page.locator("#feedback")).toContainText("Lesson marked complete");
   await expect(page.locator("#json-preview")).toContainText('"model": "gpt-5.4-mini"');
   await expect(page.locator("#request-preview")).toBeVisible();
   await expect(page.locator("#live-try-panel")).toBeHidden();
@@ -66,6 +67,7 @@ test("four lessons build a valid request and show a persistent learning summary"
   await expect(page.locator("#progress-count")).toHaveText("4 of 4");
   await expect(page.locator("#completion-panel")).toContainText("all four lessons");
   await expect(page.locator("#completion-panel a[href='/debug']")).toBeVisible();
+  await expect(page.locator("body")).not.toContainText(/XP/i);
   await page.reload();
   await expect(page.locator("#completion-panel")).toBeVisible();
   await expect(page.locator("#progress-count")).toHaveText("4 of 4");
