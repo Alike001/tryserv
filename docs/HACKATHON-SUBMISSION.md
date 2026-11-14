@@ -20,8 +20,8 @@ This is a problem hypothesis. User interviews and willingness-to-pay validation 
 
 ## How SERV powers Tabbas
 
-- The server sends the narrative report, funder requirements and extracted supporting-document segments to OpenServ SERV Chat Completions.
-- It uses `reasoning_effort: "medium"` and a forced `submit_report_review` function tool for structured findings.
+- The server sends the narrative report, funder requirements and extracted supporting-document segments to OpenServ SERV Responses API.
+- It uses `reasoning: { effort: "medium", summary: "auto" }` and a forced `submit_report_review` function tool for structured findings.
 - SERV reasons about claim-to-evidence relationships, requirement coverage and apparent document contradictions.
 - The backend verifies every evidence reference and exact quotation against the extracted source segment before showing it.
 - Deterministic code handles file extraction, source locators, budget arithmetic, input validation and result validation.
