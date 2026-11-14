@@ -104,6 +104,21 @@ test("a report pack is created without inference; SERV runs only after explicit 
  await expect(page.locator("#review-findings")).toContainText("Partially supported");
  await expect(page.locator("#review-findings")).toContainText(quote);
  await expect(page.locator("#review-provider")).toContainText("serv-live-completion");
+ const readableSizes=await page.evaluate(()=>({
+  fieldLabel:parseFloat(getComputedStyle(document.querySelector(".field>span")).fontSize),
+  uploadNote:parseFloat(getComputedStyle(document.querySelector(".upload-note")).fontSize),
+  findingBody:parseFloat(getComputedStyle(document.querySelector("#review-findings .finding-card>p")).fontSize),
+  evidenceQuote:parseFloat(getComputedStyle(document.querySelector("#review-findings .evidence-ref blockquote")).fontSize),
+  reviewerButton:parseFloat(getComputedStyle(document.querySelector(".reviewer-actions .button")).fontSize)
+ }));
+ expect(readableSizes.fieldLabel).toBeGreaterThanOrEqual(12);
+ expect(readableSizes.uploadNote).toBeGreaterThanOrEqual(11);
+ expect(readableSizes.findingBody).toBeGreaterThanOrEqual(12);
+ expect(readableSizes.evidenceQuote).toBeGreaterThanOrEqual(12);
+ expect(readableSizes.reviewerButton).toBeGreaterThanOrEqual(12);
+ await page.setViewportSize({width:375,height:812});
+ const workspaceOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+ expect(workspaceOverflow,"workspace overflow at mobile width").toBeLessThanOrEqual(2);
  expect(analysisCalls).toBe(1);
  await page.locator("#review-note").fill("Please attach the missing Site C commissioning record.");
  await page.locator("#request-clarification").click();
