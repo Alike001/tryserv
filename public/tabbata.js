@@ -47,11 +47,14 @@ function preview(index){
 }
 function displayFiles(){
  const list=$("file-list");list.replaceChildren();
+ const reportFile=$("report-file").files?.[0]??null;
  const files=sampleFiles??Array.from($("evidence-files").files??[]);
- if(!files.length){const empty=document.createElement("span");empty.className="file-empty";empty.textContent="No files added yet.";list.append(empty);return;}
- for(const file of files){
+ const entries=[...(reportFile?[{file:reportFile,label:"Narrative report"}]:[]),...files.map(file=>({file,label:"Supporting evidence"}))];
+ if(!entries.length){const empty=document.createElement("span");empty.className="file-empty";empty.textContent="No files added yet.";list.append(empty);return;}
+ for(const entry of entries){
+  const file=entry.file;
   const row=document.createElement("div");row.className="file-item";
-  const name=document.createElement("b");name.textContent=file.name;row.append(name);
+  const name=document.createElement("b");name.textContent=entry.label+": "+file.name;row.append(name);
   const size=document.createElement("span");size.textContent=(file.size??new TextEncoder().encode(file.content??"").length).toLocaleString()+" bytes";row.append(size);
   list.append(row);
  }
@@ -62,7 +65,7 @@ function loadSample(){
   $(map[key]).value=value;
  });
  sampleFiles=sampleEvidence.map(file=>({...file,size:new TextEncoder().encode(file.content).length}));
- $("evidence-files").value="";
+ $("report-file").value="";$("evidence-files").value="";
  displayFiles();
  formStatus("Fictional sample loaded. Review the details, then create a workspace. No SERV request has been made.","success");
  $("review").scrollIntoView({behavior:"smooth",block:"start"});
@@ -105,8 +108,9 @@ function statusLabel(status){
 }
 function renderDocuments(payload){
  const list=$("case-documents");list.replaceChildren();
- for(const doc of payload.documents??[]){
-  const row=addText(list,"div","case-doc",doc.name);
+ const allDocs=[...(payload.report_document?[{...payload.report_document,display_name:"Narrative report"}]:[]),...(payload.documents??[]).map(doc=>({...doc,display_name:"Supporting evidence"}))];
+ for(const doc of allDocs){
+  const row=addText(list,"div","case-doc",(doc.display_name?doc.display_name+": ":"")+doc.name);
   row.title=doc.extracted_chars+" extracted characters"+(doc.truncated?" · text limit reached":"");
  }
 }
@@ -171,19 +175,23 @@ function renderCase(payload,expiresAt){
 async function createWorkspace(event){
  event.preventDefault();
  if(!storageConfigured){formStatus("Secure review storage is not configured on the server yet. The form has not been sent.","error");return;}
- const files=sampleFiles??Array.from($("evidence-files").files??[]);
- if(files.length<1||files.length>MAX_FILES){formStatus("Choose between 1 and 5 supporting files.","error");return;}
+ const reportFile=$("report-file").files?.[0]??null;
+ const supportFiles=sampleFiles??Array.from($("evidence-files").files??[]);
+ const files=[...(reportFile?[reportFile]:[]),...supportFiles];
+ if(supportFiles.length<1||files.length>MAX_FILES){formStatus("Add at least one supporting document and no more than 5 files total, including the report.","error");return;}
  const total=files.reduce((sum,file)=>sum+(file.size??new TextEncoder().encode(file.content??"").length),0);
  if(files.some(file=>(file.size??new TextEncoder().encode(file.content??"").length)>MAX_FILE)||total>MAX_TOTAL){formStatus("Files exceed the 2 MiB per-file or 8 MiB combined limit.","error");return;}
+ if(!reportFile&&$("report-text").value.trim().length<80){formStatus("Paste at least 80 characters of narrative report, or upload the report file above.","error");$("report-text").focus();return;}
  const button=$("create-case");button.disabled=true;button.textContent="Preparing documents…";
  try{
-  const encoded=[];for(const file of files)encoded.push(await filePayload(file));
+  const encoded=[];for(const file of supportFiles)encoded.push(await filePayload(file));
   const body={
    project_name:$("project-name").value,funder:$("funder").value,
    reporting_period:$("reporting-period").value,currency:$("currency").value,
    approved_budget:$("approved-budget").value,reported_spend:$("reported-spend").value,
    requirements:$("requirements").value,report_text:$("report-text").value,files:encoded
   };
+  if(reportFile)body.report_file=await filePayload(reportFile);
   button.textContent="Creating workspace…";
   const response=await fetch("/api/tabbata/cases",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   const result=await response.json();
@@ -252,6 +260,7 @@ document.addEventListener("DOMContentLoaded",async()=>{
  $("load-sample").addEventListener("click",loadSample);
  $("load-sample-top").addEventListener("click",loadSample);
  $("evidence-files").addEventListener("change",()=>{sampleFiles=null;displayFiles();});
+ $("report-file").addEventListener("change",displayFiles);
  $("case-form").addEventListener("submit",createWorkspace);
  $("analyze-case").addEventListener("click",analyzeCase);
  $("print-report").addEventListener("click",()=>window.print());
