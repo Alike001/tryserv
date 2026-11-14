@@ -42,7 +42,7 @@ The SERV request uses a forced function tool named `submit_report_review`, `reas
 - Maximum 5 files, 2 MiB each, 8 MiB total.
 - Maximum 40,000 extracted characters per case.
 - Scanned-image PDF OCR is not supported.
-- CSV/XLSX line-item checks rely on recognised column headings and stored cell values; unsupported or ambiguous headers are surfaced for review.
+- CSV/XLSX line-item checks rely on recognised column headings and stored cell values; unsupported or ambiguous headers are surfaced for review. Financial XLSX schedules must contain one data worksheet; multiple worksheets are not silently combined, so export the relevant sheet separately.
 - Spreadsheet formulas are not executed or recalculated; only stored cell values are read.
 - Financial flags are not proof of fraud, expense eligibility or improper spending.
 - This pilot uses one-time private case links rather than organisation accounts or team roles; organisation workspaces and role-based access are on the product roadmap.
