@@ -33,13 +33,13 @@ TrySERV's backend calls OpenServ's Chat Completions API for constrained lesson-s
 
 **What was built for the hackathon:**
 
-A standalone public learning product, four source-linked deterministic exercises, the validated SERV request builder, SERV-powered lesson tutor, bounded public inference access, persistent local XP, three realistic editable debugging missions, a full in-app documentation portal, and automated Node/Chromium journeys. Describe only the features present in the deployed commit.
+A standalone public learning product, four source-linked deterministic exercises, the validated SERV request builder, SERV-powered lesson tutor, bounded public inference access, browser-local lesson completion progress, three realistic editable debugging missions, a full in-app documentation portal, and automated Node/Chromium journeys. Describe only the features present in the deployed commit.
 
 **Revenue potential (hypothesis, not existing revenue):**
 
 A developer-onboarding product that could eventually be commissioned by SDK, API and AI infrastructure ecosystems to provide guided learning and first-request success. No paying customers, conversion data, sales or partnership claims are established.
 
-**Honest limitations:** Local XP is not a credential; previews never execute; model explanations may be inaccurate; guest inference is capped and can run out; a separate access code is needed for operator-only custom inference; production human usability and accessibility signoff are pending.
+**Honest limitations:** Lesson completion is stored only in the current browser and is not a credential; previews never execute; model explanations may be inaccurate; guest inference is capped and can run out; a separate access code is needed for operator-only custom inference; production human usability and accessibility signoff are pending.
 
 ## Recommended demonstration (3–4 minutes; record actual app)
 
@@ -49,7 +49,7 @@ A developer-onboarding product that could eventually be commissioned by SDK, API
 | 0:25–1:10 | /debug | Select missing instructions, submit broken JSON and show deterministic field-level error | **No inference and no credits** |
 | 1:10–1:55 | /debug | **Only if guest quota is available:** click Ask SERV, show a genuine explanation, partially redacted completion ID, model, latency and linked source | Paid inference ONLY after click; no raw editor JSON sent |
 | 1:55–2:20 | /debug | Correct the instruction, validate again and copy blueprint | Fix remains user-directed, never executed here |
-| 2:20–2:55 | /learn | Finish or review a sourced lesson, show non-spoiler feedback and real on-device XP | XP is local, not an official credential |
+| 2:20–2:55 | /learn | Finish or review a sourced lesson, show non-spoiler feedback and completed-lesson progress | Completion is local to this browser, not an official credential |
 | 2:55–3:20 | /try | Validate and copy example request/curl; show clearly labeled preview | Not a live request unless separately authorized |
 | 3:20–3:40 | /docs and GitHub | Real product guides, source, and passing Chromium tests | No fabricated users, payments or revenue |
 
@@ -60,7 +60,7 @@ Keep personal browser secrets, private access codes, network addresses and priva
 ## Genuine production evidence — 13 November 2026
 
 - Public Render production journey: [GitHub Actions run 43382281020](https://github.com/Alike001/tryserv/actions/runs/43382281020) — **2/2 hosted Playwright tests passed**.
-- Five routes tested at 320, 375, 768, 1024, 1440px. Four lessons completed to 80 local XP and three separate debug scenarios repaired. Zero paid requests in the free phase.
+- Five routes tested at 320, 375, 768, 1024, 1440px. Four lessons completed and three separate debug scenarios repaired. Zero paid requests in the free phase.
 - The live diagnostic made **exactly one** OpenServ `POST /api/mentor` through the actual browser after the quota preflight. The genuine model, ID, 7.866s latency, usage and official source are captured in the artifact. Global lifetime reservation count increased from 1 to 2, with 22 remaining at test completion.
 - Earlier failed hosted run and recovered test harness: first run caught premature font measurement and the vague first-case validation message; PR #13 fixed validation and stabilized post-font checks; a later full hosted run passed. Do not misrepresent the first attempt as clean.
 - This is **not** independent novice/developer human feedback or a screen reader audit. Those remain outstanding.
@@ -76,7 +76,7 @@ Most AI infrastructure onboarding stops at documentation. TrySERV turns OpenServ
 • Three editable API debugging missions with exact server-validated errors
 • Optional SERV Reasoning explanations of those errors, with actual model metadata and a tightly capped public trial
 
-No account or API key is needed for free practice. XP stays in your browser; request previews do not send inference calls.
+No account or API key is needed for free practice. Lesson completion stays in your browser; request previews do not send inference calls.
 
 Live: https://tryserv.onrender.com/
 Code: https://github.com/Alike001/tryserv
@@ -95,7 +95,7 @@ Code: https://github.com/Alike001/tryserv
 - [ ] Verify Render LIVE at the final documentation-only commit as well as the merged code.
 - [ ] Run two genuine user journeys (one beginner, one developer) without coaching; record actual blockers using [the tester kit](REAL-USER-ACCEPTANCE.md).
 - [ ] Inspect actual mobile/desktop focus and screen-reader experience; don't equate responsive tests with human review.
-- [x] Real hosted browser produced a genuine **SERV diagnostic** on 13 Nov: `gpt-5.4-mini-2026-03-17`, completion `chatcmpl-EjfWfyCJ7aPECLZXpsPWzmdxeadBK`, 7866ms, 833 input / 133 output tokens. The developer then repaired and revalidated. [Production evidence and recordings](https://github.com/Alike001/tryserv/actions/runs/43382281020/artifacts/14016669211). The free path passed 80 XP/3 repairs with zero inference calls. Global shared reservations now 2 of 24 used, so no automatic retries.
+- [x] Real hosted browser produced a genuine **SERV diagnostic** on 13 Nov: `gpt-5.4-mini-2026-03-17`, completion `chatcmpl-EjfWfyCJ7aPECLZXpsPWzmdxeadBK`, 7866ms, 833 input / 133 output tokens. The developer then repaired and revalidated. [Production evidence and recordings](https://github.com/Alike001/tryserv/actions/runs/43382281020/artifacts/14016669211). The free path completed all four lessons and 3 repairs with zero inference calls. Global shared reservations now 2 of 24 used, so no automatic retries.
 - [ ] Record and publish a truthful demo video, post on X, submit the Typeform and save the confirmation.
 
 Do not spend more guest credits just to create marketing media if the cap is nearly exhausted. Never reset the global budget without investigating provider costs and abuse conditions.
