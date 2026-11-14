@@ -35,7 +35,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
  const reviewInFlight=new Set();
  const caseCreateWindows=new Map();
  function allowCaseCreate(req){
-  const actor=guestActorHash(req,env.SERV_API_KEY??env.DATABASE_URL??"tabbata-case-limit");
+  const actor=guestActorHash(req,env.SERV_API_KEY||env.DATABASE_URL||"tabbata-case-limit");
   const now=Date.now();
   const recent=(caseCreateWindows.get(actor)??[]).filter(timestamp=>timestamp>now-60*60*1000);
   if(recent.length>=5)return false;
