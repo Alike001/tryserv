@@ -151,7 +151,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
     return json(res,201,{case_id:created.id,case_token:created.token,expires_at:created.expires_at,review_case:payload});
    }catch(error){return json(res,503,{error:"Could not create a secure review workspace. Check storage availability and try again."});}
   }
-  const tabbataCaseMatch=pathname.match(/^\\/api\\/tabbata\\/cases\\/([0-9a-f-]{36})(?:\\/(analyze|actions))?$/i);
+  const tabbataCaseMatch=pathname.match(new RegExp("^/api/tabbata/cases/([0-9a-f-]{36})(?:/(analyze|actions))?$","i"));
   if(tabbataCaseMatch){
    const caseId=tabbataCaseMatch[1];
    const routeAction=tabbataCaseMatch[2]??"";
@@ -203,7 +203,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
     let record;try{record=await reviewStore.get(caseId,caseToken);}catch{return json(res,503,{error:"Review storage is temporarily unavailable."});}
     if(!record)return json(res,404,{error:"Review workspace not found or expired."});
     const findingId=typeof input.finding_id==="string"?input.finding_id:"";
-    if(findingId&&(!record.payload.review?.findings??[]).some(finding=>finding.id===findingId))return json(res,400,{error:"The selected finding does not exist in this review."});
+    if(findingId&&!(record.payload.review?.findings??[]).some(finding=>finding.id===findingId))return json(res,400,{error:"The selected finding does not exist in this review."});
     record.payload.reviewer_actions.push({id:"A-"+(record.payload.reviewer_actions.length+1),action:input.action,finding_id:findingId||null,note,created_at:new Date().toISOString()});
     try{await reviewStore.update(caseId,caseToken,record.payload);return json(res,200,{reviewer_actions:record.payload.reviewer_actions});}
     catch{return json(res,503,{error:"Could not save the reviewer action."});}
