@@ -1,3 +1,56 @@
+# Tabbata pivot — Current handoff (14 November 2026)
+
+**Current direction:** The public product is pivoting from TrySERV's OpenServ learning companion into **Tabbata**, a focused pre-submission donor report pack reviewer. The first name proposal "Shaida" was retired after discovering an existing Web3 agent project with the same name. Tabbata is a provisional working brand, not trademark/domain-cleared.
+
+**Repository:** `Alike001/tryserv`  
+**Branch:** `feat/tabbata-donor-report-review`  
+**Draft PR:** [#22](https://github.com/Alike001/tryserv/pull/22)  
+**Existing Render service:** `https://tryserv.onrender.com/`  
+**Open Track:** OpenServ Edition 02.
+
+## Current pivot implementation
+
+- New root page `public/tabbata.html`, styling `public/tabbata.css`, browser workflow `public/tabbata.js`.
+- New backend modules: `tabbata-documents.mjs`, `tabbata-review.mjs`, `tabbata-store.mjs`.
+- New short-lived Neon table `tabbata_cases` using the existing `DATABASE_URL`; no new DB or Render service.
+- File extraction for PDF, DOCX, XLSX, CSV, TXT and Markdown with file, archive, text and segment limits.
+- One explicit SERV Chat Completions request per case, forced `submit_report_review` function output, `reasoning_effort: "medium"`.
+- Exact source ID/quote validation and deterministic budget arithmetic.
+- Random per-case token, hash-only token storage, 24-hour expiry, explicit deletion, reviewer actions.
+- Fictional community water project sample. No real NGO data or beneficiary information.
+- Old TrySERV product preserved temporarily at `/legacy`, `/learn`, `/try`, `/debug`, `/docs` during transition.
+
+## Verification status at handoff
+
+- Node CI: **81 passed, 0 failed** on the latest completed run.
+- Browser Playwright workflow: still running at last check; do not claim passed until the run concludes.
+- No live SERV inference credits have been spent by the pivot implementation or CI.
+- Hosted production database readiness and a real live SERV review still need verification.
+- No NGO programme officer or finance reviewer has tested the product yet.
+- No revenue, adoption, physical verification or audit certification claims.
+
+## Safety and inference
+
+- The user must click Analyze to trigger SERV.
+- One call reserves one unit from the existing durable guest allowance. Do not reset, raise or bypass it.
+- No automatic retries after a reserved provider failure.
+- Uploaded binaries are not persisted; extracted text and review output are stored for up to 24 hours.
+- Never upload beneficiary names, phone numbers, addresses, bank details, IDs, health data or other sensitive personal information.
+- Tabbata is not an auditor, fraud detector, funder or physical verification service.
+
+## Next actions
+
+1. Resolve any browser CI failures and rerun all checks.
+2. Finish README, hackathon submission notes, demo script and acceptance checklist.
+3. Verify the existing Render service's database and SERV readiness without exposing secrets.
+4. Deploy only after CI is green and review the deployed commit.
+5. Make one explicitly authorised live SERV review with fictional sample data, if the shared allowance permits.
+6. Verify exact source quotes, provider completion metadata, reviewer actions, print and delete.
+7. Ask one NGO programme/M&E officer and one finance/report reviewer to test the workflow; do not claim this until it happens.
+8. Record the final demo from the actual hosted result and submit only after evidence is captured.
+
+---
+
 # TrySERV — Current handoff update (14 November 2026)
 
 **Latest product decision:** XP, point totals and reward messages have been removed. The learning studio now records completed lesson IDs only, shows a 0–4 completion count and a practical learning summary, and keeps the three debugging repairs as a separate progress track. The existing `tryserv-progress-v1` localStorage format (an array of lesson IDs) is unchanged, so previously completed lessons remain completed after this UI update. The change is being delivered through `feat/remove-xp-learning-progress`; do not reintroduce XP or points.
