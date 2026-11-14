@@ -238,7 +238,7 @@ export async function reviewWithServ({casePayload,apiKey,model="gpt-5.4-mini",fe
       const errorBody=await response.json().catch(()=>null);
       const providerError=errorBody?.error;
       const code=typeof providerError?.code==="string"?providerError.code.slice(0,80):"";
-      const message=typeof providerError?.message==="string"?providerError.message.replace(/[\\r\\n\\t]+/g," ").slice(0,180):"";
+      const message=typeof providerError?.message==="string"?providerError.message.replace(/[\r\n\t]+/g," ").slice(0,180):"";
       throw new Error("SERV returned HTTP "+response.status+(code?" ("+code+")":"")+(message?": "+message:"")+".");
     }
     const data=await response.json();
