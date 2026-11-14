@@ -1,0 +1,175 @@
+name: One-time Tabbas Responses API live acceptance
+
+on:
+  push:
+    branches:
+      - ops/one-time-tabbas-responses-acceptance
+    paths:
+      - .github/workflows/one-time-tabbas-responses-acceptance.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tabbas-one-time-responses-acceptance
+  cancel-in-progress: false
+
+jobs:
+  live-serv-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Preflight and make exactly one live SERV analysis
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          const base = "https://tryserv.onrender.com";
+          const headers = {
+            "User-Agent": "Tabbas-One-Time-Responses-Acceptance/1.0",
+            "Cache-Control": "no-store"
+          };
+          async function getJson(path) {
+            const response = await fetch(base + path, { headers });
+            const text = await response.text();
+            let body;
+            try { body = JSON.parse(text); } catch { throw new Error("Invalid JSON from " + path + " (HTTP " + response.status + ")"); }
+            if (!response.ok) throw new Error(path + " returned HTTP " + response.status + ": " + (body.error ?? "unknown error"));
+            return body;
+          }
+          const health = await getJson("/healthz");
+          if (health.service !== "tabbas" || health.status !== "ok") throw new Error("Production health check did not identify Tabbas.");
+          const appStatus = await getJson("/api/tabbata/status");
+          if (appStatus.storage_configured !== true || appStatus.serv_configured !== true) throw new Error("Production storage or SERV configuration is unavailable.");
+          const allowance = await getJson("/api/tutor/allowance");
+          console.log("Preflight:", JSON.stringify({
+            health: health.status,
+            storage_configured: appStatus.storage_configured,
+            serv_configured: appStatus.serv_configured,
+            model: appStatus.model,
+            allowance_status: allowance.status,
+            remaining_today: allowance.remaining_today,
+            remaining_total: allowance.remaining_total
+          }));
+          if (allowance.available !== true || allowance.remaining_today < 1 || allowance.remaining_total < 1) {
+            throw new Error("No shared guest credit is available. No case was created and no inference was attempted.");
+          }
+
+          const encode = (name, type, content) => ({
+            name, type, data_base64: Buffer.from(content, "utf8").toString("base64")
+          });
+          const body = {
+            project_name: "Community Water Access Project",
+            funder: "Community Development Fund",
+            reporting_period: "Q3 2026",
+            period_start: "2026-07-01",
+            period_end: "2026-09-30",
+            currency: "NGN",
+            approved_budget: "5000000",
+            reported_spend: "4500000",
+            requirements: [
+              "Report progress against all three approved water-facility milestones.",
+              "Provide the number of households reached and supporting distribution records.",
+              "Reconcile reported expenditure against the approved budget and supporting schedule.",
+              "Explain delays and the mitigation actions taken during the reporting period."
+            ].join("\n"),
+            report_text: "During Q3 2026, the Community Water Access Project completed and commissioned all three planned water facilities. The facilities now serve 500 households across the three target communities. The programme spent NGN 4,500,000 against an approved budget of NGN 5,000,000. All planned activities were delivered on schedule and no material delays were recorded. The project team completed community engagement and distributed water access information to all target households.",
+            files: [
+              encode("site-status.csv", "text/csv", "Site,Status,Last update,Note\nSite A,Completed,2026-08-02,Commissioning record filed\nSite B,Completed,2026-08-16,Commissioning record filed\nSite C,Testing pending,2026-09-28,Water quality testing not complete"),
+              encode("household-register.csv", "text/csv", "Community,Households reached,Distribution date\nCommunity A,150,2026-08-12\nCommunity B,140,2026-08-20\nCommunity C,130,2026-09-10"),
+              encode("field-notes.txt", "text/plain", "Field notes — 28 September 2026\nSite C: commissioning visit deferred pending water quality testing. The team expects a follow-up inspection after test results are received.\nCommunity reach register currently contains 420 household entries across the three target communities.")
+            ],
+            budget_schedule_file: encode("approved-budget.csv", "text/csv", "Category,Amount NGN\nMaterials,2000000\nConstruction,2000000\nTesting,1000000"),
+            expense_schedule_file: encode("expense-schedule.csv", "text/csv", "Date,Category,Description,Amount NGN,Receipt reference\n2026-07-14,Materials,Pipes and fittings,1400000,REC-001\n2026-07-14,Materials,Additional fittings,100000,REC-001\n2026-08-02,Construction,Site works and labour,1200000,REC-002\n2026-09-03,Testing,Water quality and distribution,1800000,")
+          };
+
+          let created = null;
+          let analysisStarted = false;
+          try {
+            const createResponse = await fetch(base + "/api/tabbata/cases", {
+              method: "POST",
+              headers: { ...headers, "Content-Type": "application/json" },
+              body: JSON.stringify(body)
+            });
+            const createText = await createResponse.text();
+            let createdBody;
+            try { createdBody = JSON.parse(createText); } catch { throw new Error("Case creation returned invalid JSON (HTTP " + createResponse.status + ")."); }
+            if (!createResponse.ok) throw new Error("Case creation returned HTTP " + createResponse.status + ": " + (createdBody.error ?? "unknown error"));
+            created = { id: createdBody.case_id, token: createdBody.case_token };
+            console.log("Fictional workspace created:", JSON.stringify({
+              case_id: created.id,
+              expires_at: createdBody.expires_at,
+              document_count: (createdBody.review_case?.documents ?? []).length,
+              financial_reconciliation_status: createdBody.review_case?.financial_reconciliation?.status,
+              analysis_status: createdBody.review_case?.analysis_status
+            }));
+
+            // The only analysis POST in this workflow. No retries are performed.
+            analysisStarted = true;
+            const response = await fetch(base + "/api/tabbata/cases/" + created.id + "/analyze", {
+              method: "POST",
+              headers: { ...headers, "X-Case-Token": created.token }
+            });
+            const responseText = await response.text();
+            let result;
+            try { result = JSON.parse(responseText); } catch { throw new Error("SERV analysis returned invalid JSON (HTTP " + response.status + ")."); }
+            if (!response.ok) throw new Error("SERV analysis returned HTTP " + response.status + ": " + (result.error ?? "unknown error"));
+            if (result.reused !== false) throw new Error("Expected a new provider completion, not a reused review.");
+            if (result.analysis_status !== "complete" || !result.review || !result.provider?.completion_id) {
+              throw new Error("SERV did not return a complete, traceable review.");
+            }
+            const persisted = await getJson("/api/tabbata/cases/" + created.id);
+            if (persisted.review_case?.analysis_status !== "complete" || persisted.review_case?.provider?.completion_id !== result.provider.completion_id) {
+              throw new Error("The live SERV result was not persisted to the case.");
+            }
+
+            const findings = (result.review.findings ?? []).map(item => ({
+              id: item.id,
+              requirement_id: item.requirement_id,
+              claim: item.claim,
+              status: item.status,
+              severity: item.severity,
+              explanation: item.explanation,
+              evidence_refs: (item.evidence_refs ?? []).map(ref => ({
+                document: ref.document_name,
+                locator: ref.locator,
+                exact_quote: ref.quote
+              })),
+              citation_validation: item.citation_validation,
+              missing_items: item.missing_items,
+              suggested_question: item.suggested_question
+            }));
+            console.log("LIVE SERV RESULT:", JSON.stringify({
+              service: "tabbas",
+              inference_calls: 1,
+              reused: false,
+              provider: result.provider,
+              review_state: result.review.review_state,
+              summary: result.review.summary,
+              finding_count: findings.length,
+              findings,
+              limitations: result.review.limitations,
+              budget_check: result.budget_check,
+              financial_reconciliation: result.financial_reconciliation,
+              persisted: true
+            }, null, 2));
+          } finally {
+            if (created?.id && created?.token) {
+              const deleted = await fetch(base + "/api/tabbata/cases/" + created.id, {
+                method: "DELETE",
+                headers: { ...headers, "X-Case-Token": created.token }
+              });
+              const text = await deleted.text();
+              let data;
+              try { data = JSON.parse(text); } catch { data = { raw: text.slice(0, 200) }; }
+              if (!deleted.ok || data.deleted !== true) {
+                console.log("Cleanup warning: fictional test case was not deleted.", JSON.stringify({ status: deleted.status, result: data, analysis_started: analysisStarted }));
+                process.exitCode = 1;
+              } else {
+                console.log("Cleanup: fictional test case deleted.");
+              }
+            }
+          }
+          NODE
