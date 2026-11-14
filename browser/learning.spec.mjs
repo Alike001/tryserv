@@ -38,7 +38,7 @@ test("wrong answers give useful hints; only a correct answer completes the lesso
 });
 
 test("previously saved lesson IDs remain completed after the XP system is removed",async({page})=>{
-  await page.addInitScript(()=>localStorage.setItem("tryserv-progress-v1",JSON.stringify(["ecosystem","understand"])));
+  await page.addInitScript(()=>{if(location.origin!=="null")localStorage.setItem("tryserv-progress-v1",JSON.stringify(["ecosystem","understand"]));});
   await page.goto("/learn");
   await expect(page.locator("#progress-count")).toHaveText("2 of 4");
   await expect(page.locator("#lesson-nav .nav-lesson.complete")).toHaveCount(2);
