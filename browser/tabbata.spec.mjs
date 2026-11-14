@@ -32,7 +32,7 @@ async function mockStatus(page,configured=true){
   upload_limits:{files:5,per_file_bytes:2097152,total_bytes:8388608}
  })}));
 }
-test("Tabbata root page is responsive, accessible and its sample preview is clearly illustrative",async({page})=>{
+test("Tabbas root page is responsive, accessible and its sample preview is clearly illustrative",async({page})=>{
  let inference=0;
  await mockStatus(page,true);
  page.on("request",request=>{if(new URL(request.url()).pathname.endsWith("/analyze"))inference++;});
