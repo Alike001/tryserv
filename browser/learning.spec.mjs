@@ -10,13 +10,13 @@ const validBlueprint={
 };
 
 test("landing sends newcomers and developers to real working routes",async({page})=>{
-  await page.goto("/");
+  await page.goto("/legacy");
   await expect(page.getByRole("heading",{level:1})).toContainText("Stop reading");
   await expect(page.getByRole("link",{name:/I'm new — start here/i})).toBeVisible();
   await page.getByRole("link",{name:/I'm new — start here/i}).click();
   await expect(page).toHaveURL(/\/learn$/);
   await expect(page.locator("#lesson-nav .nav-lesson")).toHaveCount(4);
-  await page.goto("/");
+  await page.goto("/legacy");
   await page.getByRole("link",{name:/I can code — let's build/i}).click();
   await expect(page).toHaveURL(/\/try$/);
   await expect(page.locator("#builder")).toBeVisible();
@@ -229,7 +229,7 @@ test("private custom SERV request is never run by preview or missing authorizati
 
 
 test("new guide page has working navigation, documentation anchors, and learning handoff",async({page})=>{
- await page.goto("/");
+ await page.goto("/legacy");
  await expect(page.locator(".trail-card")).toHaveCount(3);
  await page.locator("a[href='/docs']:visible").first().click();
  await expect(page).toHaveURL(/\/docs$/);
@@ -258,7 +258,7 @@ test("mobile docs remains readable and its in-page navigation works",async({page
 
 
 test("keyboard users can skip homepage navigation and reach main content",async({page})=>{
- await page.goto("/");
+ await page.goto("/legacy");
  await page.keyboard.press("Tab");
  const skip=page.getByRole("link",{name:"Skip to main content"});
  await expect(skip).toBeFocused();
@@ -609,7 +609,7 @@ test("illustrated OpenServ hero displays original art and changes stages without
  });
  for(const width of [320,375,768,1440]){
    await page.setViewportSize({width,height:900});
-   await page.goto("/",{waitUntil:"load"});
+   await page.goto("/legacy",{waitUntil:"load"});
    const art=page.locator(".hero-original-illustration");
    await expect(art).toBeVisible();
    expect(await art.evaluate(img=>img.complete&&img.naturalWidth>0),"original SVG loads at "+width).toBe(true);
@@ -632,7 +632,7 @@ test("illustrated OpenServ hero displays original art and changes stages without
 
 test("hero offers reduced-motion artwork and illustration is not presented as live inference",async({page})=>{
  await page.emulateMedia({reducedMotion:"reduce"});
- await page.goto("/");
+ await page.goto("/legacy");
  await expect(page.locator(".hero-steps-top")).toContainText("NO LIVE API CALL");
  await expect(page.locator(".hero-original-illustration")).toHaveAttribute("alt",/conceptual SERV API workflow/);
  await expect(page.locator("[data-hero-explorer]")).toHaveAttribute("data-hero-current","0");
