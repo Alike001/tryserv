@@ -69,6 +69,25 @@ test("status and case creation never spend SERV credits; access token protects t
   assert.equal(reviewCalls,0);
  });
 });
+test("uploaded narrative reports retain their page locators separately from supporting evidence",async()=>{
+ const store=fakeStore();let extractedNames=[];
+ const reportText="This uploaded narrative report states that the community water project completed all three planned facilities during the reporting period.";
+ const reportDoc={id:"doc-1",name:"narrative-report.txt",kind:"txt",size_bytes:120,extracted_chars:reportText.length,truncated:false,segments:[{id:"doc-1-s1",locator:"Line 1",text:reportText}]};
+ const supportDoc={id:"doc-2",name:"site-log.txt",kind:"txt",size_bytes:100,extracted_chars:evidenceText.length,truncated:false,segments:[{id:"doc-2-s1",locator:"Line 1",text:evidenceText}]};
+ await withApp({env,tabbataStore:store,documentExtractor:async files=>{extractedNames=files.map(file=>file.name);return [reportDoc,supportDoc];},guestReserve:async()=>{throw Error("case creation must not reserve");}},async url=>{
+  const body={...input,report_text:"",report_file:{name:"narrative-report.txt",type:"text/plain",data_base64:"bmFycmF0aXZl"},files:[{name:"site-log.txt",type:"text/plain",data_base64:"c2l0ZSBsb2c="}]};
+  const response=await post(url,"/api/tabbata/cases",body);
+  assert.equal(response.status,201);
+  const result=await response.json();
+  assert.deepEqual(extractedNames,["narrative-report.txt","site-log.txt"]);
+  assert.equal(result.review_case.report_document.name,"narrative-report.txt");
+  assert.equal(result.review_case.report_document.segments[0].locator,"Line 1");
+  assert.equal(result.review_case.documents[0].id,"doc-2");
+  assert.equal(result.review_case.report_text,reportText);
+  assert.equal(result.review_case.source_segments,undefined);
+ });
+});
+
 test("one explicit analyze action reserves one shared credit and returns structured review",async()=>{
  const store=fakeStore();let reserveCalls=0,reviewCalls=0;
  await withApp({env,tabbataStore:store,documentExtractor:async()=>docs,guestReserve:async()=>{reserveCalls++;return {allowed:true,remaining:19};},reviewWithServFn:async({casePayload,apiKey})=>{
