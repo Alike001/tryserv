@@ -2,9 +2,6 @@
 
 /* TrySERV's local progress is deliberately account-free and not certified. */
 [hidden]{display:none!important}
-.xp-line{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #e0e6ef;color:#627992;font-size:11px}
-.xp-line strong{font-size:15px;color:#355bd6;white-space:nowrap}
-.xp-line small{display:block;font-size:9px;color:#9aa8b6;margin-top:3px}
 .reset-progress{border:0;background:transparent;padding:0;margin-bottom:18px;font-size:11px;color:#687d91;text-align:left;text-decoration:underline;text-underline-offset:3px}
 .reset-progress:hover{color:#3b5ed7}
 .resume-hint{font-size:12px;color:#71859a;margin-top:18px}
@@ -63,7 +60,6 @@ body{background:var(--studio-cream);color:var(--studio-ink)}
 .progressbox{background:#fff;border:1.5px solid #d9d4df;box-shadow:3px 4px 0 #eee7f5;border-radius:14px}
 .progress-track{height:8px;background:#eeeafa}
 .progress-track>div{background:#7354d1}
-.xp-line strong{color:#5e45b6}
 .nav-lesson{color:#4b5065;min-height:60px}
 .nav-lesson.active{background:var(--studio-lilac);border:1.5px solid #8f77d6;color:#312363}
 .nav-lesson.complete .nav-number{background:var(--studio-mint);border-color:#9fc5ab;color:#215b40}
@@ -172,7 +168,6 @@ select,textarea,input{font-size:13px;line-height:1.6}
  .sidebar .brand{margin-bottom:12px}
  .sidebar .navlabel,.sidebar .side-footer{display:none}
  .sidebar .progressbox{margin-bottom:13px;padding:10px 13px}
- .sidebar .xp-line{margin-top:6px;padding-top:7px}
  #lesson-nav{display:flex;gap:8px;max-width:100%;overflow:auto;padding-bottom:3px}
  .nav-lesson{min-width:165px;min-height:62px;margin:0;padding:9px}
  .maincontent{padding:26px 20px 45px}
@@ -230,5 +225,4 @@ select,textarea,input{font-size:13px;line-height:1.6}
 @media(max-width:760px){
  .sidebar .progressbox{display:block}
  .sidebar .progressrow{margin-bottom:8px}
- .sidebar .xp-line{display:flex}
 }
