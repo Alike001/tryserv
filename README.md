@@ -42,7 +42,6 @@ The SERV request uses a forced function tool named `submit_report_review`, `reas
 - Maximum 5 files, 2 MiB each, 8 MiB total.
 - Maximum 40,000 extracted characters per case.
 - Scanned-image PDF OCR is not supported.
-- Spreadsheet formulas are not executed or recalculated.
 - CSV/XLSX line-item checks rely on recognised column headings and stored cell values; unsupported or ambiguous headers are surfaced for review.
 - Spreadsheet formulas are not executed or recalculated; only stored cell values are read.
 - Financial flags are not proof of fraud, expense eligibility or improper spending.
@@ -90,7 +89,7 @@ Do not commit secrets or upload a real `.env` file. Tabbas does not provision a 
 
 ## Tests
 
-`npm test` includes parser, store, input-validation, deterministic budget, exact-evidence-quote, HTTP route and no-spend tests.
+`npm test` includes document extraction, financial schedule parsing and reconciliation, store, input validation, exact-evidence-quote, HTTP route and no-spend tests.
 
 The Playwright browser suite covers:
 - Desktop and mobile layouts at 320, 375, 768, 1024 and 1440 px.
