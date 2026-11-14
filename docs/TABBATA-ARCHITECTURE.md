@@ -36,7 +36,7 @@ No original binary uploads are persisted. Extracted text and review results are 
 
 - `GET /`: Tabbata landing and review workspace.
 - `GET /api/tabbata/status`: readiness flags only; never expose secret values.
-- `POST /api/tabbata/cases`: validate form and files, extract documents, persist case, return ID and one-time case token.
+- `POST /api/tabbata/cases`: accept either pasted narrative text or one uploaded report file plus at least one supporting file; extract all files, persist case, return ID and one-time case token.
 - `GET /api/tabbata/cases/:id`: retrieve case after case-token verification.
 - `POST /api/tabbata/cases/:id/analyze`: verify token and input, reserve the existing durable guest allowance, then make one explicit SERV request; persist validated output.
 - `POST /api/tabbata/cases/:id/actions`: record human review action.
