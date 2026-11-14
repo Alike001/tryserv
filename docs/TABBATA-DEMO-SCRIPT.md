@@ -22,7 +22,7 @@
 
 ### 0:20–0:45 — Create a report pack
 
-"Here is a fictional community water project. We enter the funder requirements, reporting period, approved budget and reported expenditure. Then we add the narrative report and supporting files."
+"Here is a fictional community water project. We enter the funder requirements, reporting period, approved budget and reported expenditure. Then we paste or upload the narrative report and add supporting files."
 
 Click **Load fictional sample pack**. Point out the site status log, household register, expense schedule and field notes. Explain that the figures are synthetic.
 
