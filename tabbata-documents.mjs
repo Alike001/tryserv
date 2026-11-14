@@ -42,7 +42,11 @@ function splitSegments(documentId,entries){
       if(segments.length>=TABBATA_UPLOAD_LIMITS.segmentsPerDocument){truncated=true;break;}
       const part=bounded.slice(offset,offset+1500);
       const suffix=bounded.length>1500?" · part "+(Math.floor(offset/1500)+1):"";
-      segments.push({id:documentId+"-s"+(segments.length+1),locator:String(entry.locator).slice(0,100)+suffix,text:part});
+      const segment={id:documentId+"-s"+(segments.length+1),locator:String(entry.locator).slice(0,100)+suffix,text:part};
+      if(offset===0&&entry.cells&&typeof entry.cells==="object"&&!Array.isArray(entry.cells)){
+        segment.cells=Object.fromEntries(Object.entries(entry.cells).slice(0,40).map(([key,value])=>[String(key).slice(0,100),String(value??"").slice(0,1000)]));
+      }
+      segments.push(segment);
       used+=part.length;
     }
     if(truncated||segments.length>=TABBATA_UPLOAD_LIMITS.segmentsPerDocument)break;
@@ -156,12 +160,12 @@ async function extractXlsx(bytes){
       if(rowNumber===1)return;
       if(++rows>1000)throw new Error("Each worksheet may contain at most 1,000 data rows.");
       const cells=row.values.slice(1);
-      const parts=cells.map((value,index)=>{
-        const label=headers[index]??("Column "+(index+1));
-        const text=cellText(value).trim();
+      const cellMap=Object.fromEntries(headers.map((label,index)=>[label,cellText(cells[index]).trim()]));
+      const parts=headers.map(label=>{
+        const text=cellMap[label];
         return text?label+": "+text:"";
       }).filter(Boolean);
-      if(parts.length)entries.push({locator:"Sheet "+sheet.name+" · Row "+rowNumber,text:parts.join(" | ")});
+      if(parts.length)entries.push({locator:"Sheet "+sheet.name+" · Row "+rowNumber,text:parts.join(" | "),cells:cellMap});
     });
   }
   if(!entries.length)throw new Error("No non-empty data rows were found in this XLSX.");
@@ -171,10 +175,14 @@ async function extractCsv(bytes){
   const rows=parseCsv(decodeText(bytes));
   if(rows.length<2)throw new Error("A CSV needs a header row and at least one data row.");
   const headers=rows[0].map((value,index)=>String(value).trim()||"Column "+(index+1));
-  return rows.slice(1).map((cells,index)=>({
-    locator:"Row "+(index+2),
-    text:cells.map((value,column)=>value.trim()?headers[column]+": "+value.trim():"").filter(Boolean).join(" | ")
-  })).filter(row=>row.text);
+  return rows.slice(1).map((cells,index)=>{
+    const cellMap=Object.fromEntries(headers.map((header,column)=>[header,String(cells[column]??"").trim()]));
+    return {
+      locator:"Row "+(index+2),
+      text:headers.map(header=>cellMap[header]?header+": "+cellMap[header]:"").filter(Boolean).join(" | "),
+      cells:cellMap
+    };
+  }).filter(row=>row.text);
 }
 
 export async function extractTABBATADocuments(files){
