@@ -31,7 +31,7 @@ A case row contains:
 - `payload`: JSONB with project metadata, requirements, report narrative, extracted document segments, deterministic checks, SERV findings and reviewer actions.
 - `created_at`, `updated_at`, `expires_at`.
 
-No original binary uploads are persisted. Extracted text and review results are retained for at most 24 hours, then purged on case retrieval/creation. The UI also offers explicit deletion.
+No original binary uploads are persisted. Extracted text, structured CSV/XLSX cell values, source locators and review results are retained for at most 24 hours, then purged on case retrieval/creation. The UI also offers explicit deletion.
 
 ## HTTP API
 
@@ -67,7 +67,7 @@ Prompt rules:
 
 ## Deterministic review
 
-The backend calculates budget variance using integer minor currency units. It does not ask SERV to perform arithmetic. The financial check is separately labelled as a rule-based calculation using user-entered amounts; it does not certify expense eligibility.
+The backend uses integer minor currency units to reconcile approved-budget and actual-expenditure CSV/XLSX rows. It compares schedule totals with entered totals, groups spend by category, flags category overruns and unbudgeted categories, checks duplicate/blank references and tests transaction dates when an explicit reporting period is supplied. Ambiguous headers, invalid rows and truncated schedules fail visibly as incomplete. SERV receives these deterministic results as context but cannot recalculate or override them. These checks do not certify expense eligibility.
 
 ## Inference protection
 
