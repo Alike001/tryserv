@@ -346,6 +346,7 @@ export function reconcileFinancialSchedules({
       "A duplicate reference is a review flag, not proof that a payment or receipt is duplicated.",
       "A missing receipt reference means the schedule cell is blank; it does not prove that no receipt exists.",
       "A receipt reference not found in submitted supporting documents is not proof that the receipt does not exist; it may be outside the bundle or unextractable.",
+      "A matched receipt reference only shows that the reference text appears in a submitted document; it does not authenticate the document or verify the receipt amount.",
       "Category-level reconciliation requires a recognised category column in both schedules; a total-only comparison is not a complete category reconciliation."
     ],
     issue_count: issueCount
