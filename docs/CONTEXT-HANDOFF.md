@@ -25,8 +25,8 @@
 
 ## Verification status
 
-- Latest Node CI on current head `0e97ade1952ff3c88624f2f5779275afb82e73cf`: **103 passed, 0 failed**. This includes financial schedule parsing, receipt-reference matching, duplicate-header preservation, inconsistent-sheet and multi-worksheet handling, reporting-period validation, blank-date checks, prompt-injection separation, schedule integration, existing extraction, security and case-workflow tests.
-- Desktop/mobile Playwright journeys: **74 passed** on UI-tested commit `f7d25898609321685b6b272bf2d715f6e7c8545f`. The current head adds backend date-validation tests after that UI-tested commit; the current browser workflow is still running.
+- Latest Node CI on current head `0875d859ba8bc967134de6ff9170c7f057e533df`: **103 passed, 0 failed**. This includes financial schedule parsing, receipt-reference matching, duplicate-header preservation, inconsistent-sheet and multi-worksheet handling, reporting-period validation, blank-date checks, prompt-injection separation, schedule integration, existing extraction, security and case-workflow tests.
+- Desktop/mobile Playwright journeys: **74 passed** on UI-tested commit `0e97ade1952ff3c88624f2f5779275afb82e73cf`. The current head adds documentation and financial-limit clarification after that UI-tested commit; the current browser workflow is still running.
 - No live SERV inference credits have been spent by these financial changes or CI.
 - PR #22 remains **open and draft**. Do not merge it or claim production acceptance until all tests, product branding, security and release checks pass.
 - Render `tryserv` still tracks `main`; the public URL is still the previous TrySERV deployment. No new Render service or database has been created.
