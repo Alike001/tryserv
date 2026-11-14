@@ -13,12 +13,12 @@ async function withApp(fn){
  finally{await new Promise(resolve=>server.close(resolve));}
 }
 
-test("Tabbata is the public root product and its assets are allowlisted",async()=>{
+test("Tabbas is the public root product and its assets are allowlisted",async()=>{
  await withApp(async(url,calls)=>{
   const response=await fetch(url+"/");
   assert.equal(response.status,200);
   const html=await response.text();
-  assert.match(html,/<title>Tabbata/);
+  assert.match(html,/<title>Tabbas/);
   assert.match(html,/Check the report/);
   assert.match(html,/SERV Reasoning/);
   assert.ok(html.includes('href="/tabbata.css"'));
