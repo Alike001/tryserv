@@ -10,6 +10,7 @@ import {guestTrialConfigured,reserveGuestTrial,guestFailure,getGuestTrialStatus,
 import {debugCases,validateDebugBlueprint} from "./debug-lab.mjs";
 import {extractTABBATADocuments,TABBATA_UPLOAD_LIMITS} from "./tabbata-documents.mjs";
 import {validateTabbataCaseInput,makeReviewSourceSegments,reviewWithServ} from "./tabbata-review.mjs";
+import {reconcileFinancialSchedules} from "./tabbas-financial.mjs";
 import {createTabbataStore} from "./tabbata-store.mjs";
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 const files={"/":["tabbata.html","text/html; charset=utf-8"],"/legacy":["landing.html","text/html; charset=utf-8"],"/tabbata.css":["tabbata.css","text/css; charset=utf-8"],"/tabbata.js":["tabbata.js","text/javascript; charset=utf-8"],"/learn":["index.html","text/html; charset=utf-8"],"/try":["index.html","text/html; charset=utf-8"],"/landing.css":["landing.css","text/css; charset=utf-8"],"/styles.css":["styles.css","text/css; charset=utf-8"],"/app.js":["app.js","text/javascript; charset=utf-8"],"/serv-map.js":["serv-map.js","text/javascript; charset=utf-8"],"/serv-hero-illustration.svg":["serv-hero-illustration.svg","image/svg+xml"],"/progress.mjs":["progress.mjs","text/javascript; charset=utf-8"],"/debug":["debug.html","text/html; charset=utf-8"],"/debug.js":["debug.js","text/javascript; charset=utf-8"],"/debug.css":["debug.css","text/css; charset=utf-8"],"/brand.css":["brand.css","text/css; charset=utf-8"],"/docs":["docs.html","text/html; charset=utf-8"],"/docs.css":["docs.css","text/css; charset=utf-8"],"/docs.js":["docs.js","text/javascript; charset=utf-8"]};
@@ -150,26 +151,49 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
   if(req.method==="POST"&&pathname==="/api/tabbata/cases"){
    if(!env.DATABASE_URL)return json(res,503,{error:"Review storage is not configured. The existing case workspace is unavailable."});
    if(!allowCaseCreate(req))return json(res,429,{error:"This browser has reached the five-workspaces-per-hour limit. Reuse or delete an existing case and try later."});
-   let normalized,documents,reportDocument;
+   let normalized,documents=[],reportDocument=null,budgetSchedule=null,expenseSchedule=null,financial_reconciliation;
    try{
     const input=await readJson(req,12*1024*1024);
     const reportFile=input.report_file??null;
+    const budgetScheduleFile=input.budget_schedule_file??null;
+    const expenseScheduleFile=input.expense_schedule_file??null;
     const supportingFiles=Array.isArray(input.files)?input.files:[];
-    if(supportingFiles.length<1)throw new Error("Upload at least one supporting document.");
-    if(!reportFile){
-     normalized=validateTabbataCaseInput(input);
-     documents=await documentExtractor(supportingFiles);
-     reportDocument=null;
-    }else{
-     const extracted=await documentExtractor([reportFile,...supportingFiles]);
-     reportDocument=extracted[0];
-     documents=extracted.slice(1);
-     if(!documents.length)throw new Error("Upload at least one supporting evidence file in addition to the narrative report.");
+    if(supportingFiles.length<1&&!budgetScheduleFile&&!expenseScheduleFile)
+     throw new Error("Upload at least one supporting document or a financial schedule.");
+    if(!reportFile)normalized=validateTabbataCaseInput(input);
+    const uploadFiles=[];
+    if(reportFile)uploadFiles.push(reportFile);
+    if(budgetScheduleFile)uploadFiles.push(budgetScheduleFile);
+    if(expenseScheduleFile)uploadFiles.push(expenseScheduleFile);
+    uploadFiles.push(...supportingFiles);
+    const extracted=await documentExtractor(uploadFiles);
+    let cursor=0;
+    if(reportFile)reportDocument=extracted[cursor++];
+    if(budgetScheduleFile)budgetSchedule=extracted[cursor++];
+    if(expenseScheduleFile)expenseSchedule=extracted[cursor++];
+    if(reportFile){
+     if(!reportDocument)throw new Error("The narrative report could not be extracted.");
      const reportText=reportDocument.segments.map(segment=>segment.text).join("\n\n");
      normalized=validateTabbataCaseInput({...input,report_text:reportText});
     }
+    if((budgetScheduleFile&&!budgetSchedule)||(expenseScheduleFile&&!expenseSchedule))
+     throw new Error("A selected financial schedule could not be extracted.");
+    documents=[
+     ...(budgetSchedule?[{...budgetSchedule,purpose:"approved_budget_schedule"}]:[]),
+     ...(expenseSchedule?[{...expenseSchedule,purpose:"expense_schedule"}]:[]),
+     ...extracted.slice(cursor).map(document=>({...document,purpose:"supporting_evidence"}))
+    ];
+    if(!documents.length)throw new Error("Upload at least one supporting evidence file in addition to the narrative report.");
+    financial_reconciliation=reconcileFinancialSchedules({
+     budgetSchedule,expenseSchedule,
+     approvedBudgetMinor:normalized.approved_budget_minor,
+     reportedSpendMinor:normalized.reported_spend_minor,
+     currency:normalized.project.currency,
+     periodStart:normalized.period_start,
+     periodEnd:normalized.period_end
+    });
    }catch(error){return json(res,400,{error:String(error.message).slice(0,220)});}
-   const payload={...normalized,report_document:reportDocument??null,documents,analysis_status:"not_started",review:null,provider:null,analysis_error:null,reviewer_actions:[],created_at:new Date().toISOString()};
+   const payload={...normalized,financial_reconciliation,report_document:reportDocument??null,documents,analysis_status:"not_started",review:null,provider:null,analysis_error:null,reviewer_actions:[],created_at:new Date().toISOString()};
    try{
     const created=await reviewStore.create(payload);
     return json(res,201,{case_id:created.id,case_token:created.token,expires_at:created.expires_at,review_case:payload});
@@ -195,7 +219,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
     let record;
     try{record=await reviewStore.get(caseId,caseToken);}catch{return json(res,503,{error:"Review storage is temporarily unavailable."});}
     if(!record)return json(res,404,{error:"Review workspace not found or expired."});
-    if(record.payload.review)return json(res,200,{analysis_status:"complete",review:record.payload.review,budget_check:record.payload.budget_check,provider:record.payload.provider,reused:true});
+    if(record.payload.review)return json(res,200,{analysis_status:"complete",review:record.payload.review,budget_check:record.payload.budget_check,financial_reconciliation:record.payload.financial_reconciliation,provider:record.payload.provider,reused:true});
     if(record.payload.analysis_status==="running"||record.payload.analysis_status==="failed")return json(res,409,{error:record.payload.analysis_error??"This case has already used its one analysis attempt. Create a new case to try again."});
     reviewInFlight.add(caseId);
     try{
@@ -211,7 +235,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
      record.payload.analysis_error=null;
      if(!await reviewStore.update(caseId,caseToken,record.payload))throw new Error("Review case expired while saving the result.");
      console.info("tabbata.serv_review",JSON.stringify({model:result.provider.model,completion_id:result.provider.completion_id,latency_ms:result.provider.latency_ms,input_tokens:result.provider.usage.input_tokens,output_tokens:result.provider.usage.output_tokens}));
-     return json(res,200,{analysis_status:"complete",review:result.review,budget_check:record.payload.budget_check,provider:result.provider,reused:false});
+     return json(res,200,{analysis_status:"complete",review:result.review,budget_check:record.payload.budget_check,financial_reconciliation:record.payload.financial_reconciliation,provider:result.provider,reused:false});
     }catch(error){
      record.payload.analysis_status="failed";
      record.payload.analysis_error="The reserved SERV review attempt could not be completed. No automatic retry was made; create a new case only if you choose to spend another review credit.";
