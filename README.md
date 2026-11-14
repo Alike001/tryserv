@@ -117,8 +117,9 @@ The former TrySERV learning product is temporarily preserved at `/legacy`, `/lea
 - [Product specification](docs/TABBATA-PRODUCT-SPEC.md)
 - [Problem and competitor research](docs/TABBATA-RESEARCH.md)
 - [Technical architecture and security](docs/TABBATA-ARCHITECTURE.md)
-- [Demo script](docs/TABBATA-DEMO-SCRIPT.md) (in progress)
-- [Release acceptance](docs/TABBATA-RELEASE-ACCEPTANCE.md) (in progress)
+- [Demo script](docs/TABBATA-DEMO-SCRIPT.md)
+- [Release acceptance checklist](docs/TABBATA-RELEASE-ACCEPTANCE.md)
+- [Real-user acceptance plan](docs/TABBATA-REAL-USER-ACCEPTANCE.md)
 
 ## Hackathon
 
