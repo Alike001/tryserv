@@ -1,0 +1,41 @@
+name: Tabbata production smoke (no inference)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server.mjs'
+      - 'tabbata-*.mjs'
+      - 'public/tabbata.*'
+      - '.github/workflows/tabbata-production-smoke.yml'
+  workflow_dispatch:
+jobs:
+  public-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check public Tabbata deployment without making inference calls
+        run: |
+          node --input-type=module <<'NODE'
+          const base = "https://tryserv.onrender.com";
+          async function get(path) {
+            const response = await fetch(base + path, { signal: AbortSignal.timeout(20000) });
+            if (!response.ok) throw new Error(path + " returned HTTP " + response.status);
+            return response;
+          }
+          const health = await (await get("/healthz")).json();
+          if (health.service !== "tabbata" || health.status !== "ok") throw new Error("Unexpected production health response");
+          const status = await (await get("/api/tabbata/status")).json();
+          if (status.storage_configured !== true) throw new Error("Tabbata case storage is not configured");
+          if (status.serv_configured !== true) throw new Error("SERV is not configured for Tabbata");
+          const html = await (await get("/")).text();
+          if (!html.includes("<title>Tabbata") || !html.includes('href="/tabbata.css"')) throw new Error("Tabbata root page is not deployed");
+          await get("/tabbata.css");
+          await get("/tabbata.js");
+          console.log(JSON.stringify({ service: health.service, storage_configured: status.storage_configured, serv_configured: status.serv_configured, model: status.model, inference_calls: 0 }, null, 2));
+          NODE
