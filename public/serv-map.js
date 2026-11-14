@@ -1,6 +1,6 @@
 /**
  * Original TrySERV visual walkthrough.
- * Purely local UI: no network requests, grading, XP, or inference calls.
+ * Purely local UI: no network requests, grading, or inference calls.
  */
 const scenes = [
   {
@@ -91,7 +91,7 @@ document.querySelectorAll("[data-serv-map]").forEach((root, index) => {
         </div>
       </div>
       <div class="serv-map-footer">
-        <p id="${noteId}"><strong>What's real?</strong> TrySERV's graded lessons, deterministic checker, and opt-in SERV explanations are separate working features. This visual is an illustration only: it makes no API calls and earns no XP.</p>
+        <p id="${noteId}"><strong>What's real?</strong> TrySERV's graded lessons, deterministic checker, and opt-in SERV explanations are separate working features. This visual is an illustration only: it makes no API calls or changes saved learning progress.</p>
         <a href="https://docs.openserv.ai/serv-reasoning/introduction" target="_blank" rel="noopener noreferrer">Read the official SERV docs ↗</a>
       </div>
     </section>`;
