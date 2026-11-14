@@ -19,18 +19,18 @@
 - Backend verifies document IDs and exact quotations against extracted supporting-source text. Invalid or unsupported citations are downgraded.
 - Human reviewer actions and print/save-PDF output are implemented. Tabbas never makes funding or audit decisions.
 - Optional approved-budget and actual-expenditure CSV/XLSX schedules are now supported. Structured cell values are retained separately from source text for deterministic calculations.
-- New `tabbas-financial.mjs` computes schedule totals, compares them with entered totals, reconciles spend by budget category, flags category overspend/unbudgeted categories, duplicate references, blank receipt references, receipt references not found in separately submitted supporting documents and transactions outside an explicitly entered reporting period. Invalid rows, unsupported headers and truncated schedules fail visibly as incomplete; totals are never silently treated as reconciled.
+- New `tabbas-financial.mjs` computes schedule totals, compares them with entered totals, reconciles spend by budget category, flags category overspend/unbudgeted categories, duplicate references, blank receipt references, receipt references not found in separately submitted supporting documents and transactions outside an explicitly entered reporting period. Invalid rows, unsupported/ambiguous headers, duplicate columns, inconsistent column sets, blank/unparsed dates and multi-worksheet schedules fail visibly rather than being guessed or silently combined.
 - SERV receives the deterministic reconciliation result as context and is instructed not to recalculate or override it. The code remains authoritative for arithmetic.
-- The workspace UI has dedicated schedule uploads and a line-item reconciliation panel. The optional fictional sample pack now demonstrates category overspend and receipt-reference issues; it is explicitly illustrative and not a real customer case.
+- The workspace UI has dedicated schedule uploads and a line-item reconciliation panel, including where receipt-reference text was found or not found. The optional fictional sample pack demonstrates category overspend and receipt-reference issues; it is explicitly illustrative and not a real customer case. Public branding now says Tabbas and positions it as an independent product, not a hackathon build.
 
 ## Verification status
 
-- Latest completed Node CI for commit `2d65621e5ed5d959c4dc72a5a904c662d4c34f08`: **97 passed, 0 failed**. This includes financial schedule parsing, receipt-reference matching, duplicate-header preservation, inconsistent-sheet handling, reporting-period validation, schedule integration, existing extraction, security and case-workflow tests.
-- Desktop/mobile Playwright verification for the latest UI is still running; recheck the latest branch run before marking the UI verified.
+- Latest Node CI on current head `0e97ade1952ff3c88624f2f5779275afb82e73cf`: **103 passed, 0 failed**. This includes financial schedule parsing, receipt-reference matching, duplicate-header preservation, inconsistent-sheet and multi-worksheet handling, reporting-period validation, blank-date checks, prompt-injection separation, schedule integration, existing extraction, security and case-workflow tests.
+- Desktop/mobile Playwright journeys: **74 passed** on UI-tested commit `f7d25898609321685b6b272bf2d715f6e7c8545f`. The current head adds backend date-validation tests after that UI-tested commit; the current browser workflow is still running.
 - No live SERV inference credits have been spent by these financial changes or CI.
 - PR #22 remains **open and draft**. Do not merge it or claim production acceptance until all tests, product branding, security and release checks pass.
 - Render `tryserv` still tracks `main`; the public URL is still the previous TrySERV deployment. No new Render service or database has been created.
-- No NGO programme/M&E officer or finance reviewer has tested Tabbas yet. No customer adoption, revenue or product-market fit is claimed.
+- This pilot uses one-time private case links rather than organisation accounts or team roles; those are on the product roadmap. No NGO programme/M&E officer or finance reviewer has tested Tabbas yet. No customer adoption, revenue or product-market fit is claimed.
 
 ## Safety and product boundaries
 
