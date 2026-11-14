@@ -45,8 +45,9 @@ function parseAmountMinor(value, currency) {
     if (markerCurrency !== currency) throw new Error("currency marker does not match the selected case currency");
     raw = raw.replace(markerPattern, "").trim();
   }
-  raw = raw.replace(/[,\s]/g, "");
-  if (!/^\d{1,12}(?:\.\d{1,2})?$/.test(raw)) throw new Error("amount is not a non-negative number with up to two decimal places");
+  raw = raw.replace(/\s/g, "");
+  if (!/^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$/.test(raw)) throw new Error("amount is not a non-negative number with valid thousands separators and up to two decimal places");
+  raw = raw.replace(/,/g, "");
   const [whole, fraction = ""] = raw.split(".");
   const minor = Number(whole) * 100 + Number(fraction.padEnd(2, "0"));
   if (!Number.isSafeInteger(minor)) throw new Error("amount exceeds the supported range");
