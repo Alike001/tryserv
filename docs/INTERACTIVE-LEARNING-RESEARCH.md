@@ -40,7 +40,7 @@ Source: https://docs.openserv.ai/serv-reasoning/api/chat-completions and https:/
 ## What we have done
 
 - Verified full public lesson + genuine SERV contextual tutoring through user screenshot (real model and completion ID visible).
-- Four official-source lessons, deterministic quizzes, on-device 20 XP per passed lesson.
+- Four official-source lessons, deterministic quizzes, browser-local completion state for passed lessons.
 - Validated request-builder preview, separate private live-execution lab.
 - Public SERV tutor protected by separate lifetime guest budget on Neon (2/day, 24 total initially); do **not** silently increase budget based on a guess.
 - New implementation: **Fix a SERV request** debugging lab. Three editable HTTP request blueprints (missing instruction, wrong endpoint, unrecognized model); user repairs JSON and gets immediate deterministic diagnosis. No key, account, payment or model inference required. Source links and progress are shown. Corrections generate validated HTTP request blueprints but never execute the API.
