@@ -13,6 +13,14 @@ function fakeDatabase(){
   if(sql.startsWith("SELECT id,payload")){
    const [id,hash]=params;const row=rows.get(id);return row&&row.token_hash===hash?[{id,payload:row.payload,created_at:row.created_at,expires_at:row.expires_at}]:[];
   }
+  if(sql.startsWith("WITH target AS")){
+   const [id,hash,action,maxActions]=params;const row=rows.get(id);
+   if(!row||row.token_hash!==hash)return [{payload:null,result:"not_found"}];
+   row.payload.reviewer_actions=Array.isArray(row.payload.reviewer_actions)?row.payload.reviewer_actions:[];
+   if(row.payload.reviewer_actions.length>=maxActions)return [{payload:null,result:"limit"}];
+   row.payload.reviewer_actions.push(JSON.parse(action));
+   return [{payload:row.payload,result:"appended"}];
+  }
   if(sql.startsWith("UPDATE tabbata_cases")){
    const [id,hash,payload]=params;const row=rows.get(id);if(!row||row.token_hash!==hash)return [];
    row.payload=JSON.parse(payload);return [{id}];
@@ -49,4 +57,17 @@ test("database configuration is mandatory and schema creation is cached",async()
  await store.create({one:1});await store.create({two:2});
  assert.equal(db.statements.filter(sql=>sql.startsWith("CREATE TABLE")).length,1);
  assert.equal(db.statements.filter(sql=>sql.startsWith("CREATE INDEX")).length,1);
+});
+
+test("reviewer actions append atomically and enforce the per-case limit",async()=>{
+ const db=fakeDatabase();const store=createTabbataStore({databaseUrl:"postgresql://example.invalid/db",query:db.query});
+ const created=await store.create({project:{name:"Sample"},reviewer_actions:[]});
+ const actions=Array.from({length:55},(_,index)=>({id:"A-"+index,action:"mark_reviewed",note:"",created_at:"2026-11-14T00:00:00Z"}));
+ const results=await Promise.all(actions.map(action=>store.appendReviewerAction(created.id,created.token,action,50)));
+ assert.equal(results.filter(result=>result.status==="appended").length,50);
+ assert.equal(results.filter(result=>result.status==="limit").length,5);
+ const saved=await store.get(created.id,created.token);
+ assert.equal(saved.payload.reviewer_actions.length,50);
+ const denied=await store.appendReviewerAction(created.id,"wrong-token",actions[0],50);
+ assert.equal(denied.status,"not_found");
 });
