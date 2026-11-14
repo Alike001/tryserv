@@ -145,13 +145,18 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
     const reportFile=input.report_file??null;
     const supportingFiles=Array.isArray(input.files)?input.files:[];
     if(supportingFiles.length<1)throw new Error("Upload at least one supporting document.");
-    const allFiles=[...(reportFile?[reportFile]:[]),...supportingFiles];
-    const extracted=await documentExtractor(allFiles);
-    reportDocument=reportFile?extracted[0]:null;
-    documents=reportFile?extracted.slice(1):extracted;
-    if(!documents.length)throw new Error("Upload at least one supporting evidence file in addition to the narrative report.");
-    const reportText=reportDocument?reportDocument.segments.map(segment=>segment.text).join("\n\n"):input.report_text;
-    normalized=validateTabbataCaseInput({...input,report_text:reportText});
+    if(!reportFile){
+     normalized=validateTabbataCaseInput(input);
+     documents=await documentExtractor(supportingFiles);
+     reportDocument=null;
+    }else{
+     const extracted=await documentExtractor([reportFile,...supportingFiles]);
+     reportDocument=extracted[0];
+     documents=extracted.slice(1);
+     if(!documents.length)throw new Error("Upload at least one supporting evidence file in addition to the narrative report.");
+     const reportText=reportDocument.segments.map(segment=>segment.text).join("\n\n");
+     normalized=validateTabbataCaseInput({...input,report_text:reportText});
+    }
    }catch(error){return json(res,400,{error:String(error.message).slice(0,220)});}
    const payload={...normalized,report_document:reportDocument??null,documents,analysis_status:"not_started",review:null,provider:null,analysis_error:null,reviewer_actions:[],created_at:new Date().toISOString()};
    try{
