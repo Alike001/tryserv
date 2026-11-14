@@ -98,7 +98,8 @@ function validateToolPayload(raw,casePayload){
     const claim=boundedString(item.claim,5,500);
     const explanation=boundedString(item.explanation,15,1200);
     if(!claim||!explanation||!STATUSES.has(item.status))throw new Error("A SERV finding did not meet the review contract.");
-    const requirementId=typeof item.requirement_id==="string"&&requirements.has(item.requirement_id)?item.requirement_id:null;
+    const requestedRequirement=typeof item.requirement_id==="string"?item.requirement_id:"";
+    const requirementId=requestedRequirement&&requirements.has(requestedRequirement)?requestedRequirement:null;
     const evidence=[];
     if(Array.isArray(item.evidence_refs)){
       for(const ref of item.evidence_refs.slice(0,5)){
@@ -113,11 +114,13 @@ function validateToolPayload(raw,casePayload){
       }
     }
     let status=item.status;
+    if(requestedRequirement&&!requirementId)status="human_review_required";
     const uniqueDocs=new Set(evidence.map(x=>x.document_id));
     if((status==="supported_in_documents"||status==="partially_supported")&&evidence.length===0)
       status="human_review_required";
     if(status==="conflicting_documents"&&uniqueDocs.size<2)
       status="human_review_required";
+    if(status==="not_found_in_submitted_documents"&&evidence.length>0){status="human_review_required";evidence.length=0;}
     if(item.status==="conflicting_documents"&&uniqueDocs.size<2)
       evidence.length=0;
     const missing=Array.isArray(item.missing_items)?item.missing_items.slice(0,8).map(x=>boundedString(x,1,240)).filter(Boolean):[];
