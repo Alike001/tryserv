@@ -145,7 +145,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
     normalized=validateTabbataCaseInput(input);
     documents=await documentExtractor(input.files);
    }catch(error){return json(res,400,{error:String(error.message).slice(0,220)});}
-   const payload={...normalized,documents,source_segments:makeReviewSourceSegments(normalized.report_text,documents),analysis_status:"not_started",review:null,provider:null,analysis_error:null,reviewer_actions:[],created_at:new Date().toISOString()};
+   const payload={...normalized,documents,analysis_status:"not_started",review:null,provider:null,analysis_error:null,reviewer_actions:[],created_at:new Date().toISOString()};
    try{
     const created=await reviewStore.create(payload);
     return json(res,201,{case_id:created.id,case_token:created.token,expires_at:created.expires_at,review_case:payload});
@@ -178,13 +178,14 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
      const allowance=await guestReserve({req,env});
      if(!allowance.allowed){const failure=guestFailure(allowance.reason);return json(res,failure.status,{error:failure.message});}
      record.payload.analysis_status="running";
-     await reviewStore.update(caseId,caseToken,record.payload);
-     const result=await reviewWithServFn({casePayload:record.payload,apiKey:env.SERV_API_KEY,model:env.SERV_MODEL??"gpt-5.4-mini",fetchImpl});
+     if(!await reviewStore.update(caseId,caseToken,record.payload))throw new Error("Review case expired before analysis.");
+     const caseForReview={...record.payload,source_segments:makeReviewSourceSegments(record.payload.report_text,record.payload.documents)};
+     const result=await reviewWithServFn({casePayload:caseForReview,apiKey:env.SERV_API_KEY,model:env.SERV_MODEL??"gpt-5.4-mini",fetchImpl});
      record.payload.review=result.review;
      record.payload.provider=result.provider;
      record.payload.analysis_status="complete";
      record.payload.analysis_error=null;
-     await reviewStore.update(caseId,caseToken,record.payload);
+     if(!await reviewStore.update(caseId,caseToken,record.payload))throw new Error("Review case expired while saving the result.");
      console.info("tabbata.serv_review",JSON.stringify({model:result.provider.model,completion_id:result.provider.completion_id,latency_ms:result.provider.latency_ms,input_tokens:result.provider.usage.input_tokens,output_tokens:result.provider.usage.output_tokens}));
      return json(res,200,{analysis_status:"complete",review:result.review,budget_check:record.payload.budget_check,provider:result.provider,reused:false});
     }catch(error){
@@ -202,6 +203,8 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
     if(input.action==="request_clarification"&&!note)return json(res,400,{error:"Add a short clarification request."});
     let record;try{record=await reviewStore.get(caseId,caseToken);}catch{return json(res,503,{error:"Review storage is temporarily unavailable."});}
     if(!record)return json(res,404,{error:"Review workspace not found or expired."});
+    if(!record.payload.review)return json(res,409,{error:"Run the report review before recording reviewer actions."});
+    if(record.payload.reviewer_actions.length>=50)return json(res,429,{error:"This review has reached its reviewer-action limit."});
     const findingId=typeof input.finding_id==="string"?input.finding_id:"";
     if(findingId&&!(record.payload.review?.findings??[]).some(finding=>finding.id===findingId))return json(res,400,{error:"The selected finding does not exist in this review."});
     record.payload.reviewer_actions.push({id:"A-"+(record.payload.reviewer_actions.length+1),action:input.action,finding_id:findingId||null,note,created_at:new Date().toISOString()});
