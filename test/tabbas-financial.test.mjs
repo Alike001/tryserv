@@ -85,8 +85,8 @@ test("inconsistent worksheet column sets fail visibly",()=>{
  const workbook={
   name:"multi-sheet.xlsx",truncated:false,
   segments:[
-   {locator:"Sheet Budget · Row 2",cells:{"Category":"Materials","Amount":"1000"}},
-   {locator:"Sheet Other · Row 2",cells:{"Category":"Transport","Cost":"200"}}
+   {locator:"Row 2",cells:{"Category":"Materials","Amount":"1000"}},
+   {locator:"Row 3",cells:{"Category":"Transport","Cost":"200"}}
   ]
  };
  const result=reconcileFinancialSchedules({expenseSchedule:workbook,currency:"NGN"});
