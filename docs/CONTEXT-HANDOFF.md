@@ -1,6 +1,6 @@
 # Tabbata pivot — Current handoff (14 November 2026)
 
-**Current direction:** The public product is pivoting from TrySERV's OpenServ learning companion into **Tabbata**, a focused pre-submission donor report pack reviewer. The first name proposal "Shaida" was retired after discovering an existing Web3 agent project with the same name. Tabbata is a provisional working brand, not trademark/domain-cleared.
+**Current direction:** The public product is pivoting from TrySERV's OpenServ learning companion into **Tabbata**, a focused pre-submission donor report pack reviewer. The user explicitly selected **Shaida**. The current draft branch was instead branded **Tabbata** after the previous assistant found an existing Shaida Web3/AI project; this substitution was not explicitly approved by the user. Do not treat Tabbata as the final brand until the user confirms the choice. Shaida has a same-name autonomous-agent/0G project in the Web3 ecosystem, so the collision is real and should be discussed rather than silently overridden.
 
 **Repository:** `Alike001/tryserv`  
 **Branch:** `feat/tabbata-donor-report-review`  
@@ -23,8 +23,11 @@
 ## Verification status at handoff
 
 - Node CI: **85 passed, 0 failed** on the latest completed run (includes PDF and XLSX extraction fixtures, token-protected storage, HTTP workflow, rate limits and exact evidence validation).
-- Browser Playwright workflow: still running at last check; do not claim passed until the run concludes.
+- Browser Playwright workflow: **74 passed, 0 failed** on code commit `980f640` (desktop and mobile).
 - No live SERV inference credits have been spent by the pivot implementation or CI.
+- Latest PR head is documentation-only commit `c215fd3`; tested code commit `980f640` is unchanged. Node CI 85/85 and browser CI 74/74 are green.
+- Render service `tryserv` still tracks `main` with auto-deploy. Latest live deployment is old TrySERV commit `a897876`; the pivot has not been deployed. No new Render service/database was created.
+- OpenServ Edition 02 official deadline: 15 November 2026, 23:59 UTC (16 November 00:59 Africa/Lagos). X post and Typeform submission are required.
 - Hosted production database readiness and a real live SERV review still need verification.
 - No NGO programme officer or finance reviewer has tested the product yet.
 - No revenue, adoption, physical verification or audit certification claims.
@@ -40,14 +43,14 @@
 
 ## Next actions
 
-1. Resolve any browser CI failures and rerun all checks.
-2. Finish README, hackathon submission notes, demo script and acceptance checklist.
-3. Verify the existing Render service's database and SERV readiness without exposing secrets.
-4. Deploy only after CI is green and review the deployed commit.
-5. Make one explicitly authorised live SERV review with fictional sample data, if the shared allowance permits.
-6. Verify exact source quotes, provider completion metadata, reviewer actions, print and delete.
+1. Confirm the final product brand with the user; the current draft says Tabbata, but the user originally selected Shaida.
+2. Decide whether to add deterministic expense-schedule total reconciliation; the current budget check only compares user-entered totals.
+3. Review the current draft PR and keep it draft until brand, browser CI, security and production readiness are accepted.
+4. After explicit approval, merge and let the existing Render `main` service auto-deploy; do not create a second service or database.
+5. Run the no-inference production smoke workflow to verify the deployed root, storage readiness, SERV readiness and synthetic case create/read/delete.
+6. Only after the user explicitly authorises a live analysis, spend one existing guest allowance unit on a fictional report pack; capture actual completion metadata and verify source quotes.
 7. Ask one NGO programme/M&E officer and one finance/report reviewer to test the workflow; do not claim this until it happens.
-8. Record the final demo from the actual hosted result and submit only after evidence is captured.
+8. Record the final demo from the actual hosted result, post the required X submission, submit the official Typeform, and retain confirmation.
 
 ---
 
