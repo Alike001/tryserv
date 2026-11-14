@@ -167,6 +167,15 @@ test("both schedules without entered control totals remain partial, not reconcil
  assert.equal(result.status,"partial");
  assert.match(result.summary,/control totals are missing/);
 });
+test("blank transaction dates make an explicit reporting-period check incomplete",()=>{
+ const schedule={
+  name:"actuals.csv",truncated:false,
+  segments:[{locator:"Row 2",cells:{"Date":"","Amount":"1000"}}]
+ };
+ const result=reconcileFinancialSchedules({expenseSchedule:schedule,currency:"NGN",periodStart:"2026-07-01",periodEnd:"2026-09-30"});
+ assert.equal(result.status,"incomplete");
+ assert.ok(result.issues.some(issue=>issue.type==="unparsed_date"&&issue.value===undefined&&/blank/.test(issue.message)));
+});
 test("no schedule is reported as not provided rather than silently passed", () => {
   const result = reconcileFinancialSchedules({approvedBudgetMinor: 500000000, reportedSpendMinor: 450000000});
   assert.equal(result.status, "not_provided");
