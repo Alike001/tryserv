@@ -64,7 +64,7 @@ test("a report pack is created without inference; SERV runs only after explicit 
   if(url.pathname==="/api/tabbata/cases"&&method==="POST"){
    createBody=request.postDataJSON();
    await route.fulfill({status:201,contentType:"application/json",body:JSON.stringify({
-    case_id:caseId,case_token:caseToken,expires_at:"2026-11-15T00:00:00.000Z",review_case
+    case_id:caseId,case_token:caseToken,expires_at:"2026-11-15T00:00:00.000Z",review_case:reviewCase
    })});return;
   }
   if(url.pathname.endsWith("/analyze")&&method==="POST"){
