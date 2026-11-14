@@ -1,4 +1,4 @@
-const ENDPOINT="https://inference-api.openserv.ai/v1/chat/completions";
+const ENDPOINT="https://inference-api.openserv.ai/v1/responses";
 const CURRENCIES=new Set(["NGN","USD","GBP","EUR"]);
 const STATUSES=new Set(["supported_in_documents","partially_supported","not_found_in_submitted_documents","conflicting_documents","human_review_required"]);
 const SEVERITIES=new Set(["low","medium","high"]);
@@ -155,39 +155,38 @@ function validateToolPayload(raw,casePayload){
 
 const tool={
   type:"function",
-  function:{
-    name:"submit_report_review",
-    description:"Return a structured review of donor-report claims against the supplied requirements and supporting document excerpts. Every cited quote must be copied exactly from one supplied supporting segment. Never make real-world verification, fraud or approval claims.",
-    parameters:{
-      type:"object",additionalProperties:false,
-      required:["summary","review_state","findings","limitations"],
-      properties:{
-        summary:{type:"string",minLength:30,maxLength:1000},
-        review_state:{type:"string",enum:["ready_for_human_review","needs_clarification","insufficient_evidence"]},
-        findings:{
-          type:"array",minItems:1,maxItems:20,
-          items:{
-            type:"object",additionalProperties:false,
-            required:["requirement_id","claim","status","severity","explanation","evidence_refs","missing_items","suggested_question"],
-            properties:{
-              requirement_id:{type:"string",maxLength:24},
-              claim:{type:"string",minLength:5,maxLength:500},
-              status:{type:"string",enum:["supported_in_documents","partially_supported","not_found_in_submitted_documents","conflicting_documents","human_review_required"]},
-              severity:{type:"string",enum:["low","medium","high"]},
-              explanation:{type:"string",minLength:15,maxLength:1200},
-              evidence_refs:{
-                type:"array",maxItems:5,
-                items:{type:"object",additionalProperties:false,required:["document_id","segment_id","quote"],properties:{
-                  document_id:{type:"string",maxLength:40},segment_id:{type:"string",maxLength:60},quote:{type:"string",minLength:20,maxLength:400}
-                }}
-              },
-              missing_items:{type:"array",maxItems:8,items:{type:"string",maxLength:240}},
-              suggested_question:{type:"string",maxLength:300}
-            }
+  name:"submit_report_review",
+  description:"Return a structured review of donor-report claims against the supplied requirements and supporting document excerpts. Every cited quote must be copied exactly from one supplied supporting segment. Never make real-world verification, fraud or approval claims.",
+  strict:false,
+  parameters:{
+    type:"object",additionalProperties:false,
+    required:["summary","review_state","findings","limitations"],
+    properties:{
+      summary:{type:"string",minLength:30,maxLength:1000},
+      review_state:{type:"string",enum:["ready_for_human_review","needs_clarification","insufficient_evidence"]},
+      findings:{
+        type:"array",minItems:1,maxItems:20,
+        items:{
+          type:"object",additionalProperties:false,
+          required:["requirement_id","claim","status","severity","explanation","evidence_refs","missing_items","suggested_question"],
+          properties:{
+            requirement_id:{type:"string",maxLength:24},
+            claim:{type:"string",minLength:5,maxLength:500},
+            status:{type:"string",enum:["supported_in_documents","partially_supported","not_found_in_submitted_documents","conflicting_documents","human_review_required"]},
+            severity:{type:"string",enum:["low","medium","high"]},
+            explanation:{type:"string",minLength:15,maxLength:1200},
+            evidence_refs:{
+              type:"array",maxItems:5,
+              items:{type:"object",additionalProperties:false,required:["document_id","segment_id","quote"],properties:{
+                document_id:{type:"string",maxLength:40},segment_id:{type:"string",maxLength:60},quote:{type:"string",minLength:20,maxLength:400}
+              }}
+            },
+            missing_items:{type:"array",maxItems:8,items:{type:"string",maxLength:240}},
+            suggested_question:{type:"string",maxLength:300}
           }
-        },
-        limitations:{type:"array",maxItems:8,items:{type:"string",maxLength:300}}
-      }
+        }
+      },
+      limitations:{type:"array",maxItems:8,items:{type:"string",maxLength:300}}
     }
   }
 };
@@ -228,31 +227,36 @@ export async function reviewWithServ({casePayload,apiKey,model="gpt-5.4-mini",fe
       method:"POST",
       headers:{"Authorization":"Bearer "+apiKey,"Content-Type":"application/json"},
       body:JSON.stringify({
-        model,messages:[
-          {role:"system",content:instructions},
-          {role:"user",content:JSON.stringify(context)}
-        ],
-        reasoning_effort:"medium",max_completion_tokens:2800,
-        tools:[tool],tool_choice:{type:"function",function:{name:"submit_report_review"}},
+        model,instructions,input:JSON.stringify(context),
+        reasoning:{effort:"medium",summary:"auto"},max_output_tokens:2800,
+        tools:[tool],tool_choice:{type:"function",name:"submit_report_review"},
         parallel_tool_calls:false
       }),
       signal:controller.signal
     });
-    if(!response.ok)throw new Error("SERV returned HTTP "+response.status+".");
+    if(!response.ok){
+      const errorBody=await response.json().catch(()=>null);
+      const providerError=errorBody?.error;
+      const code=typeof providerError?.code==="string"?providerError.code.slice(0,80):"";
+      const message=typeof providerError?.message==="string"?providerError.message.replace(/[\\r\\n\\t]+/g," ").slice(0,180):"";
+      throw new Error("SERV returned HTTP "+response.status+(code?" ("+code+")":"")+(message?": "+message:"")+".");
+    }
     const data=await response.json();
-    const choice=data?.choices?.[0];
-    if(choice?.finish_reason!=="tool_calls"||!Array.isArray(choice.message?.tool_calls))
-      throw new Error("SERV did not return the required structured review.");
-    const call=choice.message.tool_calls.find(item=>item?.type==="function"&&item?.function?.name==="submit_report_review");
-    if(!call||typeof call.function.arguments!=="string")throw new Error("SERV returned no review function payload.");
+    if(data?.status&&data.status!=="completed"){
+      const detail=typeof data.error?.message==="string"?data.error.message:typeof data.incomplete_details?.reason==="string"?data.incomplete_details.reason:"";
+      throw new Error("SERV response did not complete ("+String(data.status).slice(0,40)+")."+(detail?" "+detail.slice(0,160):""));
+    }
+    const calls=Array.isArray(data?.output)?data.output.filter(item=>item?.type==="function_call"&&item?.name==="submit_report_review"):[];
+    if(calls.length!==1||typeof calls[0].arguments!=="string")
+      throw new Error("SERV did not return exactly one structured report-review function call.");
     let raw;
-    try{raw=JSON.parse(call.function.arguments);}catch{throw new Error("SERV returned malformed review JSON.");}
+    try{raw=JSON.parse(calls[0].arguments);}catch{throw new Error("SERV returned malformed review JSON.");}
     const review=validateToolPayload(raw,casePayload);
     return {
       review,provider:{
         model:data.model??model,completion_id:data.id??null,
         latency_ms:Math.round(performance.now()-started),
-        usage:{input_tokens:data.usage?.prompt_tokens??null,output_tokens:data.usage?.completion_tokens??null}
+        usage:{input_tokens:data.usage?.input_tokens??null,output_tokens:data.usage?.output_tokens??null}
       }
     };
   }catch(error){
