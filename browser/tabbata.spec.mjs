@@ -114,6 +114,35 @@ test("a report pack is created without inference; SERV runs only after explicit 
  await expect(page.locator("#case-workspace")).toBeHidden();
  expect(analysisCalls).toBe(1);
 });
+test("a narrative report can be uploaded instead of pasted",async({page})=>{
+ await mockStatus(page,true);
+ let createBody=null;
+ const reportText="This uploaded narrative report states that the community water project completed all three planned facilities during the reporting period.";
+ const reportDoc={id:"doc-1",name:"narrative-report.txt",kind:"txt",size_bytes:120,extracted_chars:reportText.length,truncated:false,segments:[{id:"doc-1-s1",locator:"Line 1",text:reportText}]};
+ const supportDoc={id:"doc-2",name:"site-log.txt",kind:"txt",size_bytes:100,extracted_chars:quote.length,truncated:false,segments:[{id:"doc-2-s1",locator:"Line 1",text:quote}]};
+ await page.route("**/api/tabbata/cases",async route=>{
+  createBody=route.request().postDataJSON();
+  await route.fulfill({status:201,contentType:"application/json",body:JSON.stringify({
+   case_id:caseId,case_token:caseToken,expires_at:"2026-11-15T00:00:00Z",
+   review_case:{...reviewCase,report_text:reportText,report_document:reportDoc,documents:[supportDoc]}
+  })});
+ });
+ await page.goto("/");
+ await page.locator("#project-name").fill("Community Water Access Project");
+ await page.locator("#reporting-period").fill("Q3 2026");
+ await page.locator("#requirements").fill("Report progress against all approved water facility milestones.");
+ await page.locator("#report-file").setInputFiles({name:"narrative-report.txt",mimeType:"text/plain",buffer:Buffer.from(reportText)});
+ await page.locator("#evidence-files").setInputFiles({name:"site-log.txt",mimeType:"text/plain",buffer:Buffer.from(quote)});
+ await expect(page.locator("#file-list .file-item")).toHaveCount(2);
+ await page.locator("#create-case").click();
+ await expect(page.locator("#workspace-title")).toHaveText("Community Water Access Project");
+ expect(createBody.report_file.name).toBe("narrative-report.txt");
+ expect(createBody.report_text).toBe("");
+ expect(createBody.files).toHaveLength(1);
+ await expect(page.locator("#case-documents")).toContainText("Narrative report: narrative-report.txt");
+ await expect(page.locator("#case-documents")).toContainText("Supporting evidence: site-log.txt");
+});
+
 test("without configured storage the workspace is disabled and no review request can be sent",async({page})=>{
  await mockStatus(page,false);
  let requests=0;
