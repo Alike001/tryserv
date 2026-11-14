@@ -143,6 +143,47 @@ test("case creation is rate-limited per visitor without spending inference credi
  });
 });
 
+test("case creation assigns financial schedules and persists deterministic line-item reconciliation",async()=>{
+ const store=fakeStore();let extractedNames=[];
+ const budgetDoc={
+  id:"doc-1",name:"approved-budget.csv",kind:"csv",size_bytes:120,extracted_chars:80,truncated:false,
+  segments:[
+   {id:"doc-1-s1",locator:"Row 2",text:"Category: Materials | Amount NGN: 2000000",cells:{Category:"Materials","Amount NGN":"2000000"}},
+   {id:"doc-1-s2",locator:"Row 3",text:"Category: Testing | Amount NGN: 1000000",cells:{Category:"Testing","Amount NGN":"1000000"}}
+  ]
+ };
+ const expenseDoc={
+  id:"doc-2",name:"actuals.csv",kind:"csv",size_bytes:150,extracted_chars:120,truncated:false,
+  segments:[
+   {id:"doc-2-s1",locator:"Row 2",text:"Date: 2026-08-01 | Category: Materials | Amount NGN: 3000000 | Receipt reference: REC-1",cells:{Date:"2026-08-01",Category:"Materials","Amount NGN":"3000000","Receipt reference":"REC-1"}},
+   {id:"doc-2-s2",locator:"Row 3",text:"Date: 2026-08-02 | Category: Testing | Amount NGN: 500000 | Receipt reference:",cells:{Date:"2026-08-02",Category:"Testing","Amount NGN":"500000","Receipt reference":""}}
+  ]
+ };
+ const supportDoc={...docs[0],id:"doc-3"};
+ const body={
+  ...input,approved_budget:"5000000",reported_spend:"3500000",
+  period_start:"2026-07-01",period_end:"2026-09-30",
+  budget_schedule_file:{name:"approved-budget.csv",type:"text/csv",data_base64:"Y2F0ZWdvcnksYW1vdW50"},
+  expense_schedule_file:{name:"actuals.csv",type:"text/csv",data_base64:"ZGF0ZSxjYXRlZ29yeSxhbW91bnQ="}
+ };
+ await withApp({
+  env,tabbataStore:store,
+  documentExtractor:async files=>{extractedNames=files.map(file=>file.name);return [budgetDoc,expenseDoc,supportDoc];},
+  guestReserve:async()=>{throw Error("case creation must not reserve");}
+ },async url=>{
+  const response=await post(url,"/api/tabbata/cases",body);
+  assert.equal(response.status,201);
+  const result=await response.json();
+  assert.deepEqual(extractedNames,["approved-budget.csv","actuals.csv","site-log.txt"]);
+  assert.equal(result.review_case.documents[0].purpose,"approved_budget_schedule");
+  assert.equal(result.review_case.documents[1].purpose,"expense_schedule");
+  assert.equal(result.review_case.documents[2].purpose,"supporting_evidence");
+  assert.equal(result.review_case.financial_reconciliation.status,"attention_required");
+  assert.equal(result.review_case.financial_reconciliation.schedule_totals.budget_minor,300000000);
+  assert.equal(result.review_case.financial_reconciliation.schedule_totals.expense_minor,350000000);
+  assert.ok(result.review_case.financial_reconciliation.checks.some(item=>item.type==="category_over_budget"&&item.category==="Materials"));
+ });
+});
 test("reviewer actions are recorded and case deletion removes the workspace",async()=>{
  const store=fakeStore();
  await withApp({env,tabbataStore:store,documentExtractor:async()=>docs,guestReserve:async()=>({allowed:true}),reviewWithServFn:async()=>({review,provider:{model:"test",completion_id:"c",latency_ms:1,usage:{}}})},async url=>{
