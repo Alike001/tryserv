@@ -19,14 +19,14 @@
 - Backend verifies document IDs and exact quotations against extracted supporting-source text. Invalid or unsupported citations are downgraded.
 - Human reviewer actions and print/save-PDF output are implemented. Tabbas never makes funding or audit decisions.
 - Optional approved-budget and actual-expenditure CSV/XLSX schedules are now supported. Structured cell values are retained separately from source text for deterministic calculations.
-- New `tabbas-financial.mjs` computes schedule totals, compares them with entered totals, reconciles spend by budget category, flags category overspend/unbudgeted categories, duplicate references, blank receipt references and transactions outside an explicitly entered reporting period. Invalid rows, unsupported headers and truncated schedules fail visibly as incomplete; totals are never silently treated as reconciled.
+- New `tabbas-financial.mjs` computes schedule totals, compares them with entered totals, reconciles spend by budget category, flags category overspend/unbudgeted categories, duplicate references, blank receipt references, receipt references not found in separately submitted supporting documents and transactions outside an explicitly entered reporting period. Invalid rows, unsupported headers and truncated schedules fail visibly as incomplete; totals are never silently treated as reconciled.
 - SERV receives the deterministic reconciliation result as context and is instructed not to recalculate or override it. The code remains authoritative for arithmetic.
 - The workspace UI has dedicated schedule uploads and a line-item reconciliation panel. The optional fictional sample pack now demonstrates category overspend and receipt-reference issues; it is explicitly illustrative and not a real customer case.
 
 ## Verification status
 
-- Latest Node CI for commit `40ba9bb8d4c7cb23e2bb84e4d835942e89773104`: **passed**. This includes the new financial parser, reporting-period validation, schedule integration, existing extraction, security and case-workflow tests.
-- Browser Playwright workflow for that commit was still running at the time of this handoff; recheck its final result before marking the UI verified.
+- Latest completed Node CI for commit `2d65621e5ed5d959c4dc72a5a904c662d4c34f08`: **97 passed, 0 failed**. This includes financial schedule parsing, receipt-reference matching, duplicate-header preservation, inconsistent-sheet handling, reporting-period validation, schedule integration, existing extraction, security and case-workflow tests.
+- Desktop/mobile Playwright verification for the latest UI is still running; recheck the latest branch run before marking the UI verified.
 - No live SERV inference credits have been spent by these financial changes or CI.
 - PR #22 remains **open and draft**. Do not merge it or claim production acceptance until all tests, product branding, security and release checks pass.
 - Render `tryserv` still tracks `main`; the public URL is still the previous TrySERV deployment. No new Render service or database has been created.
@@ -38,7 +38,7 @@
 - Never reset, raise or bypass the existing shared inference allowance.
 - Uploaded binaries are not persisted; extracted text, structured CSV/XLSX cell values, source locators and review output expire after up to 24 hours.
 - Do not upload beneficiary names, phone numbers, addresses, bank details, IDs, health data or other sensitive personal information; redact first.
-- Financial checks are arithmetic and document-structure checks. A duplicate reference, missing receipt reference, category variance or out-of-period row is a review flag—not proof of fraud, misconduct, ineligibility or improper spending.
+- Financial checks are arithmetic and document-structure checks. A duplicate reference, missing/unmatched receipt reference, category variance or out-of-period row is a review flag—not proof of fraud, misconduct, ineligibility or improper spending. A reference not found in the submitted bundle may exist outside the bundle or in an unextractable file.
 - Tabbas is not an auditor, accountant, funder, fraud detector or physical-verification service. A human reviewer remains responsible for decisions.
 
 ## Next actions
