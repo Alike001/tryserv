@@ -110,6 +110,7 @@ function parseSchedule(document, role, currency) {
       document: document.name,
       message: "More than one worksheet contains data. Export the relevant worksheet separately so Tabbas does not silently combine different periods or schedules."
     });
+    return { status: "incomplete", rows: [], total_minor: null, issues, headers };
   }
 
   const rows = [];
