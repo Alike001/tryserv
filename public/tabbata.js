@@ -1,7 +1,7 @@
 const $=id=>document.getElementById(id);
 const SESSION_KEY="tabbata.active-case.v1";
 const MAX_FILE=2*1024*1024,MAX_TOTAL=8*1024*1024,MAX_FILES=5;
-let sampleFiles=null,activeCase=null,activePayload=null,servConfigured=false,storageConfigured=false;
+let sampleFiles=null,activeCase=null,activePayload=null,activeExpiresAt=null,servConfigured=false,storageConfigured=false;
 
 const samplePack={
  project_name:"Community Water Access Project",
@@ -152,7 +152,7 @@ function renderReview(review,provider){
  $("analysis-status").hidden=true;
 }
 function renderCase(payload,expiresAt){
- activePayload=payload;
+ activePayload=payload;activeExpiresAt=expiresAt??activeExpiresAt;
  $("case-workspace").hidden=false;
  $("workspace-title").textContent=payload.project.name;
  $("workspace-meta").textContent=[payload.project.funder,payload.project.reporting_period,payload.project.currency].filter(Boolean).join(" · ");
@@ -161,7 +161,7 @@ function renderCase(payload,expiresAt){
  status.textContent=payload.analysis_status==="complete"?"Review complete":payload.analysis_status==="failed"?"Analysis attempt used":"Ready to analyze";
  $("case-expiry").textContent=expiresAt?"Expires "+new Date(expiresAt).toLocaleString():"This workspace expires within 24 hours.";
  $("analysis-cta").hidden=Boolean(payload.review)||payload.analysis_status==="failed";
- if(!servConfigured){$("analyze-case").disabled=true;addText($("analysis-cta"),"p","","SERV review is not configured. You can still inspect, print and delete this workspace.");}
+ if(!servConfigured){$("analyze-case").disabled=true;analysisStatus("SERV review is not configured. You can still inspect, print and delete this workspace.","error");}else{$("analyze-case").disabled=false;}
  if(payload.analysis_status==="failed"){analysisStatus(payload.analysis_error??"The analysis attempt could not be completed. No automatic retry was made.","error");}
  else if(payload.review){renderReview(payload.review,payload.provider);renderActions(payload.reviewer_actions);}
  else if(payload.analysis_status==="running"){analysisStatus("A SERV review is already running for this case.","info");}
@@ -202,12 +202,12 @@ async function analyzeCase(){
  try{
   const response=await fetch("/api/tabbata/cases/"+activeCase.id+"/analyze",{method:"POST",headers:{"X-Case-Token":activeCase.token}});
   const result=await response.json();
-  if(!response.ok)throw new Error(result.error??"SERV review failed.");
+  if(!response.ok){const error=new Error(result.error??"SERV review failed.");error.httpStatus=response.status;throw error;}
   activePayload.review=result.review;activePayload.provider=result.provider;activePayload.analysis_status="complete";
   activePayload.budget_check=result.budget_check;
-  renderCase(activePayload);
+  renderCase(activePayload,activeExpiresAt);
   toast("SERV review completed. Inspect each source-linked finding.");
- }catch(error){analysisStatus(error.message||"SERV review failed.","error");button.disabled=false;button.textContent="Try analysis again";return;}
+ }catch(error){analysisStatus(error.message||"SERV review failed.","error");const status=error.httpStatus??0;if(status===502||status===409){button.disabled=true;button.textContent="Analysis attempt used";}else{button.disabled=false;button.textContent="Analyze with SERV";}return;}
  button.disabled=false;button.textContent="Analyze with SERV";
 }
 async function recordAction(action){
@@ -236,7 +236,7 @@ async function restoreCase(){
   const response=await fetch("/api/tabbata/cases/"+saved.id,{headers:{"X-Case-Token":saved.token}});
   const result=await response.json();
   if(!response.ok){clearSession();return;}
-  renderCase(result.review_case);
+  renderCase(result.review_case,result.expires_at);
  }catch{analysisStatus("Could not reconnect to your saved review workspace.","error");}
 }
 async function loadStatus(){
