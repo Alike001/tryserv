@@ -130,6 +130,7 @@ function renderFinancial(reconciliation){
    else if(item.type==="unbudgeted_category")message=item.category+": expenditure has no matching approved budget category";
    else if(item.type==="duplicate_reference")message="Duplicate reference "+item.reference+" at "+item.locators.join(", ");
    else if(item.type==="missing_receipt_reference")message="Missing receipt reference at "+item.locator+(item.description?" · "+item.description:"");
+   else if(item.type==="receipt_reference_not_found")message="Receipt reference "+item.reference+" was not found in the submitted supporting documents · "+item.locator;
    else if(item.type==="outside_reporting_period")message="Out-of-period transaction "+item.date+" at "+item.locator;
    else if(item.type==="budget_schedule_total"||item.type==="expense_schedule_total")message=item.label+": variance "+formatMoney(Math.abs(item.difference_minor),reconciliation.currency);
    if(message)addText(list,"li","",""+message);
