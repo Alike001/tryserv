@@ -7,7 +7,7 @@
 ## Before recording
 
 1. Open the deployed Tabbas root page and hard refresh.
-2. Confirm `/healthz` reports `service: tabbata`.
+2. Confirm `/healthz` reports `service: tabbas`.
 3. Confirm `/api/tabbata/status` reports storage and SERV configured.
 4. Confirm the existing shared guest allowance has capacity. Do not reset or increase it.
 5. Use only the fictional sample pack. Do not upload real beneficiary information.
