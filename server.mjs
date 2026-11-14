@@ -158,7 +158,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
    const caseToken=req.headers["x-case-token"];
    if(typeof caseToken!=="string"||caseToken.length<40)return json(res,401,{error:"A valid case access token is required."});
    if(req.method==="GET"&&!routeAction){
-    try{const record=await reviewStore.get(caseId,caseToken);return record?json(res,200,{case_id:caseId,review_case:record.payload}):json(res,404,{error:"Review workspace not found or expired."});}
+    try{const record=await reviewStore.get(caseId,caseToken);return record?json(res,200,{case_id:caseId,review_case:record.payload,expires_at:record.expires_at}):json(res,404,{error:"Review workspace not found or expired."});}
     catch{return json(res,503,{error:"Review storage is temporarily unavailable."});}
    }
    if(req.method==="DELETE"&&!routeAction){
