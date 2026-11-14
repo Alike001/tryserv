@@ -118,7 +118,11 @@ test("SERV review uses one forced structured function call and returns provenanc
    }]}}]
   })};
  };
- const result=await reviewWithServ({casePayload,apiKey:"test-secret-openserv-api-key",fetchImpl});
+ const reviewCase={...casePayload,financial_reconciliation:{
+  status:"attention_required",summary:"Testing category exceeds the approved amount.",
+  checks:[{type:"category_over_budget",category:"Testing",approved_minor:100000000,actual_minor:180000000,variance_minor:80000000}]
+ }};
+ const result=await reviewWithServ({casePayload:reviewCase,apiKey:"test-secret-openserv-api-key",fetchImpl});
  assert.equal(calls,1);
  assert.equal(request.url,"https://inference-api.openserv.ai/v1/chat/completions");
  assert.equal(request.body.reasoning_effort,"medium");
@@ -129,6 +133,8 @@ test("SERV review uses one forced structured function call and returns provenanc
  assert.equal(result.review.findings[0].evidence_refs.length,1);
  assert.ok(!JSON.stringify(result).includes("test-secret-openserv-api-key"));
  assert.match(request.body.messages[0].content,/untrusted data/);
+ assert.match(request.body.messages[1].content,/financial_reconciliation/);
+ assert.match(request.body.messages[1].content,/category_over_budget/);
 });
 test("uploaded prompt-injection text is passed as untrusted evidence, not system instructions",async()=>{
  let request;
