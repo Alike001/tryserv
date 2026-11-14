@@ -59,8 +59,11 @@ export function validateTabbataCaseInput(body){
     budget_check:calculateBudgetCheck(approved_budget_minor,reported_spend_minor,project.currency)
   };
 }
-export function makeReviewSourceSegments(reportText,documents){
-  const sources=[{
+export function makeReviewSourceSegments(reportText,documents,reportDocument=null){
+  const sources=[reportDocument?{
+    document_id:reportDocument.id,document_name:reportDocument.name,role:"report",
+    segments:reportDocument.segments.map(segment=>({id:segment.id,locator:segment.locator,text:segment.text}))
+  }:{
     document_id:"report",document_name:"Narrative report",role:"report",
     segments:[{id:"report-s1",locator:"Narrative report",text:reportText}]
   }];
