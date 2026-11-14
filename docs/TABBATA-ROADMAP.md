@@ -30,7 +30,7 @@ Two authorised fictional production analyses reached the provider but neither pr
 1. Earlier Chat Completions request returned HTTP 502.
 2. Responses API request returned `incomplete` because the original `max_output_tokens: 2800` limit was exhausted.
 
-Both fictional cases were deleted. No retry was made. The code now uses an 8,000-token output budget and reports bounded output-token diagnostics. The revised code passed Node CI and was deployed; browser CI for the latest documentation revision was still running at the time of this update. A successful live review has **not** been demonstrated. The remaining 18 shared guest credits are not a reason to spend another one without explicit approval.
+Both fictional cases were deleted. No retry was made. The code now uses an 8,000-token output budget and reports bounded output-token diagnostics. The revised integration is deployed. Latest verified CI passed **104/104 Node tests** and **74/74 desktop/mobile browser journeys**. A readability pass increased the core form, findings, evidence, reviewer-action and mobile illustration text sizes; Playwright now checks key text sizes and mobile workspace overflow. A successful live review has **not** been demonstrated. The remaining 18 shared guest credits are not a reason to spend another one without explicit approval.
 
 ## P0 — finish and accept the core workflow
 
@@ -45,7 +45,7 @@ These are the release blockers. Do not broaden the product until they are closed
 - [x] Add bounded diagnostics for provider errors and incomplete output.
 - [x] Test request shape, provider parsing, provenance, prompt-injection handling and incomplete-response handling with mocks.
 - [x] Deploy the revised integration.
-- [ ] Confirm latest Node and browser CI are green.
+- [x] Confirm latest Node and browser CI are green (104 Node tests; 74 browser journeys).
 - [ ] After separate user approval, perform one new live test with the same fictional pack; do not retry automatically.
 - [ ] Capture provider model, response ID, latency and token usage.
 - [ ] Confirm the returned review is complete and persisted.
@@ -90,6 +90,7 @@ Start these after the P0 flow is stable.
 ### 6. Make the review experience easier to use
 
 - [ ] Conduct a focused UX review of the landing page, form, upload states, workspace and findings.
+- [x] Improve core form/workspace typography and add a browser regression check for readable labels, findings, evidence and mobile overflow.
 - [ ] Improve upload guidance: accepted formats, file limits, report-vs-supporting-document roles and what happens to files.
 - [ ] Improve validation messages for missing requirements, malformed schedules, unsupported headers and oversized files.
 - [ ] Make the finding cards easier to scan: requirement, claim, status, severity, explanation, evidence and next question.
