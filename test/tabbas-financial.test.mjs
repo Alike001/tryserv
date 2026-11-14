@@ -134,6 +134,13 @@ test("currency markers must agree with the case currency", () => {
   assert.match(result.issues[0].message, /currency marker/);
 });
 
+test("both schedules without entered control totals remain partial, not reconciled",()=>{
+ const budget={name:"budget.csv",truncated:false,segments:[{locator:"Row 2",cells:{"Category":"Travel","Approved amount":"1000"}}]};
+ const expenses={name:"actuals.csv",truncated:false,segments:[{locator:"Row 2",cells:{"Category":"Travel","Amount":"500"}}]};
+ const result=reconcileFinancialSchedules({budgetSchedule:budget,expenseSchedule:expenses,currency:"NGN"});
+ assert.equal(result.status,"partial");
+ assert.match(result.summary,/control totals are missing/);
+});
 test("no schedule is reported as not provided rather than silently passed", () => {
   const result = reconcileFinancialSchedules({approvedBudgetMinor: 500000000, reportedSpendMinor: 450000000});
   assert.equal(result.status, "not_provided");
