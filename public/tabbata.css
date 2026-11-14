@@ -154,6 +154,7 @@ body[data-page="tabbata"] :is(a,button,input,select,textarea):focus-visible{outl
 .file-item{display:flex;justify-content:space-between;gap:10px;background:#f4f7fa;border-radius:7px;padding:8px 10px;font-size:9px;color:#4c6378}
 .file-item b{font-weight:800;overflow-wrap:anywhere}.file-item span{color:#8999a8;white-space:nowrap}
 .file-empty{font-size:9px;color:#a0adba}
+ .compact-dropzone{min-height:95px}
 .upload-note{font-size:9px;line-height:1.6;color:#8a99a8;margin:9px 0 0}
 .safety-callout{display:flex;gap:11px;background:#fff6ed;border:1px solid #f4dfcb;border-radius:10px;padding:12px;margin-top:19px}
 .safety-icon{width:22px;height:22px;border-radius:50%;background:#ffe4ca;color:#a65e2b;display:grid;place-items:center;font-weight:900;font-size:11px;flex:none}
