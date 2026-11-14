@@ -238,6 +238,12 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
      console.info("tabbas.serv_review",JSON.stringify({model:result.provider.model,completion_id:result.provider.completion_id,latency_ms:result.provider.latency_ms,input_tokens:result.provider.usage.input_tokens,output_tokens:result.provider.usage.output_tokens}));
      return json(res,200,{analysis_status:"complete",review:result.review,budget_check:record.payload.budget_check,financial_reconciliation:record.payload.financial_reconciliation,provider:result.provider,reused:false});
     }catch(error){
+     const safeReason=String(error?.message??"Unknown provider error").replace(/[\r\n\t]+/g," ").slice(0,240);
+     console.warn("tabbas.serv_review_failed",JSON.stringify({
+      case_id:caseId,model:env.SERV_MODEL??"gpt-5.4-mini",
+      error_type:String(error?.name??"Error").slice(0,60),
+      reason:safeReason,allowance_reserved:true
+     }));
      record.payload.analysis_status="failed";
      record.payload.analysis_error="The reserved SERV review attempt could not be completed. No automatic retry was made; create a new case only if you choose to spend another review credit.";
      try{await reviewStore.update(caseId,caseToken,record.payload);}catch{}

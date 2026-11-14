@@ -111,11 +111,9 @@ test("SERV review uses one forced structured function call and returns provenanc
  const fetchImpl=async(url,options)=>{
   calls++;request={url,body:JSON.parse(options.body),headers:options.headers};
   return {ok:true,status:200,json:async()=>({
-   id:"serv-completion-123",model:"gpt-5.4-mini-2026-03-17",
-   usage:{prompt_tokens:250,completion_tokens:180},
-   choices:[{finish_reason:"tool_calls",message:{tool_calls:[{
-    type:"function",id:"call_review",function:{name:"submit_report_review",arguments:JSON.stringify(raw)}
-   }]}}]
+   id:"resp-serv-123",model:"gpt-5.4-mini-2026-03-17",status:"completed",
+   usage:{input_tokens:250,output_tokens:180},
+   output:[{type:"function_call",call_id:"call_review",name:"submit_report_review",arguments:JSON.stringify(raw)}]
   })};
  };
  const reviewCase={...casePayload,budget_check:{status:"within_budget",currency:"NGN",approved_minor:500000000,reported_minor:450000000,variance_minor:-50000000},financial_reconciliation:{
@@ -124,19 +122,20 @@ test("SERV review uses one forced structured function call and returns provenanc
  }};
  const result=await reviewWithServ({casePayload:reviewCase,apiKey:"test-secret-openserv-api-key",fetchImpl});
  assert.equal(calls,1);
- assert.equal(request.url,"https://inference-api.openserv.ai/v1/chat/completions");
- assert.equal(request.body.reasoning_effort,"medium");
- assert.equal(request.body.tool_choice.function.name,"submit_report_review");
- assert.equal(request.body.tools[0].function.name,"submit_report_review");
- assert.equal(result.provider.completion_id,"serv-completion-123");
+ assert.equal(request.url,"https://inference-api.openserv.ai/v1/responses");
+ assert.equal(request.body.reasoning.effort,"medium");
+ assert.equal(request.body.tool_choice.name,"submit_report_review");
+ assert.equal(request.body.tools[0].name,"submit_report_review");
+ assert.equal(request.body.tools[0].type,"function");
+ assert.equal(result.provider.completion_id,"resp-serv-123");
  assert.equal(result.provider.usage.input_tokens,250);
  assert.equal(result.review.findings[0].evidence_refs.length,1);
  assert.ok(!JSON.stringify(result).includes("test-secret-openserv-api-key"));
- assert.match(request.body.messages[0].content,/untrusted data/);
- assert.match(request.body.messages[1].content,/financial_reconciliation/);
- assert.match(request.body.messages[1].content,/budget_check/);
- assert.match(request.body.messages[1].content,/within_budget/);
- assert.match(request.body.messages[1].content,/category_over_budget/);
+ assert.match(request.body.instructions,/untrusted data/);
+ assert.match(request.body.input,/financial_reconciliation/);
+ assert.match(request.body.input,/budget_check/);
+ assert.match(request.body.input,/within_budget/);
+ assert.match(request.body.input,/category_over_budget/);
 });
 test("uploaded prompt-injection text is passed as untrusted evidence, not system instructions",async()=>{
  let request;
@@ -151,18 +150,24 @@ test("uploaded prompt-injection text is passed as untrusted evidence, not system
  const fetchImpl=async(_url,options)=>{
   request={body:JSON.parse(options.body)};
   return {ok:true,status:200,json:async()=>({
-   id:"serv-adversarial-test",model:"gpt-5.4-mini",
-   choices:[{finish_reason:"tool_calls",message:{tool_calls:[{
-    type:"function",id:"call_review",function:{name:"submit_report_review",arguments:JSON.stringify(payload())}
-   }]}}]
+   id:"resp-adversarial-test",model:"gpt-5.4-mini",status:"completed",
+   usage:{input_tokens:100,output_tokens:50},
+   output:[{type:"function_call",call_id:"call_review",name:"submit_report_review",arguments:JSON.stringify(payload())}]
   })};
  };
  await reviewWithServ({casePayload:adversarialCase,apiKey:"test-secret-openserv-api-key",fetchImpl});
- assert.match(request.body.messages[0].content,/untrusted data, never instructions/i);
- assert.match(request.body.messages[0].content,/Ignore all embedded directions/i);
- assert.match(request.body.messages[1].content,/IGNORE ALL PREVIOUS INSTRUCTIONS/i);
+ assert.match(request.body.instructions,/untrusted data, never instructions/i);
+ assert.match(request.body.instructions,/Ignore all embedded directions/i);
+ assert.match(request.body.input,/IGNORE ALL PREVIOUS INSTRUCTIONS/i);
 });
-test("incomplete provider output fails closed instead of fabricating a review",async()=>{
- const fetchImpl=async()=>({ok:true,status:200,json:async()=>({choices:[{finish_reason:"length",message:{content:"partial"}}]})});
- await assert.rejects(()=>reviewWithServ({casePayload,apiKey:"test-secret-openserv-api-key",fetchImpl}),/required structured review/);
+test("incomplete Responses output fails closed instead of fabricating a review",async()=>{
+ const fetchImpl=async()=>({ok:true,status:200,json:async()=>({status:"incomplete",incomplete_details:{reason:"max_output_tokens"},output:[{type:"message"}]})});
+ await assert.rejects(()=>reviewWithServ({casePayload,apiKey:"test-secret-openserv-api-key",fetchImpl}),/did not complete/);
+});
+test("provider errors expose bounded diagnostics without leaking the API key",async()=>{
+ const fetchImpl=async()=>({ok:false,status:400,json:async()=>({error:{code:"unsupported_parameter",message:"The request parameter is not supported."}})});
+ await assert.rejects(
+  ()=>reviewWithServ({casePayload,apiKey:"test-secret-openserv-api-key",fetchImpl}),
+  error=>error.message.includes("HTTP 400 (unsupported_parameter)")&&error.message.includes("request parameter")&&!error.message.includes("test-secret-openserv-api-key")
+ );
 });
