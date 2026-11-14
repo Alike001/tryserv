@@ -38,6 +38,7 @@ export function createTabbataStore({databaseUrl,query=defaultQuery}={}){
   return {
     async create(payload){
       await ensureSchema();
+      await query(databaseUrl,"DELETE FROM tabbata_cases WHERE expires_at <= now()",[]);
       const id=crypto.randomUUID();
       const token=crypto.randomBytes(32).toString("base64url");
       const rows=await query(databaseUrl,
@@ -50,7 +51,7 @@ export function createTabbataStore({databaseUrl,query=defaultQuery}={}){
     async get(id,token){
       if(!UUID.test(String(id))||typeof token!=="string"||!TOKEN.test(token))return null;
       await ensureSchema();
-      await query(databaseUrl,"DELETE FROM tabbata_cases WHERE id=$1 AND expires_at <= now()",[id]);
+      await query(databaseUrl,"DELETE FROM tabbata_cases WHERE expires_at <= now()",[]);
       const rows=await query(databaseUrl,
         "SELECT id,payload,created_at,expires_at FROM tabbata_cases WHERE id=$1 AND token_hash=$2 AND expires_at>now() LIMIT 1",
         [id,tokenHash(token)]);
@@ -59,6 +60,7 @@ export function createTabbataStore({databaseUrl,query=defaultQuery}={}){
     async update(id,token,payload){
       if(!UUID.test(String(id))||typeof token!=="string"||!TOKEN.test(token))return false;
       await ensureSchema();
+      await query(databaseUrl,"DELETE FROM tabbata_cases WHERE expires_at <= now()",[]);
       const rows=await query(databaseUrl,
         "UPDATE tabbata_cases SET payload=$3::jsonb,updated_at=now() WHERE id=$1 AND token_hash=$2 AND expires_at>now() RETURNING id",
         [id,tokenHash(token),JSON.stringify(payload)]);
@@ -67,6 +69,7 @@ export function createTabbataStore({databaseUrl,query=defaultQuery}={}){
     async delete(id,token){
       if(!UUID.test(String(id))||typeof token!=="string"||!TOKEN.test(token))return false;
       await ensureSchema();
+      await query(databaseUrl,"DELETE FROM tabbata_cases WHERE expires_at <= now()",[]);
       const rows=await query(databaseUrl,
         "DELETE FROM tabbata_cases WHERE id=$1 AND token_hash=$2 RETURNING id",
         [id,tokenHash(token)]);
