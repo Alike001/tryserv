@@ -251,14 +251,13 @@ export function reconcileFinancialSchedules({
     }
   }
   checks.push(...outsidePeriod.map(item => ({ type: "outside_reporting_period", ...item })));
+  const issues = [...budget.issues, ...expenses.issues];
   for (const item of unparsedDates) {
     issues.push({ type: "unparsed_date", document: expenseSchedule?.name, locator: item.locator, message: "Could not interpret transaction date: " + item.value });
   }
   if (periodStart && periodEnd && expenseSchedule && !expenses.has_date) {
     issues.push({ type: "missing_date_column", document: expenseSchedule.name, message: "No recognised transaction-date column was found, so reporting-period checks could not be completed." });
   }
-
-  const issues = [...budget.issues, ...expenses.issues];
   const attention = checks.some(check => ["variance", "category_over_budget", "unbudgeted_category", "duplicate_reference", "missing_receipt_reference", "outside_reporting_period"].includes(check.type) || check.status === "variance");
   const incomplete = issues.length > 0 || budget.status === "unsupported" || expenses.status === "unsupported" ||
     (budgetSchedule && budget.status !== "parsed") || (expenseSchedule && expenses.status !== "parsed");
