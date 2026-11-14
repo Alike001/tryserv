@@ -139,13 +139,21 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
    return json(res,200,{storage_configured:Boolean(env.DATABASE_URL),serv_configured:guestTrialConfigured(env),model:env.SERV_MODEL??"gpt-5.4-mini",upload_limits:{files:TABBATA_UPLOAD_LIMITS.files,per_file_bytes:TABBATA_UPLOAD_LIMITS.perFileBytes,total_bytes:TABBATA_UPLOAD_LIMITS.totalBytes}});
   if(req.method==="POST"&&pathname==="/api/tabbata/cases"){
    if(!env.DATABASE_URL)return json(res,503,{error:"Review storage is not configured. The existing case workspace is unavailable."});
-   let normalized,documents;
+   let normalized,documents,reportDocument;
    try{
     const input=await readJson(req,12*1024*1024);
-    normalized=validateTabbataCaseInput(input);
-    documents=await documentExtractor(input.files);
+    const reportFile=input.report_file??null;
+    const supportingFiles=Array.isArray(input.files)?input.files:[];
+    if(supportingFiles.length<1)throw new Error("Upload at least one supporting document.");
+    const allFiles=[...(reportFile?[reportFile]:[]),...supportingFiles];
+    const extracted=await documentExtractor(allFiles);
+    reportDocument=reportFile?extracted[0]:null;
+    documents=reportFile?extracted.slice(1):extracted;
+    if(!documents.length)throw new Error("Upload at least one supporting evidence file in addition to the narrative report.");
+    const reportText=reportDocument?reportDocument.segments.map(segment=>segment.text).join("\n\n"):input.report_text;
+    normalized=validateTabbataCaseInput({...input,report_text:reportText});
    }catch(error){return json(res,400,{error:String(error.message).slice(0,220)});}
-   const payload={...normalized,documents,analysis_status:"not_started",review:null,provider:null,analysis_error:null,reviewer_actions:[],created_at:new Date().toISOString()};
+   const payload={...normalized,report_document:reportDocument??null,documents,analysis_status:"not_started",review:null,provider:null,analysis_error:null,reviewer_actions:[],created_at:new Date().toISOString()};
    try{
     const created=await reviewStore.create(payload);
     return json(res,201,{case_id:created.id,case_token:created.token,expires_at:created.expires_at,review_case:payload});
@@ -179,7 +187,7 @@ export function createApp({env=process.env,fetchImpl=fetch,guestReserve=reserveG
      if(!allowance.allowed){const failure=guestFailure(allowance.reason);return json(res,failure.status,{error:failure.message});}
      record.payload.analysis_status="running";
      if(!await reviewStore.update(caseId,caseToken,record.payload))throw new Error("Review case expired before analysis.");
-     const caseForReview={...record.payload,source_segments:makeReviewSourceSegments(record.payload.report_text,record.payload.documents)};
+     const caseForReview={...record.payload,source_segments:makeReviewSourceSegments(record.payload.report_text,record.payload.documents,record.payload.report_document)};
      const result=await reviewWithServFn({casePayload:caseForReview,apiKey:env.SERV_API_KEY,model:env.SERV_MODEL??"gpt-5.4-mini",fetchImpl});
      record.payload.review=result.review;
      record.payload.provider=result.provider;
