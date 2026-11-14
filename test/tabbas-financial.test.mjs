@@ -6,8 +6,8 @@ const budgetSchedule = {
   name: "approved-budget.csv",
   truncated: false,
   segments: [
-    {locator: "Row 2", cells: {"Category": "Materials", "Amount NGN": "2000000"}},
-    {locator: "Row 3", cells: {"Category": "Construction", "Amount NGN": "2000000"}},
+    {locator: "Row 2", cells: {"Category": "Materials", "Approved amount NGN": "2000000"}},
+    {locator: "Row 3", cells: {"Category": "Construction", "Approved amount NGN": "2000000"}},
     {locator: "Row 4", cells: {"Category": "Testing", "Amount NGN": "1000000"}}
   ]
 };
