@@ -1,4 +1,4 @@
-# Tabbata — Problem and Competitor Research
+# Tabbas — Problem and Competitor Research
 
 **Research reviewed:** 14 November 2026  
 **Purpose:** Ground the hackathon pivot in a real, specific problem and avoid presenting a generic AI document dashboard as novel.
@@ -13,7 +13,7 @@ Sources:
 - [Nigeria report PDF](https://gaps-uk.org/wp-content/uploads/2020/12/Supporting-Civil-Society-and-Women%E2%80%99s-Rights-Organisations-in-Fragile-and-Conflict-Affected-Contexts-Nigeria.pdf)
 - [GAPS report page](https://www.qgaps.com/the-key-to-change-supporting-civil-society-and-womens-rights-organisations-in-fragile-and-conflict-affected-contexts-nigeria-report.html)
 
-This is a relevant qualitative signal, not proof that every Nigerian NGO has the same workflow or that Tabbata has product-market fit.
+This is a relevant qualitative signal, not proof that every Nigerian NGO has the same workflow or that Tabbas has product-market fit.
 
 ### 2026 Nigeria civil-society landscape research
 
@@ -46,7 +46,7 @@ The evidence supports a plausible pain: reporting requirements and formats can v
 
 Outcome Proof captures evidence (quotes, numbers, photos and notes), links it to outcomes, manages grantmakers and deadlines, and drafts report sections with an AI assistant that shows the evidence used. It exports reports to Word and supports a $39/month flat-rate plan per its current public site.
 
-**Implication:** Tabbata must not claim to invent evidence-linked reporting or AI report drafting. Its narrower proposed wedge is a one-off pre-submission consistency/evidence review of an already prepared narrative + financial schedule + attached evidence bundle, with deterministic financial checks and exact-quote validation.
+**Implication:** Tabbas must not claim to invent evidence-linked reporting or AI report drafting. Its narrower proposed wedge is a one-off pre-submission consistency/evidence review of an already prepared narrative + financial schedule + attached evidence bundle, with deterministic financial checks and exact-quote validation.
 
 ### MIZAN Qiyas — adjacent evidence-review competitor
 
@@ -54,7 +54,7 @@ Outcome Proof captures evidence (quotes, numbers, photos and notes), links it to
 
 MIZAN Qiyas targets government digital-transformation measurement. It checks uploaded evidence against requirements, identifies missing points, creates tasks and reports, and keeps humans in the decision loop.
 
-**Implication:** Requirement-to-evidence review is not unique. Tabbata must differentiate by target user (small implementing NGOs), workflow (donor report pack before submission) and document mix (narrative, financial schedule and supporting attachments), not by claiming to be the first evidence-checking AI.
+**Implication:** Requirement-to-evidence review is not unique. Tabbas must differentiate by target user (small implementing NGOs), workflow (donor report pack before submission) and document mix (narrative, financial schedule and supporting attachments), not by claiming to be the first evidence-checking AI.
 
 ### DevResults — established M&E platform
 
@@ -78,7 +78,7 @@ ActivityInfo provides grant-management capabilities around applications, budgets
 
 Eri describes itself as a field-intelligence company gathering evidence directly from people, places and markets across Nigeria through field teams and direct observation.
 
-**Implication:** Tabbata cannot claim that documents prove physical delivery. Field verification is a different service and remains outside the product.
+**Implication:** Tabbas cannot claim that documents prove physical delivery. Field verification is a different service and remains outside the product.
 
 ## 3. What is and is not differentiated
 
@@ -97,7 +97,7 @@ Eri describes itself as a field-intelligence company gathering evidence directly
 - A clear distinction between "not found in this bundle" and "false in the real world".
 - A low-friction workflow designed for smaller Nigerian implementing organisations and varied donor templates.
 
-**Important competitor correction:** Outcome Proof already offers ongoing evidence capture, outcome tracking, grantmaker deadlines, team collaboration, report generation and optional AI drafting from selected evidence. It also says its AI draft identifies the evidence used and reports when evidence is insufficient. Therefore Tabbata must not claim that evidence-linked AI reporting is new. Its proposed wedge is the one-off review of a pre-existing report bundle for cross-document inconsistencies and omissions, with deterministic financial reconciliation. This wedge still needs to be proven in user tests.
+**Important competitor correction:** Outcome Proof already offers ongoing evidence capture, outcome tracking, grantmaker deadlines, team collaboration, report generation and optional AI drafting from selected evidence. It also says its AI draft identifies the evidence used and reports when evidence is insufficient. Therefore Tabbas must not claim that evidence-linked AI reporting is new. Its proposed wedge is the one-off review of a pre-existing report bundle for cross-document inconsistencies and omissions, with deterministic financial reconciliation. This wedge still needs to be proven in user tests.
 
 Sources:
 - [Outcome Proof feature set](https://www.outcomeproof.com/features/)
@@ -109,7 +109,7 @@ This is a product hypothesis, not a defensible moat yet.
 
 The first proposed name, **Shaida**, is being retired because a Web3 project named Shaida already exists and describes itself as a verifiable memory layer for autonomous agents.
 
-The current working name is **Tabbata**, a Hausa word used for becoming certain, being confirmed or proving true. The exact name also appears in an unrelated French fashion/apparel business, and a French company record references a trademark filing. A preliminary search did not surface a direct donor-report-review software competitor under that exact name, but the name is **not cleared** for trademark, domain, company registration or social handles. Keep it as a hackathon working name pending formal checks.
+The current working name is **Tabbas**. The name has not yet received formal trademark, company-name, domain or social-handle clearance; complete those checks before a wider commercial launch.
 
 Sources:
 - [HausaDictionary — tabbata](https://hausadictionary.com/tabbata)
@@ -125,7 +125,7 @@ Sources:
 - [Official Edition 02 page](https://www.openserv.ai/hackathon-2)
 - [SERV Chat Completions API](https://docs.openserv.ai/serv-reasoning/api/chat-completions)
 
-The Chat Completions reference documents `reasoning_effort`, function tools, `tool_choice`, token limits and standard completion metadata. Tabbata will use those documented API features. It will not claim unverified native OpenServ agent products.
+The Chat Completions reference documents `reasoning_effort`, function tools, `tool_choice`, token limits and standard completion metadata. Tabbas will use those documented API features. It will not claim unverified native OpenServ agent products.
 
 ## 6. Validation still required
 
