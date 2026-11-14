@@ -10,13 +10,13 @@ const validBlueprint={
 };
 
 test("landing sends newcomers and developers to real working routes",async({page})=>{
-  await page.goto("/");
+  await page.goto("/legacy");
   await expect(page.getByRole("heading",{level:1})).toContainText("Stop reading");
   await expect(page.getByRole("link",{name:/I'm new — start here/i})).toBeVisible();
   await page.getByRole("link",{name:/I'm new — start here/i}).click();
   await expect(page).toHaveURL(/\/learn$/);
   await expect(page.locator("#lesson-nav .nav-lesson")).toHaveCount(4);
-  await page.goto("/");
+  await page.goto("/legacy");
   await page.getByRole("link",{name:/I can code — let's build/i}).click();
   await expect(page).toHaveURL(/\/try$/);
   await expect(page.locator("#builder")).toBeVisible();
@@ -229,7 +229,7 @@ test("private custom SERV request is never run by preview or missing authorizati
 
 
 test("new guide page has working navigation, documentation anchors, and learning handoff",async({page})=>{
- await page.goto("/");
+ await page.goto("/legacy");
  await expect(page.locator(".trail-card")).toHaveCount(3);
  await page.locator("a[href='/docs']:visible").first().click();
  await expect(page).toHaveURL(/\/docs$/);
@@ -258,7 +258,7 @@ test("mobile docs remains readable and its in-page navigation works",async({page
 
 
 test("keyboard users can skip homepage navigation and reach main content",async({page})=>{
- await page.goto("/");
+ await page.goto("/legacy");
  await page.keyboard.press("Tab");
  const skip=page.getByRole("link",{name:"Skip to main content"});
  await expect(skip).toBeFocused();
@@ -346,16 +346,16 @@ test("debug lab has clear repair stages, accessible entry and no mobile overflow
 
 test("all pages share the landing's navy/blue brand and mobile page navigation",async({page})=>{
  await page.setViewportSize({width:375,height:812});
- for(const route of ["/","/learn","/try","/debug","/docs"]){
+ for(const route of ["/legacy","/learn","/try","/debug","/docs"]){
    await page.goto(route);
    await expect(page.locator('link[href="/brand.css"]')).toHaveCount(1);
    const visibleNav=page.getByRole("navigation",{name:"TrySERV pages"});
    await expect(visibleNav).toBeVisible();
-   for(const href of ["/","/learn","/try","/debug","/docs"]){
+   for(const href of ["/legacy","/learn","/try","/debug","/docs"]){
      await expect(visibleNav.locator('a[href="'+href+'"]')).toBeVisible();
    }
    const bg=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
-   expect(bg).toBe(route==="/"?"rgb(255, 255, 255)":"rgb(247, 249, 252)");
+   expect(bg).toBe(route==="/legacy"?"rgb(255, 255, 255)":"rgb(247, 249, 252)");
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
    expect(overflow,"shared UI overflow at "+route).toBeLessThanOrEqual(2);
  }
@@ -495,7 +495,7 @@ test("SERV visual walkthrough is accessible, clickable and no-spend at 320px",as
    if(["/api/mentor","/api/try-serv","/api/debug/explain"].includes(new URL(request.url()).pathname))inferenceCalls++;
  });
  await page.setViewportSize({width:320,height:850});
- for(const route of ["/","/learn"]){
+ for(const route of ["/legacy","/learn"]){
    await page.goto(route,{waitUntil:"load"});
    const map=page.locator("[data-serv-map] .serv-map");
    await expect(map).toBeVisible();
@@ -609,7 +609,7 @@ test("illustrated OpenServ hero displays original art and changes stages without
  });
  for(const width of [320,375,768,1440]){
    await page.setViewportSize({width,height:900});
-   await page.goto("/",{waitUntil:"load"});
+   await page.goto("/legacy",{waitUntil:"load"});
    const art=page.locator(".hero-original-illustration");
    await expect(art).toBeVisible();
    expect(await art.evaluate(img=>img.complete&&img.naturalWidth>0),"original SVG loads at "+width).toBe(true);
@@ -632,7 +632,7 @@ test("illustrated OpenServ hero displays original art and changes stages without
 
 test("hero offers reduced-motion artwork and illustration is not presented as live inference",async({page})=>{
  await page.emulateMedia({reducedMotion:"reduce"});
- await page.goto("/");
+ await page.goto("/legacy");
  await expect(page.locator(".hero-steps-top")).toContainText("NO LIVE API CALL");
  await expect(page.locator(".hero-original-illustration")).toHaveAttribute("alt",/conceptual SERV API workflow/);
  await expect(page.locator("[data-hero-explorer]")).toHaveAttribute("data-hero-current","0");

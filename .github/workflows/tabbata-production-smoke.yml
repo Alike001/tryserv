@@ -1,0 +1,71 @@
+name: Tabbas production smoke (no inference)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server.mjs'
+      - 'tabbata-*.mjs'
+      - 'public/tabbata.*'
+      - '.github/workflows/tabbata-production-smoke.yml'
+  workflow_dispatch:
+jobs:
+  public-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check public Tabbas deployment without making inference calls
+        run: |
+          node --input-type=module <<'NODE'
+          const base = "https://tryserv.onrender.com";
+          async function get(path) {
+            const response = await fetch(base + path, { signal: AbortSignal.timeout(20000) });
+            if (!response.ok) throw new Error(path + " returned HTTP " + response.status);
+            return response;
+          }
+          const health = await (await get("/healthz")).json();
+          if (health.service !== "tabbas" || health.status !== "ok") throw new Error("Unexpected production health response");
+          const status = await (await get("/api/tabbata/status")).json();
+          if (status.storage_configured !== true) throw new Error("Tabbas case storage is not configured");
+          if (status.serv_configured !== true) throw new Error("SERV is not configured for Tabbas");
+          const html = await (await get("/")).text();
+          if (!html.includes("<title>Tabbas") || !html.includes('href="/tabbata.css"')) throw new Error("Tabbas root page is not deployed");
+          await get("/tabbata.css");
+          await get("/tabbata.js");
+          const sample = {
+            project_name: "Automated synthetic smoke case",
+            funder: "Test fixture only",
+            reporting_period: "Smoke test",
+            currency: "NGN",
+            requirements: "Check that the report includes its reporting period and has supporting evidence.",
+            report_text: "This synthetic smoke report describes a fictional community project and its reported activities during the test reporting period. It is used only to verify private case storage and is not a real project report.",
+            files: [{ name: "smoke-evidence.txt", type: "text/plain", data_base64: Buffer.from("Synthetic evidence note: Site A is listed as completed for this test only.").toString("base64") }]
+          };
+          const createdResponse = await fetch(base + "/api/tabbata/cases", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(sample), signal: AbortSignal.timeout(20000)
+          });
+          if (createdResponse.status !== 201) throw new Error("Private case creation returned HTTP " + createdResponse.status);
+          const created = await createdResponse.json();
+          let deleted = false;
+          try {
+            const loadedResponse = await fetch(base + "/api/tabbata/cases/" + created.case_id, {
+              headers: { "X-Case-Token": created.case_token }, signal: AbortSignal.timeout(20000)
+            });
+            if (!loadedResponse.ok) throw new Error("Private case read returned HTTP " + loadedResponse.status);
+            const loaded = await loadedResponse.json();
+            if (loaded.review_case.project.name !== sample.project_name) throw new Error("Private case payload did not persist");
+          } finally {
+            const deletedResponse = await fetch(base + "/api/tabbata/cases/" + created.case_id, {
+              method: "DELETE", headers: { "X-Case-Token": created.case_token }, signal: AbortSignal.timeout(20000)
+            });
+            deleted = deletedResponse.ok;
+          }
+          if (!deleted) throw new Error("Synthetic smoke case could not be deleted");
+          console.log(JSON.stringify({ service: health.service, storage_configured: status.storage_configured, serv_configured: status.serv_configured, model: status.model, private_case_crud: "passed", synthetic_case_deleted: deleted, inference_calls: 0 }, null, 2));
+          NODE

@@ -1,3 +1,60 @@
+# Tabbas — Current product handoff (14 November 2026)
+
+**Current product decision:** Build **Tabbas**, an independent, file-first pre-submission donor-report quality checker for NGOs and implementing organisations. This is a real product build, not a demo-only exercise. The fictional sample pack is optional onboarding material only; real users must be able to submit their own authorised, redacted report packs and get reliable, traceable checks. The user has selected the name **Tabbas** for the current direction. Earlier Tabbata and Shaida references are superseded for public branding. Formal trademark, domain and handle clearance remains outstanding.
+
+**Problem:** Donor report packs combine narrative claims, funder requirements, approved budgets, expenditure schedules and supporting evidence. These files can disagree or leave requirements unsupported. Tabbas checks one prepared pack before submission; it does not replace an NGO MIS, accounting system or auditor.
+
+**Repository:** `Alike001/tryserv`  
+**Branch:** `feat/tabbata-donor-report-review`  
+**Draft PR:** [#22](https://github.com/Alike001/tryserv/pull/22)  
+**Existing Render service:** `https://tryserv.onrender.com/` (still deploys `main`; not yet updated to Tabbas)  
+**Track:** OpenServ Edition 02 — Open Track.
+
+## Current product implementation
+
+- Public product workspace is at `/`; legacy TrySERV learning routes are temporarily preserved at `/legacy`, `/learn`, `/try`, `/debug` and `/docs`.
+- Bounded extraction for PDF, DOCX, XLSX, CSV, TXT and Markdown, retaining page/sheet/row/line source locators.
+- Private case workspaces use the existing Neon `DATABASE_URL`, random one-time case tokens (hashes stored), 24-hour expiry and explicit deletion. Original file binaries are not persisted.
+- SERV is invoked only after an explicit Analyze action, with one reservation from the existing durable guest allowance and a forced `submit_report_review` structured response.
+- Backend verifies document IDs and exact quotations against extracted supporting-source text. Invalid or unsupported citations are downgraded.
+- Human reviewer actions and print/save-PDF output are implemented. Tabbas never makes funding or audit decisions.
+- Optional approved-budget and actual-expenditure CSV/XLSX schedules are now supported. Structured cell values are retained separately from source text for deterministic calculations.
+- New `tabbas-financial.mjs` computes schedule totals, compares them with entered totals, reconciles spend by budget category, flags category overspend/unbudgeted categories, duplicate references, blank receipt references, receipt references not found in separately submitted supporting documents and transactions outside an explicitly entered reporting period. Invalid rows, unsupported/ambiguous headers, duplicate columns, inconsistent column sets, blank/unparsed dates and multi-worksheet schedules fail visibly rather than being guessed or silently combined.
+- SERV receives the deterministic reconciliation result as context and is instructed not to recalculate or override it. The code remains authoritative for arithmetic.
+- The workspace UI has dedicated schedule uploads and a line-item reconciliation panel, including where receipt-reference text was found or not found. The optional fictional sample pack demonstrates category overspend and receipt-reference issues; it is explicitly illustrative and not a real customer case. Public branding now says Tabbas and positions it as an independent product, not a hackathon build.
+
+## Verification status
+
+- Latest Node CI on current head `0875d859ba8bc967134de6ff9170c7f057e533df`: **103 passed, 0 failed**. This includes financial schedule parsing, receipt-reference matching, duplicate-header preservation, inconsistent-sheet and multi-worksheet handling, reporting-period validation, blank-date checks, prompt-injection separation, schedule integration, existing extraction, security and case-workflow tests.
+- Desktop/mobile Playwright journeys: **74 passed** on UI-tested commit `0e97ade1952ff3c88624f2f5779275afb82e73cf`. The current head adds documentation and financial-limit clarification after that UI-tested commit; the current browser workflow is still running.
+- No live SERV inference credits have been spent by these financial changes or CI.
+- PR #22 remains **open and draft**. Do not merge it or claim production acceptance until all tests, product branding, security and release checks pass.
+- Render `tryserv` still tracks `main`; the public URL is still the previous TrySERV deployment. No new Render service or database has been created.
+- This pilot uses one-time private case links rather than organisation accounts or team roles; those are on the product roadmap. No NGO programme/M&E officer or finance reviewer has tested Tabbas yet. No customer adoption, revenue or product-market fit is claimed.
+
+## Safety and product boundaries
+
+- Only the explicit Analyze action may trigger SERV; no automatic retries after a reserved provider failure.
+- Never reset, raise or bypass the existing shared inference allowance.
+- Uploaded binaries are not persisted; extracted text, structured CSV/XLSX cell values, source locators and review output expire after up to 24 hours.
+- Do not upload beneficiary names, phone numbers, addresses, bank details, IDs, health data or other sensitive personal information; redact first.
+- Financial checks are arithmetic and document-structure checks. A duplicate reference, missing/unmatched receipt reference, category variance or out-of-period row is a review flag—not proof of fraud, misconduct, ineligibility or improper spending. A reference not found in the submitted bundle may exist outside the bundle or in an unextractable file.
+- Tabbas is not an auditor, accountant, funder, fraud detector or physical-verification service. A human reviewer remains responsible for decisions.
+
+## Next actions
+
+1. Public brand alignment to **Tabbas** is complete across the page, README, submission notes, product specification, smoke workflow and PR metadata. Historical internal filenames/API identifiers still use `tabbata`; rename them only as a separate cleanup after the product review.
+2. Confirm the latest browser workflow finishes successfully, then run the no-inference production smoke check after deployment approval. Desktop/mobile Playwright already passed 74 journeys on the current UI-tested commit.
+3. Review the financial schedule parser against real-world CSV/XLSX variations, especially headers, number formats, date formats, totals rows, duplicate columns and truncated files. Keep unsupported formats explicit rather than guessing.
+4. Add the stronger SERV Prompt Guard / Shadow Agent integration only after checking the current official API contract and benchmarking it against the existing one-call implementation. Do not claim native features that have not been verified and tested.
+5. Keep PR #22 draft until all tests and release gates pass. After explicit approval, merge and let the existing Render service auto-deploy; do not create a second service or database.
+6. Run the no-inference production smoke workflow, verify storage/SERV readiness, and then perform a live SERV review only after the user explicitly authorises spending one existing allowance unit on fictional or otherwise authorised redacted data.
+7. Conduct real acceptance sessions with at least one NGO programme/M&E officer and one finance/report reviewer. Record findings and revise the product; do not claim this has happened before it does.
+8. Prepare the submission from the actual working product: truthful screenshots/video, public repository, clear SERV integration explanation, commercial hypothesis and required X/Typeform submission.
+
+
+---
+
 # TrySERV — Current handoff update (14 November 2026)
 
 **Latest product decision:** XP, point totals and reward messages have been removed. The learning studio now records completed lesson IDs only, shows a 0–4 completion count and a practical learning summary, and keeps the three debugging repairs as a separate progress track. The existing `tryserv-progress-v1` localStorage format (an array of lesson IDs) is unchanged, so previously completed lessons remain completed after this UI update. The change is being delivered through `feat/remove-xp-learning-progress`; do not reintroduce XP or points.

@@ -1,121 +1,136 @@
-# TrySERV — Learn OpenServ by doing
+# Tabbas
 
-**A free, hands-on OpenServ learning companion.** Understand agents and workflows, practise making a valid SERV Reasoning request, and repair realistic API integration mistakes. An optional, budget-limited live SERV tutor provides context-aware help.
+**Check the report before it leaves.**
 
-**Independent community project.** Not affiliated with, endorsed by, or operated by OpenServ. No wallet, account, or API key is needed to finish the learning exercises.
+Tabbas is a focused donor-report pack reviewer built on OpenServ SERV Reasoning. It helps a programme/M&E or finance officer review one prepared report bundle against funder requirements before submission.
 
-[**Open TrySERV**](https://tryserv.onrender.com/) · [**Learn**](https://tryserv.onrender.com/learn) · [**Try a request**](https://tryserv.onrender.com/try) · [**Fix a request**](https://tryserv.onrender.com/debug) · [**Docs**](https://tryserv.onrender.com/docs)
+Bring the narrative report, reporting requirements, approved budget, reported expenditure and supporting documents. Tabbas extracts source passages, asks SERV to reason across the claims and evidence, validates every cited quotation in deterministic code, and leaves the decision with a human reviewer.
 
-## The problem and the result
+> Tabbas reviews the submitted documents. It does not verify that an activity happened in the physical world, prove a receipt is authentic, detect fraud, or provide an audit opinion.
 
-Getting started with an AI infrastructure platform often means reading multiple documentation pages without knowing whether you understand them—or how to make the first request. TrySERV turns that uncertainty into small, checkable tasks. A newcomer can complete four short lessons; a developer can go directly to the request builder and debug lab.
+## Why this product
 
-Unlike a generic documentation chatbot:
-- **Exact answers are graded in code on the server.** The model does not decide whether an answer is correct or mark lessons complete.
-- **Wrong answers receive specific, non-spoiler hints.** Learners can try again.
-- **A request builder validates the official Chat Completions shape** and produces copyable JSON/curl examples. A preview is never disguised as an API execution.
-- **Three editable debugging missions** teach how to repair missing instructions, a wrong endpoint, and an invalid model choice. All three are free and deterministic.
-- **SERV Reasoning is genuinely integrated** as an optional lesson-aware tutor. A successful provider response exposes the returned model, completion ID, measured latency, and usage rather than substituting a scripted answer.
+Research on Nigerian civil-society organisations reports that donor requirements, templates, reporting formats and reporting cadence can vary across partners and projects. That makes preparing and reconciling a report pack a plausible administrative pain for smaller implementing organisations. This is a problem hypothesis, not a claim of product-market fit; user interviews are still required.
 
-## Refreshed learning and reasoning experience
+See [problem and competitor research](docs/TABBATA-RESEARCH.md) for the evidence, limitations and existing alternatives.
 
-The learning studio now uses a focused **Understand → Practice → Apply** progression, larger readable lesson cards and a distinct SERV coach section. Three question suggestions prepare a beginner explanation, a developer example or a reasoning-versus-code comparison **without sending a paid request**. Lesson three contains a hypothetical policy-exception case showing where exact code stops and careful SERV-assisted review may begin. It never makes a real refund decision.
+## The workflow
 
-The standalone debugging lab shares the same original TrySERV visual language, with explicit Read → Edit → Verify steps. These improvements were merged in [PR #8](https://github.com/Alike001/tryserv/pull/8) and [PR #9](https://github.com/Alike001/tryserv/pull/9). Research: [Learning UX and SERV Coach](docs/LEARNING-UX-RESEARCH.md).
+1. **Create a review case.** Enter the project, funder, reporting period, currency, requirements and optional budget totals.
+2. **Add the narrative report.** Paste the report text or upload one PDF, DOCX, XLSX, CSV, TXT or Markdown report file.
+3. **Add financial schedules.** Optionally upload an approved-budget CSV/XLSX and an actual-expenditure CSV/XLSX. Tabbas checks schedule totals, category variances, duplicate references, blank or unmatched receipt references and transaction dates when the reporting period is supplied.
+4. **Upload supporting evidence.** Add site records, attendance registers, receipts and other evidence in PDF, DOCX, XLSX, CSV, TXT or Markdown.
+5. **Create a private workspace.** Files are extracted with page, sheet, row or paragraph locators. Original binary uploads are not retained; structured spreadsheet cell values are retained for deterministic checks.
+6. **Choose Analyze with SERV.** Only this explicit action calls the OpenServ Chat Completions API. It uses one unit from the existing shared durable guest allowance.
+7. **Inspect findings.** Review supported-in-document, partial, missing, conflicting and human-review-required findings, with exact source quotations.
+8. **Record a reviewer action.** Mark findings reviewed or request clarification.
+9. **Print / Save PDF.** Use the browser print dialog to save the review report.
 
-**Final visual and validation polish (November 13):** TrySERV now includes an original interactive Learn → Validate → Reason → Verify illustration, lesson-specific OpenServ concept diagrams, a state-driven debugging flow, and a searchable in-page documentation guide. The diagnostic stage responds to real checker output; editing a request clears older validation evidence rather than presenting it as current. Passing validation never implies that an optional paid SERV inference happened. See [PR #14](https://github.com/Alike001/tryserv/pull/14), [PR #15](https://github.com/Alike001/tryserv/pull/15), and [PR #17](https://github.com/Alike001/tryserv/pull/17).
 
-## Try it as a judge or first-time visitor
+## What makes the review trustworthy
 
-| Visit | What to do | What proves it works |
-| --- | --- | --- |
-| [Home](https://tryserv.onrender.com/) | Choose **I'm new**, **I can code**, or the debugging path | Task-specific links lead to working routes |
-| [Lessons](https://tryserv.onrender.com/learn) | Finish four short, sourced exercises; deliberately answer one incorrectly first | Specific hint, server-graded result, completed-lesson progress saved locally |
-| [Request builder](https://tryserv.onrender.com/try) | Validate a system instruction, user task and supported model; copy JSON/curl | Request structure and feedback, explicitly **NOT EXECUTED** |
-| [Debug lab](https://tryserv.onrender.com/debug) | Repair three broken request examples | Each fix is checked and saved locally; no API credits |
-| [SERV tutor](https://tryserv.onrender.com/learn) | Ask a lesson question, **if** public allowance remains | A live answer, official reference, provider model/ID and latency |
-| [Docs](https://tryserv.onrender.com/docs) | Explore integration, safety, progress and troubleshooting | A dedicated in-app guide portal |
+- **SERV handles contextual reasoning:** mapping narrative claims to requirements and supporting document passages.
+- **Code handles deterministic work:** input validation, extraction, schedule totals, category-level financial reconciliation, schema validation and exact citation checks.
+- **Every displayed citation is checked:** the backend verifies the document ID, segment ID and exact quotation against the extracted source.
+- **Invalid citations are downgraded:** unsupported or mismatched quotations cannot appear as supported findings.
+- **Humans make decisions:** the product never automatically approves or rejects a project report.
 
-Lesson progress is kept in **this browser only** as completed lesson IDs. The three debugging missions have a separate 0–3 completion count. TrySERV has no XP, points, streaks or leaderboard: the focus is on understanding and practical skills. Progress is not an account, credential or certificate, and can disappear if browser storage is cleared.
+The SERV request uses a forced function tool named `submit_report_review`, `reasoning_effort: "medium"`, and a bounded output schema. Uploaded documents are treated as untrusted data, not instructions. See [architecture and safety](docs/TABBATA-ARCHITECTURE.md).
 
-A previously tested public SERV response was confirmed in the operator's real browser. Automated integration/browser tests use mocks where appropriate; they are **not** a replacement for a fresh production live-inference verification.
+## Current MVP limits
 
-## Why SERV Reasoning belongs here
+- Maximum 5 files, 2 MiB each, 8 MiB total.
+- Maximum 40,000 extracted characters per case.
+- Scanned-image PDF OCR is not supported.
+- CSV/XLSX line-item checks rely on recognised column headings and stored cell values; unsupported or ambiguous headers are surfaced for review. Financial XLSX schedules must contain one data worksheet; multiple worksheets are not silently combined, so export the relevant sheet separately.
+- Spreadsheet formulas are not executed or recalculated; only stored cell values are read.
+- Financial flags are not proof of fraud, expense eligibility or improper spending. A receipt-reference text match does not authenticate the document or verify the amount.
+- This pilot uses one-time private case links rather than organisation accounts or team roles; organisation workspaces and role-based access are on the product roadmap.
+- Cases are stored in the existing Neon database for up to 24 hours and can be deleted sooner. Extracted text, structured spreadsheet cell values, source locators and review output are retained during that period.
+- No original file binaries are stored.
+- Do not upload beneficiary names, phone numbers, addresses, bank details, IDs, health data or other sensitive personal information. Redact first.
+- The seeded Community Water Access example is fictional and illustrative.
 
-TrySERV sends a constrained, source-grounded lesson question from its server to OpenServ's Chat Completions endpoint (`POST https://inference-api.openserv.ai/v1/chat/completions`). The tutor returns an explanation and one next action, with a link to an official lesson reference. A model answer can be wrong; factual learning and grading stay deterministic. User-facing prompts never need a user-supplied API key.
+## OpenServ integration and inference budget
 
-The separate optional **operator-only** request execution lets an authorized tester make a live call with a custom validated request. Copying or validating a request never consumes SERV credits.
+The server calls:
 
-[OpenServ SERV Reasoning API reference](https://docs.openserv.ai/serv-reasoning/api/chat-completions) · [SERV introduction](https://docs.openserv.ai/serv-reasoning/introduction)
+`https://inference-api.openserv.ai/v1/chat/completions`
 
-## Why SERV Reasoning is central — a reproducible example
+with the configured `SERV_MODEL` (default `gpt-5.4-mini`). The API key is server-side only.
 
-The developer/debugging journey is now more than a code preview. Visit [the repair lab](https://tryserv.onrender.com/debug), choose **A request without instructions**, and submit the broken example.
+A review request is made only when the user clicks **Analyze with SERV**. The endpoint reserves one unit from the existing durable guest allowance before calling SERV. No quota has been reset, increased or bypassed. A failed reserved attempt does not trigger an automatic retry.
 
-1. **Exact validation (free):** server-side deterministic code reports the missing instruction.
-2. **SERV diagnosis (optional, live):** when guest trial capacity is available, explicitly click **Ask SERV to explain this issue**. A constrained prompt uses only the pre-authored scenario and validated error field names—never the user's editable JSON—and asks for a concrete explanation and next check. A successful response displays SERV model, completion ID, latency, usage, and an official reference.
-3. **Apply and revalidate (free):** add a system/developer instruction, validate the repair, and copy the checked blueprint. The AI never writes or executes a request for the user.
+No live inference is performed by unit tests or browser CI.
 
-If guest capacity is exhausted or its status cannot be checked, SERV explanations fail closed, while the entire deterministic lab remains usable. Tests stub the upstream provider; separately verify the live hosted diagnostic before calling it a demonstrated production completion.
+## Run locally
 
-The visual system now uses the original [landing page](https://tryserv.onrender.com/) navy/cobalt/mint palette across all routes, with a common responsive Home / Learn / Build / Debug / Docs navigation. Static content and exercise grading are unaffected by brand CSS.
-
-## Safety and real operating limits
-
-- The normal public tutor is explicitly opt-in for the deployment and **budget-limited**: at most **2 guest calls per approximate visitor identity per UTC day**, and **24 shared lifetime guest calls** for the pilot. Allowance is checked before calling SERV.
-- A dedicated Neon PostgreSQL budget reservation guards the shared cap across deployments. When budget storage is unavailable or exhausted, paid guest inference stops; free lessons, previews and debug missions still work. Upstream failures can consume a reservation.
-- The protected custom-request executor requires a separate private operator access code. Never share that code, the SERV API key, or database connection string.
-- The server owns the API key. The browser cannot issue arbitrary direct OpenServ requests through the free tutor.
-- No wallet signatures, payments, token rewards, verified certificates, or fictitious usage figures.
-- This is a public pilot, not a promise of unlimited free inference or production-grade commercial billing.
-- The repo is not presented as security-audited; AI output is informational, not independently guaranteed.
-
-## Architecture at a glance
-
-```text
-Browser (landing / lessons / builder / debug / docs)
-    |          free server-graded /api/check and /api/debug/check
-    +----> Node HTTP server
-             |-- deterministic grading, validated request previews
-             |-- optional /api/mentor -> atomic Neon guest-budget reservation
-             |                        -> SERV Reasoning Chat Completions
-             |-- operator-gated /api/try-serv -> authorized SERV call
-Browser localStorage: completed lesson IDs and debug repair markers
-```
-
-Node 22+, minimal front-end JavaScript/CSS, Neon for limited public guest-credit accounting, GitHub Actions for Node and Chromium tests, Render for deployment. No account database is used for learners.
-
-## Run and test locally
+Requirements: Node.js 22 or newer.
 
 ```bash
-git clone https://github.com/Alike001/tryserv.git
-cd tryserv
 npm install
 npm run check
 npm test
 npm start
 ```
 
-Open `http://localhost:3000`. With no inference secrets, learning and debugging remain functional. The dedicated GitHub Actions browser workflow runs real Chromium desktop/mobile journeys. Do not put tokens in public repository files or client-side JavaScript.
+The app listens on `PORT` (default 3000).
 
-See [release acceptance tasks](docs/RELEASE-ACCEPTANCE.md), [browser regression record](docs/BROWSER-RELIABILITY.md), and [product plan](docs/PRODUCT-PLAN.md) for the test boundaries and open human-testing work.
+### Environment
 
-## Evidence and limitations
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | Existing Neon Postgres connection used for short-lived review cases and the existing guest allowance |
+| `SERV_API_KEY` | Server-side OpenServ inference key |
+| `SERV_MODEL` | Optional model override; defaults to `gpt-5.4-mini` |
+| `PUBLIC_TUTOR_ENABLED` | Must be `true` with database and key configured to enable bounded public SERV calls |
+| `PORT` | HTTP server port |
 
-- Public source: [Alike001/tryserv](https://github.com/Alike001/tryserv)
-- Live Render deployment: [tryserv.onrender.com](https://tryserv.onrender.com/)
-- Automated tests: [GitHub Actions](https://github.com/Alike001/tryserv/actions)
-- Product design comparison: [NimQuest design research](docs/NIMQUEST-DESIGN-RESEARCH.md)
-- **Pending for release:** unassisted first-time learner and developer walkthroughs on the production site, human mobile/screen-reader inspection, final video and X launch post. The browser CI is not a substitute for those human checks.
+Do not commit secrets or upload a real `.env` file. Tabbas does not provision a new database or Render service; it reuses the existing TrySERV deployment and Neon connection.
+
+## Tests
+
+`npm test` includes document extraction, financial schedule parsing and reconciliation, store, input validation, exact-evidence-quote, HTTP route and no-spend tests.
+
+The Playwright browser suite covers:
+- Desktop and mobile layouts at 320, 375, 768, 1024 and 1440 px.
+- Fictional sample-pack loading.
+- Workspace creation without inference.
+- One explicit mocked SERV review action.
+- Source-linked finding rendering.
+- Reviewer actions and case deletion.
+- Reduced-motion behavior.
+
+The browser suite uses mocked provider responses. It does not spend live SERV credits or prove that the deployed provider credentials are working. A separately authorised live production review is required before claiming live acceptance.
+
+## Routes
+
+- `/` — Tabbas product and review workspace.
+- `/api/tabbata/status` — readiness flags only.
+- `/api/tabbata/cases` — create a short-lived review case.
+- `/api/tabbata/cases/:id` — retrieve a case with its random case token.
+- `/api/tabbata/cases/:id/analyze` — one explicit SERV review.
+- `/api/tabbata/cases/:id/actions` — record reviewer actions.
+- `/api/tabbata/cases/:id` (`DELETE`) — delete a case.
+- `/healthz` — service health.
+
+The former TrySERV learning product is temporarily preserved at `/legacy`, `/learn`, `/try`, `/debug` and `/docs` during the pivot. It is not the current product direction.
+
+## Documentation
+
+- [Product specification](docs/TABBATA-PRODUCT-SPEC.md)
+- [Problem and competitor research](docs/TABBATA-RESEARCH.md)
+- [Technical architecture and security](docs/TABBATA-ARCHITECTURE.md)
+- [Product walkthrough script](docs/TABBATA-DEMO-SCRIPT.md)
+- [Release acceptance checklist](docs/TABBATA-RELEASE-ACCEPTANCE.md)
+- [Real-user acceptance plan](docs/TABBATA-REAL-USER-ACCEPTANCE.md)
 
 ## Hackathon
 
-**OpenServ SERV Hackathon Edition 02 · Open Track.** The official rules require use of SERV Reasoning, a public code repository, a demo link or video, a short explanation of the project and its track, plus a public X post linked in the submission form. Deadline: **November 15, 2026 at 23:59 UTC**.
+OpenServ Edition 02 · Open Track.
 
-Judging focuses on **creativity, user readiness and revenue potential**. A possible future revenue path is onboarding/training tools for developer ecosystems; this is **an unvalidated opportunity**, not traction or revenue.
+The work must demonstrate a real SERV-powered report-review workflow, explain the role of SERV, and include a public repository and a demo. See [hackathon submission notes](docs/HACKATHON-SUBMISSION.md).
 
-[Official rules](https://www.openserv.ai/hackathon-2) · [Submission preparation](docs/HACKATHON-SUBMISSION.md)
+## Status and honesty
 
-## License
-
-[MIT](LICENSE).
+This repository contains a working pivot implementation under review. The latest verified Tabbas code commit passed all 103 Node tests and all 74 desktop/mobile Playwright tests (Node CI and browser workflow both green). Subsequent branch commits update release documentation and financial-check limitations only. The existing Render deployment remains on the old `main` commit until this PR is approved and merged. Do not claim external NGO adoption, user interviews, revenue, physical verification, audit certification or live production SERV acceptance until independently demonstrated.

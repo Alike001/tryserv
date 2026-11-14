@@ -1,3 +1,7 @@
+# Product plan status — 14 November 2026
+
+> **Superseded product direction:** This file contains the historical TrySERV learning-companion plan. The current hackathon product is Tabbas, a pre-submission donor report pack reviewer. See [Tabbas product specification](TABBATA-PRODUCT-SPEC.md), [research](TABBATA-RESEARCH.md) and [architecture](TABBATA-ARCHITECTURE.md). Do not implement new XP, lesson completion or learning-studio features for the current submission.
+
 # TrySERV — Product Direction, Feature Plan and Release Gates
 Updated: 12 Nov 2026 (Africa/Lagos). Living milestone plan. Update release gates only with tested outcomes.
 Working name: TrySERV (not trademark cleared). Independent OpenServ learning companion.

@@ -1,0 +1,354 @@
+const CURRENCY_MARKERS = {
+  NGN: ["NGN", "₦"],
+  USD: ["USD", "$"],
+  GBP: ["GBP", "£"],
+  EUR: ["EUR", "€"]
+};
+
+const HEADER_ALIASES = {
+  amount: ["amount", "approved amount", "budget amount", "actual amount", "actual expenditure", "expenditure", "expenditure amount", "amount spent", "spent", "paid", "total amount", "total expenditure", "value"],
+  category: ["category", "budget category", "expense category", "cost category", "budget line", "budget item", "cost centre", "cost center", "account code", "account name", "expense type"],
+  date: ["date", "transaction date", "expense date", "payment date"],
+  receipt: ["receipt reference", "receipt ref", "receipt no", "receipt number", "receipt id", "supporting receipt", "invoice no", "invoice number", "voucher no", "voucher number"],
+  reference: ["reference", "reference no", "transaction reference", "transaction id", "transaction number", "payment reference", "payment id", "voucher reference"],
+  description: ["description", "particulars", "narration", "details", "item"]
+};
+
+function normaliseHeader(value) {
+  return String(value ?? "")
+    .normalize("NFKD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function findColumn(headers, field) {
+  const aliases = HEADER_ALIASES[field];
+  const matches = headers.filter(header => {
+    const normalized = normaliseHeader(header);
+    return aliases.some(alias => normalized === alias || normalized.startsWith(alias + " "));
+  });
+  if (matches.length > 1) return { ambiguous: matches };
+  return { header: matches[0] ?? null };
+}
+
+function parseAmountMinor(value, currency) {
+  if (value === null || value === undefined || String(value).trim() === "") return null;
+  let raw = String(value).trim();
+  if (/^\(.*\)$/.test(raw) || raw.startsWith("-")) throw new Error("negative amounts and accounting parentheses require human review");
+  const markerPattern = /^(NGN|USD|GBP|EUR|₦|\$|£|€)\s*|\s*(NGN|USD|GBP|EUR)$/i;
+  const marker = raw.match(markerPattern);
+  if (marker) {
+    const token = (marker[1] ?? marker[2]).toUpperCase();
+    const markerCurrency = token === "₦" ? "NGN" : token === "$" ? "USD" : token === "£" ? "GBP" : token === "€" ? "EUR" : token;
+    if (markerCurrency !== currency) throw new Error("currency marker does not match the selected case currency");
+    raw = raw.replace(markerPattern, "").trim();
+  }
+  raw = raw.replace(/\s/g, "");
+  if (!/^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$/.test(raw)) throw new Error("amount is not a non-negative number with valid thousands separators and up to two decimal places");
+  raw = raw.replace(/,/g, "");
+  const [whole, fraction = ""] = raw.split(".");
+  const minor = Number(whole) * 100 + Number(fraction.padEnd(2, "0"));
+  if (!Number.isSafeInteger(minor)) throw new Error("amount exceeds the supported range");
+  return minor;
+}
+
+function parseIsoDate(value) {
+  if (value instanceof Date && Number.isFinite(value.getTime())) return value.toISOString().slice(0, 10);
+  const text = String(value ?? "").trim();
+  const match = text.match(/^(\d{4}-\d{2}-\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?Z)?$/);
+  if (!match) return null;
+  const date = new Date(match[1] + "T00:00:00.000Z");
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === match[1] ? match[1] : null;
+}
+
+function normaliseCategory(value) {
+  return String(value ?? "").normalize("NFKD").replace(/\p{Diacritic}/gu, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function normaliseReference(value) {
+  return String(value ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+function referenceAppearsInText(reference, text) {
+  const parts = String(reference ?? "").toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean);
+  if (!parts.length) return false;
+  const pattern = parts.join("[^A-Z0-9]*");
+  return new RegExp("(?:^|[^A-Z0-9])" + pattern + "(?=$|[^A-Z0-9])", "i").test(String(text ?? ""));
+}
+
+function parseSchedule(document, role, currency) {
+  if (!document) return { status: "not_provided", rows: [], total_minor: null, issues: [] };
+  const tableSegments = (document.segments ?? []).filter(segment => segment.cells && typeof segment.cells === "object" && !Array.isArray(segment.cells));
+  if (!tableSegments.length) return {
+    status: "unsupported",
+    rows: [],
+    total_minor: null,
+    issues: [{ type: "table_structure_missing", document: document.name, message: "This file has no readable spreadsheet or CSV header-and-row structure. Upload a CSV or XLSX schedule with column headings." }]
+  };
+  const headers = Object.keys(tableSegments[0].cells);
+  const headerSignature = headers.map(normaliseHeader).sort().join("|");
+  const columns = Object.fromEntries(Object.keys(HEADER_ALIASES).map(field => [field, findColumn(headers, field)]));
+  const issues = [];
+  for (const field of ["amount", ...(role === "budget" ? ["category"] : [])]) {
+    if (columns[field].ambiguous) {
+      issues.push({ type: "ambiguous_column", field, candidates: columns[field].ambiguous, document: document.name });
+    } else if (!columns[field].header) {
+      issues.push({ type: "missing_column", field, document: document.name });
+    }
+  }
+  if (issues.length) return { status: "incomplete", rows: [], total_minor: null, issues, headers };
+  const sheetNames = new Set(tableSegments.map(segment => {
+    const match = String(segment.locator ?? "").match(/^Sheet (.+?) · Row \d+$/);
+    return match?.[1] ?? null;
+  }).filter(Boolean));
+  if (sheetNames.size > 1) {
+    issues.push({
+      type: "multiple_worksheets",
+      document: document.name,
+      message: "More than one worksheet contains data. Export the relevant worksheet separately so Tabbas does not silently combine different periods or schedules."
+    });
+    return { status: "incomplete", rows: [], total_minor: null, issues, headers };
+  }
+
+  const rows = [];
+  let total = 0;
+  for (const segment of tableSegments) {
+    const rowHeaderSignature = Object.keys(segment.cells).map(normaliseHeader).sort().join("|");
+    if (rowHeaderSignature !== headerSignature) {
+      issues.push({
+        type: "inconsistent_columns",
+        document: document.name,
+        locator: String(segment.locator ?? "Unknown row"),
+        message: "This worksheet row uses a different column set from the first schedule sheet; export matching sheets or reconcile them separately."
+      });
+      continue;
+    }
+    const cells = segment.cells;
+    const rawAmount = cells[columns.amount.header];
+    if (rawAmount === null || rawAmount === undefined || String(rawAmount).trim() === "") continue;
+    const category = columns.category.header ? String(cells[columns.category.header] ?? "").trim() : "";
+    const description = columns.description.header ? String(cells[columns.description.header] ?? "").trim() : "";
+    if (/^(grand )?total$|^subtotal$/i.test(category || description)) continue;
+    try {
+      const amount_minor = parseAmountMinor(rawAmount, currency);
+      if (amount_minor === null) continue;
+      if (role === "budget" && !category) throw new Error("budget category is blank");
+      if (role === "expense" && columns.category.header && !category) throw new Error("expense category is blank");
+      const date = columns.date.header ? parseIsoDate(cells[columns.date.header]) : null;
+      rows.push({
+        locator: String(segment.locator ?? "Unknown row"),
+        amount_minor,
+        category,
+        category_key: normaliseCategory(category),
+        date,
+        raw_date: columns.date.header ? String(cells[columns.date.header] ?? "").trim() : "",
+        receipt_reference: columns.receipt.header ? String(cells[columns.receipt.header] ?? "").trim() : "",
+        reference: columns.reference.header ? String(cells[columns.reference.header] ?? "").trim() : "",
+        description
+      });
+      total += amount_minor;
+      if (!Number.isSafeInteger(total)) throw new Error("schedule total exceeds the supported range");
+    } catch (error) {
+      issues.push({
+        type: "invalid_row",
+        document: document.name,
+        locator: String(segment.locator ?? "Unknown row"),
+        message: String(error.message).slice(0, 180)
+      });
+    }
+  }
+  if (document.truncated) issues.push({
+    type: "truncated_document",
+    document: document.name,
+    message: "The extracted schedule reached the document limit; totals are partial and must not be treated as complete."
+  });
+  return {
+    status: issues.length ? "incomplete" : "parsed",
+    rows,
+    total_minor: total,
+    issues,
+    headers,
+    has_category: Boolean(columns.category.header),
+    has_date: Boolean(columns.date.header),
+    has_receipt: Boolean(columns.receipt.header),
+    has_reference: Boolean(columns.reference.header)
+  };
+}
+
+function compareTotals(schedule, enteredMinor, label) {
+  if (schedule.status === "not_provided") return { status: "not_provided", label };
+  if (schedule.total_minor === null || enteredMinor === null || enteredMinor === undefined) {
+    return { status: "not_comparable", label, schedule_total_minor: schedule.total_minor, entered_total_minor: enteredMinor ?? null };
+  }
+  const difference_minor = schedule.total_minor - enteredMinor;
+  return {
+    status: difference_minor === 0 ? "matched" : "variance",
+    label,
+    schedule_total_minor: schedule.total_minor,
+    entered_total_minor: enteredMinor,
+    difference_minor
+  };
+}
+
+export function reconcileFinancialSchedules({
+  budgetSchedule = null,
+  expenseSchedule = null,
+  approvedBudgetMinor = null,
+  reportedSpendMinor = null,
+  currency = "NGN",
+  periodStart = null,
+  periodEnd = null,
+  supportingDocuments = []
+} = {}) {
+  if (!budgetSchedule && !expenseSchedule) {
+    return {
+      status: "not_provided",
+      summary: "No line-item financial schedules were supplied. The entered budget totals can still be compared separately.",
+      currency,
+      budget_schedule: null,
+      expense_schedule: null,
+      checks: []
+    };
+  }
+  const budget = parseSchedule(budgetSchedule, "budget", currency);
+  const expenses = parseSchedule(expenseSchedule, "expense", currency);
+  const checks = [];
+  const budgetTotal = compareTotals(budget, approvedBudgetMinor, "Approved budget schedule vs entered approved budget");
+  const expenseTotal = compareTotals(expenses, reportedSpendMinor, "Expense schedule vs reported expenditure");
+  if (budgetSchedule) checks.push({ type: "budget_schedule_total", ...budgetTotal });
+  if (expenseSchedule) checks.push({ type: "expense_schedule_total", ...expenseTotal });
+
+  const budgetByCategory = new Map();
+  for (const row of budget.rows) {
+    if (!row.category_key) continue;
+    budgetByCategory.set(row.category_key, (budgetByCategory.get(row.category_key) ?? 0) + row.amount_minor);
+  }
+  const spendByCategory = new Map();
+  for (const row of expenses.rows) {
+    if (!row.category_key) continue;
+    const current = spendByCategory.get(row.category_key) ?? { category: row.category, amount_minor: 0, locators: [] };
+    current.amount_minor += row.amount_minor;
+    current.locators.push(row.locator);
+    spendByCategory.set(row.category_key, current);
+  }
+  const categoryVariances = [];
+  if (budget.status !== "not_provided" && expenses.status !== "not_provided" && budget.status !== "unsupported" && expenses.status !== "unsupported") {
+    for (const [key, actual] of spendByCategory) {
+      const approved = budgetByCategory.get(key);
+      if (approved === undefined) {
+        categoryVariances.push({ type: "unbudgeted_category", category: actual.category, actual_minor: actual.amount_minor, locators: actual.locators });
+      } else if (actual.amount_minor > approved) {
+        categoryVariances.push({
+          type: "category_over_budget",
+          category: actual.category,
+          approved_minor: approved,
+          actual_minor: actual.amount_minor,
+          variance_minor: actual.amount_minor - approved,
+          locators: actual.locators
+        });
+      }
+    }
+  }
+  checks.push(...categoryVariances);
+
+  const referenceRows = new Map();
+  for (const row of expenses.rows) {
+    const value = row.receipt_reference || row.reference;
+    const key = normaliseReference(value);
+    if (!key) continue;
+    const current = referenceRows.get(key) ?? { reference: value, locators: [] };
+    current.locators.push(row.locator);
+    referenceRows.set(key, current);
+  }
+  const duplicateReferences = [...referenceRows.values()].filter(item => item.locators.length > 1);
+  for (const duplicate of duplicateReferences) checks.push({ type: "duplicate_reference", ...duplicate });
+
+  const missingReceiptReferences = expenses.has_receipt
+    ? expenses.rows.filter(row => !row.receipt_reference).map(row => ({ type: "missing_receipt_reference", locator: row.locator, description: row.description, amount_minor: row.amount_minor }))
+    : [];
+  checks.push(...missingReceiptReferences);
+  const receiptReferenceChecks = [];
+  if (expenses.has_receipt && supportingDocuments.length) {
+    for (const row of expenses.rows) {
+      if (!row.receipt_reference) continue;
+      const matchingDocuments = supportingDocuments.filter(document => {
+        const text = (document.segments ?? []).map(segment => segment.text ?? "").join("\n");
+        return referenceAppearsInText(row.receipt_reference, text);
+      }).map(document => document.name);
+      receiptReferenceChecks.push({
+        type: matchingDocuments.length ? "receipt_reference_found" : "receipt_reference_not_found",
+        reference: row.receipt_reference,
+        locator: row.locator,
+        supporting_documents: matchingDocuments
+      });
+    }
+  }
+  checks.push(...receiptReferenceChecks);
+
+  const outsidePeriod = [];
+  const unparsedDates = [];
+  if (periodStart && periodEnd && expenses.has_date) {
+    for (const row of expenses.rows) {
+      if (!row.date) {
+        unparsedDates.push({ locator: row.locator, value: row.raw_date || "(blank)" });
+      } else if (row.date < periodStart || row.date > periodEnd) {
+        outsidePeriod.push({ locator: row.locator, date: row.date, amount_minor: row.amount_minor });
+      }
+    }
+  }
+  checks.push(...outsidePeriod.map(item => ({ type: "outside_reporting_period", ...item })));
+  const issues = [...budget.issues, ...expenses.issues];
+  for (const item of unparsedDates) {
+    issues.push({ type: "unparsed_date", document: expenseSchedule?.name, locator: item.locator, message: "Transaction date is blank or could not be interpreted: " + item.value });
+  }
+  if (periodStart && periodEnd && expenseSchedule && !expenses.has_date) {
+    issues.push({ type: "missing_date_column", document: expenseSchedule.name, message: "No recognised transaction-date column was found, so reporting-period checks could not be completed." });
+  }
+  const attention = checks.some(check => ["variance", "category_over_budget", "unbudgeted_category", "duplicate_reference", "missing_receipt_reference", "receipt_reference_not_found", "outside_reporting_period"].includes(check.type) || check.status === "variance");
+  const incomplete = issues.length > 0 || budget.status === "unsupported" || expenses.status === "unsupported" ||
+    (budgetSchedule && budget.status !== "parsed") || (expenseSchedule && expenses.status !== "parsed");
+  const suppliedCount = Number(Boolean(budgetSchedule)) + Number(Boolean(expenseSchedule));
+  const totalsMatched = (!budgetSchedule || budgetTotal.status === "matched") && (!expenseSchedule || expenseTotal.status === "matched");
+  const categoryComparable = !(budgetSchedule && expenseSchedule) || Boolean(expenses.has_category);
+  const status = incomplete ? "incomplete" : attention ? "attention_required" : suppliedCount === 2 && totalsMatched && categoryComparable ? "reconciled" : "partial";
+  const issueCount = checks.filter(check => check.type !== "budget_schedule_total" && check.type !== "expense_schedule_total" || check.status === "variance").length;
+  const summary = incomplete
+    ? "The financial schedules could not be fully reconciled. Review the extraction or row-level issues before relying on these totals."
+    : attention
+      ? "The supplied schedules contain differences or evidence gaps that need human review. An overall budget underspend does not cancel a category-level overspend."
+      : status === "reconciled"
+        ? "The supplied budget and expense schedules match the entered totals, with no detected category overruns or duplicate/unmatched receipt references."
+        : suppliedCount === 2 && !categoryComparable
+          ? "Both schedule totals were checked, but category-level reconciliation was not possible because the expense schedule has no recognised category column."
+          : suppliedCount === 2
+            ? "Both line-item schedules were checked, but one or both entered control totals are missing or not comparable. Supply the approved budget and reported expenditure totals to complete the reconciliation."
+            : "A partial financial check was completed. Supply both the approved budget and expense schedules for category-level reconciliation.";
+
+  return {
+    status,
+    summary,
+    currency,
+    schedule_totals: {
+      budget_minor: budget.total_minor,
+      expense_minor: expenses.total_minor
+    },
+    budget_schedule: budgetSchedule ? { name: budgetSchedule.name, status: budget.status, row_count: budget.rows.length, total_minor: budget.total_minor } : null,
+    expense_schedule: expenseSchedule ? { name: expenseSchedule.name, status: expenses.status, row_count: expenses.rows.length, total_minor: expenses.total_minor } : null,
+    checks,
+    issues,
+    unparsed_dates: unparsedDates,
+    period: periodStart && periodEnd ? { start: periodStart, end: periodEnd } : null,
+    notes: [
+      "These checks are arithmetic and document-structure checks, not an audit or a determination of expense eligibility.",
+      "A duplicate reference is a review flag, not proof that a payment or receipt is duplicated.",
+      "A missing receipt reference means the schedule cell is blank; it does not prove that no receipt exists.",
+      "A receipt reference not found in submitted supporting documents is not proof that the receipt does not exist; it may be outside the bundle or unextractable.",
+      "A matched receipt reference only shows that the reference text appears in a submitted document; it does not authenticate the document or verify the receipt amount.",
+      "Category-level reconciliation requires a recognised category column in both schedules; a total-only comparison is not a complete category reconciliation."
+    ],
+    issue_count: issueCount
+  };
+}

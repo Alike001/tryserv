@@ -13,6 +13,22 @@ async function withApp(fn){
  finally{await new Promise(resolve=>server.close(resolve));}
 }
 
+test("Tabbas is the public root product and its assets are allowlisted",async()=>{
+ await withApp(async(url,calls)=>{
+  const response=await fetch(url+"/");
+  assert.equal(response.status,200);
+  const html=await response.text();
+  assert.match(html,/<title>Tabbas/);
+  assert.match(html,/Check the report/);
+  assert.match(html,/SERV Reasoning/);
+  assert.ok(html.includes('href="/tabbata.css"'));
+  assert.ok(html.includes('src="/tabbata.js"'));
+  assert.equal((await fetch(url+"/tabbata.css")).status,200);
+  assert.equal((await fetch(url+"/tabbata.js")).status,200);
+  assert.equal(calls(),0);
+ });
+});
+
 test("documentation is a real public route with correct content and assets",async()=>{
  await withApp(async(url,calls)=>{
   const doc=await fetch(url+"/docs");
@@ -38,13 +54,13 @@ test("documentation is a real public route with correct content and assets",asyn
 
 test("TrySERV guide links exist across entry pages without breaking core routes",async()=>{
  await withApp(async(url,calls)=>{
-  for(const route of ["/","/learn","/debug","/try"]){
+  for(const route of ["/legacy","/learn","/debug","/try"]){
    const response=await fetch(url+route);
    assert.equal(response.status,200,route);
    const html=await response.text();
    assert.match(html,/href="\/docs"/,route+" guide link");
   }
-  const homepage=await (await fetch(url+"/")).text();
+  const homepage=await (await fetch(url+"/legacy")).text();
   assert.match(homepage,/class="trail-grid"/);
   assert.match(homepage,/href="\/learn"/);
   assert.match(homepage,/href="\/try"/);
@@ -75,11 +91,11 @@ test("one shared brand stylesheet and working first-party navigation across the 
   const css=await style.text();
   assert.match(css,/--ts-blue:#4269e9/);
   assert.match(css,/--ts-navy:#132b42/);
-  for(const route of ["/","/learn","/try","/debug","/docs"]){
+  for(const route of ["/legacy","/learn","/try","/debug","/docs"]){
    const html=await (await fetch(url+route)).text();
    assert.match(html,/href="\/brand\.css"/,route+" must use the same brand");
    assert.match(html,/class="brand-route-nav"/,route+" must have mobile page navigation");
-   for(const link of ["/","/learn","/try","/debug","/docs"]){
+   for(const link of ["/legacy","/learn","/try","/debug","/docs"]){
     assert.ok(html.includes('href="'+link+'"'),route+" links to "+link);
    }
   }
@@ -110,7 +126,7 @@ test("docs finder script is allowlisted, self-contained and never triggers infer
 
 test("original OpenServ hero illustration is publicly served as an image with safe static markup",async()=>{
  await withApp(async(url,calls)=>{
-   const page=await (await fetch(url+"/")).text();
+   const page=await (await fetch(url+"/legacy")).text();
    assert.match(page,/src="\/serv-hero-illustration\.svg"/);
    assert.match(page,/data-hero-explorer/);
    assert.match(page,/ILLUSTRATION · NO LIVE API CALL/);
