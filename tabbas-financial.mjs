@@ -6,11 +6,11 @@ const CURRENCY_MARKERS = {
 };
 
 const HEADER_ALIASES = {
-  amount: ["amount", "actual amount", "expenditure", "expenditure amount", "spent", "paid", "total amount", "value"],
-  category: ["category", "budget category", "expense category", "cost category", "budget line", "account code", "account name", "expense type"],
-  date: ["date", "transaction date", "expense date", "payment date", "transaction date"],
-  receipt: ["receipt reference", "receipt ref", "receipt no", "receipt number", "receipt id", "invoice no", "invoice number", "voucher no", "voucher number"],
-  reference: ["reference", "transaction reference", "transaction id", "payment reference", "voucher reference"],
+  amount: ["amount", "approved amount", "budget amount", "actual amount", "actual expenditure", "expenditure", "expenditure amount", "amount spent", "spent", "paid", "total amount", "total expenditure", "value"],
+  category: ["category", "budget category", "expense category", "cost category", "budget line", "budget item", "cost centre", "cost center", "account code", "account name", "expense type"],
+  date: ["date", "transaction date", "expense date", "payment date"],
+  receipt: ["receipt reference", "receipt ref", "receipt no", "receipt number", "receipt id", "supporting receipt", "invoice no", "invoice number", "voucher no", "voucher number"],
+  reference: ["reference", "reference no", "transaction reference", "transaction id", "transaction number", "payment reference", "payment id", "voucher reference"],
   description: ["description", "particulars", "narration", "details", "item"]
 };
 
