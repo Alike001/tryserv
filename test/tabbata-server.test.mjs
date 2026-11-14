@@ -31,6 +31,13 @@ function fakeStore(){
   async create(payload){rows.set(id,{token,payload,expires_at:"2026-11-15T00:00:00.000Z"});return {id,token,expires_at:"2026-11-15T00:00:00.000Z"};},
   async get(caseId,access){const row=rows.get(caseId);return row&&row.token===access?{id:caseId,payload:row.payload,expires_at:row.expires_at}:null;},
   async update(caseId,access,payload){const row=rows.get(caseId);if(!row||row.token!==access)return false;row.payload=payload;return true;},
+  async appendReviewerAction(caseId,access,action,maxActions=50){
+   const row=rows.get(caseId);if(!row||row.token!==access)return {status:"not_found",reviewer_actions:[]};
+   row.payload.reviewer_actions=Array.isArray(row.payload.reviewer_actions)?row.payload.reviewer_actions:[];
+   if(row.payload.reviewer_actions.length>=maxActions)return {status:"limit",reviewer_actions:[]};
+   row.payload.reviewer_actions.push(action);
+   return {status:"appended",reviewer_actions:row.payload.reviewer_actions};
+  },
   async delete(caseId,access){const row=rows.get(caseId);if(!row||row.token!==access)return false;rows.delete(caseId);return true;}
  };
 }
@@ -185,20 +192,60 @@ test("case creation assigns financial schedules and persists deterministic line-
   assert.ok(result.review_case.financial_reconciliation.checks.some(item=>item.type==="receipt_reference_not_found"&&item.reference==="REC-1"));
  });
 });
-test("reviewer actions are recorded and case deletion removes the workspace",async()=>{
+test("reviewer actions are authenticated, validated, persisted and survive reload",async()=>{
  const store=fakeStore();
  await withApp({env,tabbataStore:store,documentExtractor:async()=>docs,guestReserve:async()=>({allowed:true}),reviewWithServFn:async()=>({review,provider:{model:"test",completion_id:"c",latency_ms:1,usage:{}}})},async url=>{
   await post(url,"/api/tabbata/cases",input);
   await post(url,"/api/tabbata/cases/"+id+"/analyze",{},token);
-  const action=await post(url,"/api/tabbata/cases/"+id+"/actions",{action:"request_clarification",note:"Please provide the Site C commissioning record."},token);
+  const unauthenticated=await post(url,"/api/tabbata/cases/"+id+"/actions",{action:"mark_reviewed"});
+  assert.equal(unauthenticated.status,401);
+  const unknownFinding=await post(url,"/api/tabbata/cases/"+id+"/actions",{action:"mark_reviewed",finding_id:"F-404"},token);
+  assert.equal(unknownFinding.status,400);
+  const globalDismiss=await post(url,"/api/tabbata/cases/"+id+"/actions",{action:"dismiss_finding",note:"Not relevant."},token);
+  assert.equal(globalDismiss.status,400);
+  const longNote=await post(url,"/api/tabbata/cases/"+id+"/actions",{action:"mark_reviewed",note:"x".repeat(501)},token);
+  assert.equal(longNote.status,400);
+  const action=await post(url,"/api/tabbata/cases/"+id+"/actions",{action:"request_clarification",finding_id:"F-01",note:"Please provide the Site C commissioning record."},token);
   assert.equal(action.status,200);
-  assert.equal((await action.json()).reviewer_actions[0].action,"request_clarification");
-  const missingNote=await post(url,"/api/tabbata/cases/"+id+"/actions",{action:"request_clarification",note:""},token);
-  assert.equal(missingNote.status,400);
+  const saved=await action.json();
+  assert.equal(saved.reviewer_actions[0].action,"request_clarification");
+  assert.equal(saved.reviewer_actions[0].finding_id,"F-01");
+  assert.match(saved.reviewer_actions[0].id,/^A-[0-9a-f-]{36}$/);
+  assert.ok(saved.reviewer_actions[0].created_at);
+  const loaded=await fetch(url+"/api/tabbata/cases/"+id,{headers:{"X-Case-Token":token}});
+  assert.equal(loaded.status,200);
+  const persisted=await loaded.json();
+  assert.deepEqual(persisted.review_case.reviewer_actions,saved.reviewer_actions);
   const removed=await fetch(url+"/api/tabbata/cases/"+id,{method:"DELETE",headers:{"X-Case-Token":token}});
   assert.equal(removed.status,200);
   assert.equal(store.rows.has(id),false);
   const after=await fetch(url+"/api/tabbata/cases/"+id,{headers:{"X-Case-Token":token}});
   assert.equal(after.status,404);
+ });
+});
+test("concurrent reviewer actions are both retained",async()=>{
+ const store=fakeStore();
+ await withApp({env,tabbataStore:store,documentExtractor:async()=>docs,guestReserve:async()=>({allowed:true}),reviewWithServFn:async()=>({review,provider:{model:"test",completion_id:"c",latency_ms:1,usage:{}}})},async url=>{
+  await post(url,"/api/tabbata/cases",input);
+  await post(url,"/api/tabbata/cases/"+id+"/analyze",{},token);
+  const requests=await Promise.all([
+   post(url,"/api/tabbata/cases/"+id+"/actions",{action:"mark_reviewed"},token),
+   post(url,"/api/tabbata/cases/"+id+"/actions",{action:"request_clarification",note:"Please provide the missing commissioning record."},token)
+  ]);
+  assert.deepEqual(requests.map(response=>response.status),[200,200]);
+  const loaded=await fetch(url+"/api/tabbata/cases/"+id,{headers:{"X-Case-Token":token}});
+  const actions=(await loaded.json()).review_case.reviewer_actions;
+  assert.equal(actions.length,2);
+  assert.deepEqual(new Set(actions.map(action=>action.action)),new Set(["mark_reviewed","request_clarification"]));
+ });
+});
+test("reviewer action cap returns a safe limit response",async()=>{
+ const store=fakeStore();
+ await withApp({env,tabbataStore:store,documentExtractor:async()=>docs,guestReserve:async()=>({allowed:true}),reviewWithServFn:async()=>({review,provider:{model:"test",completion_id:"c",latency_ms:1,usage:{}}})},async url=>{
+  await post(url,"/api/tabbata/cases",input);
+  await post(url,"/api/tabbata/cases/"+id+"/analyze",{},token);
+  store.rows.get(id).payload.reviewer_actions=Array.from({length:50},(_,index)=>({id:"A-"+index,action:"mark_reviewed",created_at:"2026-11-14T00:00:00Z"}));
+  const limited=await post(url,"/api/tabbata/cases/"+id+"/actions",{action:"mark_reviewed"},token);
+  assert.equal(limited.status,429);
  });
 });
