@@ -15,7 +15,7 @@ Do not touch `Alike001/opsra`. Do not create a new Render service, Postgres inst
 
 - `tabbata-review.mjs`: input validation, prompt construction, SERV tool definition, provider call, strict response parsing and evidence-reference validation.
 - `tabbata-documents.mjs`: safe extraction and source segmentation for PDF, DOCX, XLSX, CSV, TXT and Markdown.
-- `tabbas-financial.mjs`: deterministic CSV/XLSX schedule totals, category comparisons, duplicate/missing reference flags and reporting-period checks.
+- `tabbas-financial.mjs`: deterministic CSV/XLSX schedule totals, category comparisons, duplicate, blank and unmatched receipt-reference checks against supporting documents, plus reporting-period checks.
 - `tabbata-store.mjs`: Neon-backed case persistence, random case tokens, expiry, read/update/delete.
 - `public/tabbata.html`, `public/tabbata.css`, `public/tabbata.js`: new root experience and review workspace.
 - `test/tabbata-*.test.mjs`: parser, schema, source citation, budget and store tests.
