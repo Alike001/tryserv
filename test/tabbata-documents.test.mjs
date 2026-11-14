@@ -23,6 +23,30 @@ test("extracts text and CSV with stable source locators and exact text",async()=
  assert.equal(docs[0].id,"doc-1");
  assert.equal(docs[1].id,"doc-2");
 });
+function makeOnePagePdf(text){
+ const escaped=text.replace(/\\/g,"\\\\").replace(/\\(/g,"\\\\(").replace(/\\)/g,"\\\\)");
+ const stream="BT /F1 12 Tf 72 720 Td ("+escaped+") Tj ET";
+ const objects=[
+  "<< /Type /Catalog /Pages 2 0 R >>",
+  "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+  "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+  "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+  "<< /Length "+Buffer.byteLength(stream)+" >>\\nstream\\n"+stream+"\\nendstream"
+ ];
+ let output="%PDF-1.4\\n";const offsets=[0];
+ for(let index=0;index<objects.length;index++){offsets.push(Buffer.byteLength(output));output+=(index+1)+" 0 obj\\n"+objects[index]+"\\nendobj\\n";}
+ const xref=Buffer.byteLength(output);output+="xref\\n0 6\\n0000000000 65535 f \\n";
+ for(let index=1;index<offsets.length;index++)output+=String(offsets[index]).padStart(10,"0")+" 00000 n \\n";
+ output+="trailer\\n<< /Size 6 /Root 1 0 R >>\\nstartxref\\n"+xref+"\\n%%EOF\\n";
+ return Buffer.from(output,"binary");
+}
+test("PDF text extraction retains page locators",async()=>{
+ const bytes=makeOnePagePdf("Project evidence summary for Site A");
+ const docs=await extractTABBATADocuments([{name:"report.pdf",data_base64:bytes.toString("base64")}]);
+ assert.equal(docs[0].segments[0].locator,"Page 1");
+ assert.match(docs[0].segments[0].text,/Project evidence summary for Site A/);
+});
+
 test("XLSX rows retain sheet and row locators and formulas are not executed",async()=>{
  const workbook=new ExcelJS.Workbook();
  const sheet=workbook.addWorksheet("Expenses");
